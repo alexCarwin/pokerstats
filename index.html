@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZALULEDGER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #050505; color: #e5e7eb; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .glass-panel { background: rgba(24, 24, 27, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(63, 63, 70, 0.5); }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="p-4 min-h-screen flex flex-col pb-24 relative">
+
+    <div class="max-w-md mx-auto w-full flex justify-between items-center mb-6 pt-2">
+        <h1 class="text-2xl font-black uppercase italic tracking-tighter drop-shadow-lg">
+            <span class="text-white">ZALU</span><span class="text-emerald-500">LEDGER</span>
+        </h1>
+        <button onclick="endGame()" class="text-[10px] font-bold text-red-400 uppercase tracking-widest bg-red-900/20 px-3 py-2 rounded-lg border border-red-900/50 hover:bg-red-900/40 active:scale-95 transition">Завершить игру</button>
+    </div>
+
+    <div class="max-w-md mx-auto w-full flex-1 flex flex-col">
+        
+        <div class="glass-panel rounded-3xl p-5 mb-6 shadow-2xl relative overflow-hidden">
+            <div class="flex justify-between items-center mb-4 relative z-10">
+                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Касса на столе</span>
+                <span id="status-badge" class="text-[9px] font-bold px-2 py-1 rounded-md bg-zinc-800 text-zinc-400 uppercase tracking-wider transition-colors">Синхронизация...</span>
+            </div>
+            
+            <div class="flex space-x-4 relative z-10">
+                <div class="flex-1">
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1">Всего докупок</p>
+                    <p id="total-buyins" class="text-2xl font-black text-white">0 ₽</p>
+                </div>
+                <div class="flex-1">
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1">Фишек на руках</p>
+                    <p id="total-cashouts" class="text-2xl font-black text-zinc-400">0 ₽</p>
+                </div>
+            </div>
+            <div id="status-bg" class="absolute inset-0 opacity-10 transition-colors duration-500"></div>
+        </div>
+
+        <button onclick="openHistory()" class="w-full mb-6 py-3 bg-blue-900/20 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl border border-blue-900/50 hover:bg-blue-900/40 transition shadow-lg active:scale-95 flex items-center justify-center">
+            <span class="mr-2">🏆</span> Общий рейтинг (Стата)
+        </button>
+
+        <div class="flex space-x-2 mb-6">
+            <input type="text" id="new-player-name" list="db-players" placeholder="Имя игрока" class="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm font-bold text-white outline-none focus:border-emerald-500 transition placeholder-zinc-700">
+            <datalist id="db-players"></datalist>
+            <button onclick="addPlayer()" class="bg-emerald-600 text-white font-black text-sm uppercase tracking-wider px-6 rounded-xl hover:bg-emerald-500 active:scale-95 transition shadow-lg shadow-emerald-900/50">В игру</button>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 px-1">Игроки за столом</h2>
+            <div id="players-list" class="space-y-3">
+                <p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Загрузка данных...</p>
+            </div>
+        </div>
+
+        <button onclick="calculateDebts()" class="w-full py-4 bg-zinc-100 text-zinc-900 text-xs font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-white transition shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 mb-4">Рассчитать долги</button>
+
+        <div id="results-panel" class="hidden glass-panel rounded-3xl p-5 border-emerald-900/50 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-blue-500"></div>
+            <h2 class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-4">Кому куда переводить</h2>
+            <div id="transactions-list" class="space-y-3">
+            </div>
+        </div>
+
+    </div>
+
+    <div id="history-modal" class="fixed inset-0 hidden z-50 p-4 flex flex-col bg-black/90 backdrop-blur-md overflow-y-auto">
+        <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
+            <div class="flex justify-between items-center mb-6 mt-2">
+                <h2 class="text-sm font-black text-blue-500 uppercase tracking-widest">Зал Славы</h2>
+                <button onclick="closeHistory()" class="text-zinc-400 text-xs font-bold uppercase hover:text-white transition">Закрыть ✕</button>
+            </div>
+            
+            <div class="glass-panel rounded-2xl p-1 shadow-2xl border-blue-900/30">
+                <div class="flex px-4 py-2 text-[9px] font-bold text-zinc-500 uppercase tracking-widest border-b border-zinc-800/50">
+                    <div class="w-1/2">Игрок</div>
+                    <div class="w-1/4 text-center">Игр</div>
+                    <div class="w-1/4 text-right">Профит</div>
+                </div>
+                <div id="history-list" class="flex flex-col">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Твой конфиг Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyD1wjcRJdVy8gOoUUEb2ACgSpFbYmeAkCk",
+            authDomain: "pokerstats-5fc3e.firebaseapp.com",
+            databaseURL: "https://pokerstats-5fc3e-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "pokerstats-5fc3e",
+            storageBucket: "pokerstats-5fc3e.firebasestorage.app",
+            messagingSenderId: "274914765946",
+            appId: "1:274914765946:web:edcc8e3e96c9cb6c905fc3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const dbRef = ref(database, 'zalubank_data'); // Ссылка на корень нашей базы
+
+        // Глобальный объект (основа)
+        let db = { game: [], history: {} };
+        let isFirstLoad = true;
+
+        // --- МАГИЯ СИНХРОНИЗАЦИИ ---
+        // Срабатывает каждый раз, когда кто-то из 15 человек обновляет базу
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                db = data;
+                if (!db.game) db.game = [];
+                if (!db.history) db.history = {};
+            } else {
+                db = { game: [], history: {} };
+            }
+            
+            updateDatalist();
+            render();
+            isFirstLoad = false;
+        });
+
+        // Функция отправки данных в облако
+        function saveToCloud() {
+            set(dbRef, db);
+        }
+
+        function updateDatalist() {
+            const datalist = document.getElementById('db-players');
+            datalist.innerHTML = '';
+            if(!db.history) return;
+            Object.keys(db.history).forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                datalist.appendChild(option);
+            });
+        }
+
+        function render() {
+            const list = document.getElementById('players-list');
+            list.innerHTML = '';
+            
+            let totalBuyIns = 0;
+            let totalCashouts = 0;
+
+            if (!db.game || db.game.length === 0) {
+                if(isFirstLoad) {
+                    list.innerHTML = '<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Подключение к базе...</p>';
+                } else {
+                    list.innerHTML = '<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Стол пуст. Зови фишей.</p>';
+                }
+            }
+
+            if(db.game) {
+                db.game.forEach((p, index) => {
+                    const bIn = p.buyIn === null || p.buyIn === undefined ? 0 : p.buyIn;
+                    const cOut = p.cashOut === null || p.cashOut === undefined ? 0 : p.cashOut;
+                    
+                    totalBuyIns += bIn;
+                    totalCashouts += cOut;
+
+                    const net = cOut - bIn;
+                    const netClass = net > 0 ? 'text-emerald-500' : (net < 0 ? 'text-red-500' : 'text-zinc-500');
+                    const netText = net > 0 ? `+${net}` : net;
+
+                    const buyInDisplay = p.buyIn === null || p.buyIn === undefined ? '' : p.buyIn;
+                    const cashOutDisplay = p.cashOut === null || p.cashOut === undefined ? '' : p.cashOut;
+
+                    // ВАЖНО: onchange вместо oninput, чтобы можно было вводить числа без сброса фокуса при чужом обновлении
+                    list.innerHTML += `
+                        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col shadow-lg relative">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="font-black text-white text-lg tracking-tight">${p.name}</span>
+                                <span class="text-xs font-bold ${netClass} bg-[#111] px-2 py-1 rounded-md">Итог: ${netText}</span>
+                            </div>
+                            
+                            <div class="flex space-x-2">
+                                <div class="flex-1">
+                                    <span class="text-[8px] font-bold text-zinc-500 uppercase tracking-widest ml-1">Докупки</span>
+                                    <div class="flex mt-1">
+                                        <input type="number" value="${buyInDisplay}" placeholder="0" onchange="updateBuyIn(${index}, this.value)" class="w-full bg-zinc-800 rounded-l-xl px-3 py-2 text-sm font-bold text-white outline-none border border-transparent focus:border-zinc-500 transition">
+                                        <button onclick="addRebuy(${index}, 500)" class="bg-zinc-700 text-xs font-bold text-white px-3 rounded-r-xl border-l border-zinc-800 hover:bg-zinc-600 transition active:bg-zinc-500">+500</button>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="text-[8px] font-bold text-zinc-500 uppercase tracking-widest ml-1">Стэк</span>
+                                    <input type="number" value="${cashOutDisplay}" placeholder="Конец" onchange="updateCashOut(${index}, this.value)" class="w-full mt-1 bg-zinc-800 rounded-xl px-3 py-2 text-sm font-bold text-white outline-none border border-transparent focus:border-blue-500 transition">
+                                </div>
+                            </div>
+                            
+                            <button onclick="removePlayer(${index})" class="absolute -top-2 -right-2 w-6 h-6 bg-red-900/80 text-white rounded-full text-xs font-bold flex items-center justify-center hover:scale-110 transition shadow-lg border border-red-800/50">✕</button>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('total-buyins').innerText = totalBuyIns + ' ₽';
+            document.getElementById('total-cashouts').innerText = totalCashouts + ' ₽';
+
+            const badge = document.getElementById('status-badge');
+            const bg = document.getElementById('status-bg');
+
+            if (!isFirstLoad) {
+                if (totalBuyIns > 0 && totalBuyIns === totalCashouts) {
+                    badge.className = "text-[9px] font-bold px-2 py-1 rounded-md bg-emerald-900/50 text-emerald-400 border border-emerald-800 uppercase tracking-wider shadow-[0_0_10px_rgba(16,185,129,0.2)]";
+                    badge.innerText = "Касса сошлась ✓";
+                    bg.className = "absolute inset-0 bg-emerald-500/10 transition-colors duration-500";
+                } else if (totalBuyIns > 0 && totalCashouts > 0) {
+                    let diff = totalBuyIns - totalCashouts;
+                    badge.className = "text-[9px] font-bold px-2 py-1 rounded-md bg-red-900/50 text-red-400 border border-red-800 uppercase tracking-wider shadow-[0_0_10px_rgba(239,68,68,0.2)]";
+                    badge.innerText = diff > 0 ? `Не хватает ${diff}` : `Лишние ${Math.abs(diff)}`;
+                    bg.className = "absolute inset-0 bg-red-500/10 transition-colors duration-500";
+                } else {
+                    badge.className = "text-[9px] font-bold px-2 py-1 rounded-md bg-zinc-800 text-zinc-400 uppercase tracking-wider";
+                    badge.innerText = "В процессе";
+                    bg.className = "absolute inset-0 opacity-10 transition-colors duration-500";
+                }
+            }
+        }
+
+        // --- ДЕЛАЕМ ФУНКЦИИ ДОСТУПНЫМИ ДЛЯ HTML ---
+        window.addPlayer = function() {
+            const nameInput = document.getElementById('new-player-name');
+            let name = nameInput.value.trim();
+            
+            if (!name) return;
+            if (db.game.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+                alert("Этот игрок уже за столом!");
+                return;
+            }
+
+            db.game.push({ name: name, buyIn: null, cashOut: null });
+            
+            if (!db.history[name]) {
+                db.history[name] = { net: 0, games: 0 };
+            }
+
+            nameInput.value = '';
+            document.getElementById('results-panel').classList.add('hidden');
+            saveToCloud();
+        }
+
+        window.removePlayer = function(index) {
+            if(confirm(`Точно удалить игрока ${db.game[index].name} со стола?`)) {
+                db.game.splice(index, 1);
+                document.getElementById('results-panel').classList.add('hidden');
+                saveToCloud();
+            }
+        }
+
+        window.updateBuyIn = function(index, val) {
+            db.game[index].buyIn = val === '' ? null : parseInt(val);
+            document.getElementById('results-panel').classList.add('hidden');
+            saveToCloud();
+        }
+
+        window.addRebuy = function(index, amount) {
+            let current = db.game[index].buyIn || 0;
+            db.game[index].buyIn = current + amount;
+            document.getElementById('results-panel').classList.add('hidden');
+            saveToCloud();
+        }
+
+        window.updateCashOut = function(index, val) {
+            db.game[index].cashOut = val === '' ? null : parseInt(val);
+            document.getElementById('results-panel').classList.add('hidden');
+            saveToCloud();
+        }
+
+        window.endGame = function() {
+            if (db.game.length === 0) return alert('Стол пуст!');
+
+            let totalB = db.game.reduce((sum, p) => sum + (p.buyIn || 0), 0);
+            let totalC = db.game.reduce((sum, p) => sum + (p.cashOut || 0), 0);
+
+            if (totalB !== totalC) {
+                if(!confirm(`ВНИМАНИЕ: Касса не сходится! Разница: ${Math.abs(totalB - totalC)} руб.\n\nВсё равно завершить игру и записать эти результаты в историю?`)) {
+                    return;
+                }
+            } else {
+                if(!confirm('Завершить игру? Результаты будут записаны в историю.')) return;
+            }
+
+            db.game.forEach(p => {
+                const net = (p.cashOut || 0) - (p.buyIn || 0);
+                if (!db.history[p.name]) {
+                    db.history[p.name] = { net: 0, games: 0 };
+                }
+                db.history[p.name].net += net;
+                db.history[p.name].games += 1;
+            });
+
+            db.game = [];
+            document.getElementById('results-panel').classList.add('hidden');
+            saveToCloud();
+            alert("Игра завершена! Статистика сохранена в Зале Славы.");
+        }
+
+        window.openHistory = function() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = '';
+            
+            if(!db.history) return;
+
+            let historyArray = Object.keys(db.history).map(name => {
+                return { name: name, ...db.history[name] };
+            });
+
+            historyArray.sort((a, b) => b.net - a.net);
+
+            if (historyArray.length === 0) {
+                list.innerHTML = '<div class="p-6 text-center text-xs text-zinc-500 italic">Сыграйте хотя бы одну игру</div>';
+            } else {
+                historyArray.forEach((p, index) => {
+                    const netClass = p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400');
+                    const netText = p.net > 0 ? `+${p.net}` : p.net;
+                    
+                    let medal = '';
+                    if (index === 0) medal = '🥇 ';
+                    else if (index === 1) medal = '🥈 ';
+                    else if (index === 2) medal = '🥉 ';
+
+                    list.innerHTML += `
+                        <div class="flex px-4 py-3 items-center border-b border-zinc-800/30 last:border-0 hover:bg-zinc-800/20 transition">
+                            <div class="w-1/2 font-bold text-sm text-white truncate">${medal}${p.name}</div>
+                            <div class="w-1/4 text-center text-xs text-zinc-500 font-medium">${p.games}</div>
+                            <div class="w-1/4 text-right text-sm font-black ${netClass}">${netText}</div>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('history-modal').classList.remove('hidden');
+        }
+
+        window.closeHistory = function() {
+            document.getElementById('history-modal').classList.add('hidden');
+        }
+
+        window.calculateDebts = function() {
+            if (db.game.length === 0) return alert('Добавьте игроков!');
+            
+            let totalB = db.game.reduce((sum, p) => sum + (p.buyIn || 0), 0);
+            let totalC = db.game.reduce((sum, p) => sum + (p.cashOut || 0), 0);
+
+            if (totalB === 0) return alert('Никто не делал бай-ины!');
+            if (totalB !== totalC) {
+                alert(`ВНИМАНИЕ: Дебет с кредитом не сходится!\nСумма докупок: ${totalB}\nФишек на руках: ${totalC}\n\nНайдите ошибку перед расчетом.`);
+                return;
+            }
+
+            let debtors = []; 
+            let creditors = []; 
+
+            db.game.forEach(p => {
+                let net = (p.cashOut || 0) - (p.buyIn || 0);
+                if (net < 0) debtors.push({ name: p.name, amount: Math.abs(net) });
+                else if (net > 0) creditors.push({ name: p.name, amount: net });
+            });
+
+            debtors.sort((a, b) => b.amount - a.amount);
+            creditors.sort((a, b) => b.amount - a.amount);
+
+            let transactions = [];
+            let i = 0; let j = 0; 
+
+            while (i < debtors.length && j < creditors.length) {
+                let debtor = debtors[i];
+                let creditor = creditors[j];
+
+                let amountToTransfer = Math.min(debtor.amount, creditor.amount);
+
+                transactions.push({ from: debtor.name, to: creditor.name, amount: amountToTransfer });
+
+                debtor.amount -= amountToTransfer;
+                creditor.amount -= amountToTransfer;
+
+                if (debtor.amount === 0) i++;
+                if (creditor.amount === 0) j++;
+            }
+
+            const panel = document.getElementById('results-panel');
+            const list = document.getElementById('transactions-list');
+            list.innerHTML = '';
+
+            if (transactions.length === 0) {
+                list.innerHTML = '<p class="text-xs text-zinc-400">Все остались при своих!</p>';
+            } else {
+                transactions.forEach(t => {
+                    list.innerHTML += `
+                        <div class="flex items-center justify-between bg-zinc-900/80 p-3 rounded-xl border border-zinc-800">
+                            <span class="text-sm font-bold text-red-400 w-1/3 truncate">${t.from}</span>
+                            <div class="flex-1 flex flex-col items-center px-2">
+                                <span class="text-xs font-black text-white bg-zinc-800 px-3 py-1 rounded-full border border-zinc-700 shadow-md">${t.amount} ₽</span>
+                                <span class="text-[8px] text-zinc-500 mt-1 uppercase tracking-widest">переводит ➔</span>
+                            </div>
+                            <span class="text-sm font-bold text-emerald-400 w-1/3 text-right truncate">${t.to}</span>
+                        </div>
+                    `;
+                });
+            }
+
+            panel.classList.remove('hidden');
+            panel.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+    </script>
+</body>
+</html>
