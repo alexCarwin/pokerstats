@@ -17,10 +17,10 @@
 <body class="p-3 min-h-screen flex flex-col pb-24 relative">
 
     <div class="max-w-md mx-auto w-full flex justify-between items-center mb-4 pt-1">
-        <h1 class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg">
+        <h1 onclick="secretLogin()" class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg cursor-pointer">
             <span class="text-white">ZALU</span><span class="text-emerald-500">BANK</span>
         </h1>
-        <button onclick="endGame()" class="text-[10px] font-bold text-red-400 uppercase tracking-widest bg-red-900/20 px-3 py-2 rounded-lg border border-red-900/50 hover:bg-red-900/40 active:scale-95 transition">Завершить игру</button>
+        <button id="btn-end-game" onclick="endGame()" class="hidden text-[10px] font-bold text-red-400 uppercase tracking-widest bg-red-900/20 px-3 py-2 rounded-lg border border-red-900/50 hover:bg-red-900/40 active:scale-95 transition">Завершить игру</button>
     </div>
 
     <div class="max-w-md mx-auto w-full flex-1 flex flex-col">
@@ -85,13 +85,13 @@
             
             <div class="glass-panel rounded-xl p-1 shadow-2xl border-blue-900/30">
                 <div class="flex px-3 py-2 text-[8px] font-bold text-zinc-500 uppercase tracking-widest border-b border-zinc-800/50">
-                    <div class="w-[40%] flex items-center pr-1">
+                    <div class="w-[45%] flex items-center pr-1">
                         <span class="w-4 inline-block text-right">#</span>
                         <span class="ml-2">Игрок (Профиль)</span>
                     </div>
                     <div class="w-[15%] text-center">Игр</div>
                     <div class="w-[25%] text-right">Профит</div>
-                    <div class="w-[20%] text-right"></div>
+                    <div id="history-admin-header" class="w-[15%] text-right hidden"></div>
                 </div>
                 <div id="history-list" class="flex flex-col">
                 </div>
@@ -157,6 +157,11 @@
 
         let db = { game: [], history: {}, sessions: {} };
         let isFirstLoad = true;
+        
+        // ПИН-КОД АДМИНА (можешь поменять)
+        const SECRET_PIN = "7777";
+        // Проверяем, есть ли у нас права админа
+        let isAdmin = localStorage.getItem('zalubank_admin') === 'true';
 
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
@@ -173,17 +178,40 @@
             render();
             if(!document.getElementById('history-modal').classList.contains('hidden')) window.openHistory();
             if(!document.getElementById('sessions-modal').classList.contains('hidden')) window.openSessions();
-            
             if(!document.getElementById('profile-modal').classList.contains('hidden')) {
                 const currentPlayer = document.getElementById('profile-name').innerText;
                 window.openPlayerProfile(currentPlayer);
             }
-            
             isFirstLoad = false;
         });
 
         function saveToCloud() {
             set(dbRef, db);
+        }
+
+        // ФУНКЦИЯ СКРЫТОГО ЛОГИНА
+        window.secretLogin = function() {
+            if(isAdmin) {
+                if(confirm("Выйти из режима Администратора? Все опасные кнопки будут скрыты.")) {
+                    isAdmin = false;
+                    localStorage.removeItem('zalubank_admin');
+                    render();
+                    if(!document.getElementById('history-modal').classList.contains('hidden')) window.openHistory();
+                    if(!document.getElementById('sessions-modal').classList.contains('hidden')) window.openSessions();
+                }
+            } else {
+                let pin = prompt("Введите PIN-код для доступа к удалению и редактированию:");
+                if(pin === SECRET_PIN) {
+                    isAdmin = true;
+                    localStorage.setItem('zalubank_admin', 'true');
+                    alert("Режим Администратора разблокирован! 🔓");
+                    render();
+                    if(!document.getElementById('history-modal').classList.contains('hidden')) window.openHistory();
+                    if(!document.getElementById('sessions-modal').classList.contains('hidden')) window.openSessions();
+                } else if (pin !== null) {
+                    alert("Неверный PIN-код ❌");
+                }
+            }
         }
 
         function updateDatalist() {
@@ -198,6 +226,9 @@
         }
 
         function render() {
+            // Показываем или скрываем кнопку завершения игры
+            document.getElementById('btn-end-game').classList.toggle('hidden', !isAdmin);
+
             const list = document.getElementById('players-list');
             list.innerHTML = '';
             
@@ -227,6 +258,9 @@
                     const buyInDisplay = p.buyIn === null || p.buyIn === undefined ? '' : p.buyIn;
                     const cashOutDisplay = p.cashOut === null || p.cashOut === undefined ? '' : p.cashOut;
 
+                    // Кнопка удаления со стола рендерится только для админа
+                    let deleteBtnHTML = isAdmin ? `<button onclick="removePlayer(${index})" class="absolute top-2 right-2 w-5 h-5 bg-red-900/50 text-red-400 rounded-full text-[10px] font-bold flex items-center justify-center hover:bg-red-600 hover:text-white transition">✕</button>` : '';
+
                     list.innerHTML += `
                         <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 flex flex-col relative">
                             <div class="flex justify-between items-center mb-1.5 pr-4">
@@ -247,8 +281,7 @@
                                     <input type="number" value="${cashOutDisplay}" placeholder="0" onchange="updateCashOut(${index}, this.value)" class="w-full bg-zinc-800 rounded-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-blue-500 transition">
                                 </div>
                             </div>
-                            
-                            <button onclick="removePlayer(${index})" class="absolute top-2 right-2 w-5 h-5 bg-red-900/50 text-red-400 rounded-full text-[10px] font-bold flex items-center justify-center hover:bg-red-600 hover:text-white transition">✕</button>
+                            ${deleteBtnHTML}
                         </div>
                     `;
                 });
@@ -287,29 +320,20 @@
             if (db.history) {
                 existingName = Object.keys(db.history).find(k => k.toLowerCase() === rawName.toLowerCase());
             }
+            let name = existingName ? existingName : rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
 
-            let name;
-            if (existingName) {
-                name = existingName;
-            } else {
-                name = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
-            }
-
-            if (db.game.some(p => p.name === name)) {
-                alert("Этот игрок уже за столом!");
-                return;
-            }
+            if (db.game.some(p => p.name === name)) return alert("Этот игрок уже за столом!");
 
             db.game.push({ name: name, buyIn: null, cashOut: null });
-            if (!db.history[name]) {
-                db.history[name] = { net: 0, games: 0 };
-            }
+            if (!db.history[name]) db.history[name] = { net: 0, games: 0 };
+            
             nameInput.value = '';
             document.getElementById('results-panel').classList.add('hidden');
             saveToCloud();
         }
 
         window.removePlayer = function(index) {
+            if(!isAdmin) return alert("Только админ может удалять игроков со стола!");
             if(confirm(`Точно удалить игрока ${db.game[index].name} со стола?`)) {
                 db.game.splice(index, 1);
                 document.getElementById('results-panel').classList.add('hidden');
@@ -337,7 +361,9 @@
         }
 
         window.endGame = function() {
+            if(!isAdmin) return alert("Сорри, только админ может завершать игру!");
             if (db.game.length === 0) return alert('Стол пуст!');
+            
             let totalB = db.game.reduce((sum, p) => sum + (p.buyIn || 0), 0);
             let totalC = db.game.reduce((sum, p) => sum + (p.cashOut || 0), 0);
 
@@ -374,6 +400,9 @@
         }
 
         window.openHistory = function() {
+            // Переключаем ширину столбцов в зависимости от того, админ мы или нет
+            document.getElementById('history-admin-header').classList.toggle('hidden', !isAdmin);
+
             const list = document.getElementById('history-list');
             list.innerHTML = '';
             
@@ -392,18 +421,25 @@
                     const netClass = p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400');
                     const netText = p.net > 0 ? `+${p.net}` : p.net;
 
+                    // Кнопки управления рендерятся только для админа
+                    let adminButtons = isAdmin ? `
+                        <div class="w-[15%] flex justify-end space-x-2">
+                            <button onclick="editHistoryPlayer('${p.name}')" class="text-zinc-500 hover:text-blue-400 transition text-xs">✏️</button>
+                            <button onclick="deleteHistoryPlayer('${p.name}')" class="text-zinc-500 hover:text-red-400 transition text-xs">🗑️</button>
+                        </div>
+                    ` : '';
+
+                    let nameWidth = isAdmin ? 'w-[45%]' : 'w-[60%]'; // Если кнопок нет, имя занимает больше места
+
                     list.innerHTML += `
                         <div class="flex px-3 py-2 items-center border-b border-zinc-800/30 last:border-0 hover:bg-zinc-800/40 transition group">
-                            <div class="w-[40%] flex items-center pr-1 truncate">
+                            <div class="${nameWidth} flex items-center pr-1 truncate">
                                 <span class="w-4 inline-block text-[10px] text-zinc-600 font-bold text-right flex-shrink-0">${index + 1}</span>
                                 <button onclick="openPlayerProfile('${p.name}')" class="ml-2 font-bold text-xs text-blue-400 text-left truncate hover:text-blue-300 transition underline decoration-blue-900/50 underline-offset-4">${p.name}</button>
                             </div>
                             <div class="w-[15%] text-center text-[10px] text-zinc-500 font-medium">${p.games}</div>
                             <div class="w-[25%] text-right text-xs font-black ${netClass}">${netText}</div>
-                            <div class="w-[20%] flex justify-end space-x-2">
-                                <button onclick="editHistoryPlayer('${p.name}')" class="text-zinc-500 hover:text-blue-400 transition text-xs">✏️</button>
-                                <button onclick="deleteHistoryPlayer('${p.name}')" class="text-zinc-500 hover:text-red-400 transition text-xs">🗑️</button>
-                            </div>
+                            ${adminButtons}
                         </div>
                     `;
                 });
@@ -416,6 +452,7 @@
             document.getElementById('history-modal').classList.add('hidden');
         }
 
+        // ПРОФИЛЬ ИГРОКА НЕ ИЗМЕНИЛСЯ
         window.openPlayerProfile = function(name) {
             const stats = db.history[name];
             if(!stats) return;
@@ -469,6 +506,7 @@
         }
 
         window.editHistoryPlayer = function(name) {
+            if(!isAdmin) return;
             const p = db.history[name];
             let newNet = prompt(`Редактируем ПРОФИТ для игрока ${name}:`, p.net);
             if(newNet === null) return;
@@ -481,6 +519,7 @@
         }
 
         window.deleteHistoryPlayer = function(name) {
+            if(!isAdmin) return;
             if(confirm(`Точно удалить игрока ${name} из Зала Славы навсегда?`)) {
                 delete db.history[name];
                 saveToCloud();
@@ -509,12 +548,16 @@
                     return `<div class="flex justify-between text-[10px]"><span class="text-zinc-300">${p.name}</span><span class="${nClass} font-bold">${net > 0 ? '+'+net : net}</span></div>`;
                 }).join('');
 
+                // Кнопки управления сессией только для админа
+                let deleteBtn = isAdmin ? `<button onclick="deleteSession('${s.id}')" class="absolute top-2 right-2 text-red-900 hover:text-red-500 transition text-xs">🗑️ Удалить</button>` : '';
+                let editBtn = isAdmin ? `<button onclick="editSessionDate('${s.id}')" class="ml-2 text-zinc-500 hover:text-purple-400 transition text-xs">✏️</button>` : '';
+
                 list.innerHTML += `
                     <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 relative">
-                        <button onclick="deleteSession('${s.id}')" class="absolute top-2 right-2 text-red-900 hover:text-red-500 transition text-xs">🗑️ Удалить</button>
+                        ${deleteBtn}
                         <div class="flex items-center text-[10px] font-bold text-purple-500 mb-2">
                             <span>${s.date}</span>
-                            <button onclick="editSessionDate('${s.id}')" class="ml-2 text-zinc-500 hover:text-purple-400 transition text-xs">✏️</button>
+                            ${editBtn}
                         </div>
                         <div class="space-y-1 mb-2 border-b border-zinc-800 pb-2">
                             ${playersHTML}
@@ -533,8 +576,8 @@
             document.getElementById('sessions-modal').classList.add('hidden');
         }
 
-        // НОВАЯ ФУНКЦИЯ ДЛЯ РЕДАКТИРОВАНИЯ ДАТЫ
         window.editSessionDate = function(id) {
+            if(!isAdmin) return;
             const session = db.sessions[id];
             if(!session) return;
             
@@ -546,6 +589,7 @@
         }
 
         window.deleteSession = function(id) {
+            if(!isAdmin) return;
             if(!confirm('Точно удалить эту сессию? ВНИМАНИЕ: Её результаты будут автоматически вычтены из Зала Славы у всех игроков!')) return;
             
             const session = db.sessions[id];
