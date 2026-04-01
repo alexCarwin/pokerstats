@@ -512,7 +512,10 @@
                 list.innerHTML += `
                     <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 relative">
                         <button onclick="deleteSession('${s.id}')" class="absolute top-2 right-2 text-red-900 hover:text-red-500 transition text-xs">🗑️ Удалить</button>
-                        <div class="text-[10px] font-bold text-purple-500 mb-2">${s.date}</div>
+                        <div class="flex items-center text-[10px] font-bold text-purple-500 mb-2">
+                            <span>${s.date}</span>
+                            <button onclick="editSessionDate('${s.id}')" class="ml-2 text-zinc-500 hover:text-purple-400 transition text-xs">✏️</button>
+                        </div>
                         <div class="space-y-1 mb-2 border-b border-zinc-800 pb-2">
                             ${playersHTML}
                         </div>
@@ -528,6 +531,18 @@
 
         window.closeSessions = function() {
             document.getElementById('sessions-modal').classList.add('hidden');
+        }
+
+        // НОВАЯ ФУНКЦИЯ ДЛЯ РЕДАКТИРОВАНИЯ ДАТЫ
+        window.editSessionDate = function(id) {
+            const session = db.sessions[id];
+            if(!session) return;
+            
+            let newDate = prompt(`Редактируем дату игры:`, session.date);
+            if(newDate !== null && newDate.trim() !== '') {
+                db.sessions[id].date = newDate.trim();
+                saveToCloud();
+            }
         }
 
         window.deleteSession = function(id) {
