@@ -18,7 +18,7 @@
 
     <div class="max-w-md mx-auto w-full flex justify-between items-center mb-4 pt-1">
         <h1 class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg">
-            <span class="text-white">ZALU</span><span class="text-emerald-500">BANK</span>
+            <span class="text-white">ZALU</span><span class="text-emerald-500">LEDGER</span>
         </h1>
         <button onclick="endGame()" class="text-[10px] font-bold text-red-400 uppercase tracking-widest bg-red-900/20 px-3 py-2 rounded-lg border border-red-900/50 hover:bg-red-900/40 active:scale-95 transition">Завершить игру</button>
     </div>
@@ -278,12 +278,30 @@
 
         window.addPlayer = function() {
             const nameInput = document.getElementById('new-player-name');
-            let name = nameInput.value.trim();
-            if (!name) return;
-            if (db.game.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+            let rawName = nameInput.value.trim();
+            if (!rawName) return;
+
+            // Ищем, есть ли уже такой игрок в истории (игнорируя регистр)
+            let existingName = null;
+            if (db.history) {
+                existingName = Object.keys(db.history).find(k => k.toLowerCase() === rawName.toLowerCase());
+            }
+
+            let name;
+            if (existingName) {
+                // Если нашли, используем точное имя из базы
+                name = existingName;
+            } else {
+                // Иначе делаем красивое имя: первая буква большая, остальные маленькие
+                name = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
+            }
+
+            // Проверяем, не сидит ли он уже за столом
+            if (db.game.some(p => p.name === name)) {
                 alert("Этот игрок уже за столом!");
                 return;
             }
+
             db.game.push({ name: name, buyIn: null, cashOut: null });
             if (!db.history[name]) {
                 db.history[name] = { net: 0, games: 0 };
@@ -402,7 +420,6 @@
             document.getElementById('history-modal').classList.add('hidden');
         }
 
-        // --- ЛОГИКА ПРОФИЛЯ ИГРОКА ---
         window.openPlayerProfile = function(name) {
             const stats = db.history[name];
             if(!stats) return;
@@ -416,7 +433,6 @@
             document.getElementById('profile-net').className = `text-2xl font-black relative z-10 ${netClass}`;
             document.getElementById('profile-net').innerText = netText;
 
-            // Собираем сессии игрока
             const list = document.getElementById('profile-sessions-list');
             list.innerHTML = '';
             
