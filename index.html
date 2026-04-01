@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZALUBANK</title>
+    <title>ZALULEDGER</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #050505; color: #e5e7eb; font-family: 'Inter', sans-serif; overflow-x: hidden; }
@@ -14,79 +14,122 @@
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="p-4 min-h-screen flex flex-col pb-24 relative">
+<body class="p-3 min-h-screen flex flex-col pb-24 relative">
 
-    <div class="max-w-md mx-auto w-full flex justify-between items-center mb-6 pt-2">
-        <h1 class="text-2xl font-black uppercase italic tracking-tighter drop-shadow-lg">
-            <span class="text-white">ZALU</span><span class="text-emerald-500">BANK</span>
+    <div class="max-w-md mx-auto w-full flex justify-between items-center mb-4 pt-1">
+        <h1 class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg">
+            <span class="text-white">ZALU</span><span class="text-emerald-500">LEDGER</span>
         </h1>
         <button onclick="endGame()" class="text-[10px] font-bold text-red-400 uppercase tracking-widest bg-red-900/20 px-3 py-2 rounded-lg border border-red-900/50 hover:bg-red-900/40 active:scale-95 transition">Завершить игру</button>
     </div>
 
     <div class="max-w-md mx-auto w-full flex-1 flex flex-col">
         
-        <div class="glass-panel rounded-3xl p-5 mb-6 shadow-2xl relative overflow-hidden">
-            <div class="flex justify-between items-center mb-4 relative z-10">
-                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Касса на столе</span>
+        <div class="glass-panel rounded-2xl p-4 mb-4 shadow-2xl relative overflow-hidden">
+            <div class="flex justify-between items-center mb-3 relative z-10">
+                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Касса</span>
                 <span id="status-badge" class="text-[9px] font-bold px-2 py-1 rounded-md bg-zinc-800 text-zinc-400 uppercase tracking-wider transition-colors">Синхронизация...</span>
             </div>
             
             <div class="flex space-x-4 relative z-10">
                 <div class="flex-1">
-                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1">Всего докупов</p>
-                    <p id="total-buyins" class="text-2xl font-black text-white">0 ₽</p>
+                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Всего докупок</p>
+                    <p id="total-buyins" class="text-xl font-black text-white">0 ₽</p>
                 </div>
                 <div class="flex-1">
-                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1">Фишек на руках</p>
-                    <p id="total-cashouts" class="text-2xl font-black text-zinc-400">0 ₽</p>
+                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Фишек на руках</p>
+                    <p id="total-cashouts" class="text-xl font-black text-zinc-400">0 ₽</p>
                 </div>
             </div>
             <div id="status-bg" class="absolute inset-0 opacity-10 transition-colors duration-500"></div>
         </div>
 
-        <button onclick="openHistory()" class="w-full mb-6 py-3 bg-blue-900/20 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl border border-blue-900/50 hover:bg-blue-900/40 transition shadow-lg active:scale-95 flex items-center justify-center">
-            <span class="mr-2">🏆</span> Общий рейтинг (Стата)
-        </button>
-
-        <div class="flex space-x-2 mb-6">
-            <input type="text" id="new-player-name" list="db-players" placeholder="Имя игрока" class="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm font-bold text-white outline-none focus:border-emerald-500 transition placeholder-zinc-700">
-            <datalist id="db-players"></datalist>
-            <button onclick="addPlayer()" class="bg-emerald-600 text-white font-black text-sm uppercase tracking-wider px-6 rounded-xl hover:bg-emerald-500 active:scale-95 transition shadow-lg shadow-emerald-900/50">В игру</button>
+        <div class="flex space-x-2 mb-5">
+            <button onclick="openHistory()" class="flex-1 py-2.5 bg-blue-900/20 text-blue-400 text-[9px] font-black uppercase tracking-widest rounded-xl border border-blue-900/50 hover:bg-blue-900/40 transition shadow-lg active:scale-95 flex items-center justify-center">
+                🏆 Стата
+            </button>
+            <button onclick="openSessions()" class="flex-1 py-2.5 bg-purple-900/20 text-purple-400 text-[9px] font-black uppercase tracking-widest rounded-xl border border-purple-900/50 hover:bg-purple-900/40 transition shadow-lg active:scale-95 flex items-center justify-center">
+                📖 История
+            </button>
         </div>
 
-        <div class="mb-8">
-            <h2 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 px-1">Игроки за столом</h2>
-            <div id="players-list" class="space-y-3">
+        <div class="flex space-x-2 mb-4">
+            <input type="text" id="new-player-name" list="db-players" placeholder="Имя игрока" class="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm font-bold text-white outline-none focus:border-emerald-500 transition placeholder-zinc-700">
+            <datalist id="db-players"></datalist>
+            <button onclick="addPlayer()" class="bg-emerald-600 text-white font-black text-xs uppercase tracking-wider px-4 rounded-lg hover:bg-emerald-500 active:scale-95 transition shadow-lg shadow-emerald-900/50">В игру</button>
+        </div>
+
+        <div class="mb-6">
+            <div id="players-list" class="space-y-2">
                 <p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Загрузка данных...</p>
             </div>
         </div>
 
-        <button onclick="calculateDebts()" class="w-full py-4 bg-zinc-100 text-zinc-900 text-xs font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-white transition shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 mb-4">Рассчитать долги</button>
+        <button onclick="calculateDebts()" class="w-full py-3 bg-zinc-100 text-zinc-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white transition shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 mb-4">Рассчитать долги</button>
 
-        <div id="results-panel" class="hidden glass-panel rounded-3xl p-5 border-emerald-900/50 relative overflow-hidden">
+        <div id="results-panel" class="hidden glass-panel rounded-2xl p-4 border-emerald-900/50 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-blue-500"></div>
-            <h2 class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-4">Кому куда переводить</h2>
-            <div id="transactions-list" class="space-y-3">
+            <h2 class="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-3">Кому куда переводить</h2>
+            <div id="transactions-list" class="space-y-2">
             </div>
         </div>
 
     </div>
 
-    <div id="history-modal" class="fixed inset-0 hidden z-50 p-4 flex flex-col bg-black/90 backdrop-blur-md overflow-y-auto">
+    <div id="history-modal" class="fixed inset-0 hidden z-50 p-3 flex flex-col bg-black/95 backdrop-blur-md overflow-y-auto">
         <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
-            <div class="flex justify-between items-center mb-6 mt-2">
+            <div class="flex justify-between items-center mb-4 mt-2">
                 <h2 class="text-sm font-black text-blue-500 uppercase tracking-widest">Зал Славы</h2>
                 <button onclick="closeHistory()" class="text-zinc-400 text-xs font-bold uppercase hover:text-white transition">Закрыть ✕</button>
             </div>
             
-            <div class="glass-panel rounded-2xl p-1 shadow-2xl border-blue-900/30">
-                <div class="flex px-4 py-2 text-[9px] font-bold text-zinc-500 uppercase tracking-widest border-b border-zinc-800/50">
-                    <div class="w-1/2">Игрок</div>
-                    <div class="w-1/4 text-center">Игр</div>
+            <div class="glass-panel rounded-xl p-1 shadow-2xl border-blue-900/30">
+                <div class="flex px-3 py-2 text-[8px] font-bold text-zinc-500 uppercase tracking-widest border-b border-zinc-800/50">
+                    <div class="w-2/5">Игрок (Жми для профиля)</div>
+                    <div class="w-1/5 text-center">Игр</div>
                     <div class="w-1/4 text-right">Профит</div>
+                    <div class="w-1/5 text-right">Упр.</div>
                 </div>
                 <div id="history-list" class="flex flex-col">
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="profile-modal" class="fixed inset-0 hidden z-50 p-3 flex flex-col bg-black/95 backdrop-blur-md overflow-y-auto">
+        <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
+            <div class="flex justify-between items-start mb-6 mt-4">
+                <div>
+                    <h2 id="profile-name" class="text-3xl font-black text-white uppercase tracking-tighter drop-shadow-md">Имя</h2>
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">Досье игрока</p>
+                </div>
+                <button onclick="closePlayerProfile()" class="text-zinc-400 text-xs font-bold uppercase hover:text-white transition bg-zinc-900 p-2 rounded-lg border border-zinc-800">Назад ✕</button>
+            </div>
+            
+            <div class="flex space-x-3 mb-6">
+                <div class="flex-1 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-center items-center shadow-lg">
+                    <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-1">Сыграно</span>
+                    <span id="profile-games" class="text-2xl font-black text-white">0</span>
+                </div>
+                <div class="flex-[1.5] bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-center items-center shadow-lg relative overflow-hidden">
+                    <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-1 relative z-10">Общий профит</span>
+                    <span id="profile-net" class="text-2xl font-black relative z-10">0 ₽</span>
+                </div>
+            </div>
+
+            <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 px-1">История сессий</h3>
+            <div id="profile-sessions-list" class="space-y-2">
+                </div>
+        </div>
+    </div>
+
+    <div id="sessions-modal" class="fixed inset-0 hidden z-50 p-3 flex flex-col bg-black/95 backdrop-blur-md overflow-y-auto">
+        <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
+            <div class="flex justify-between items-center mb-4 mt-2">
+                <h2 class="text-sm font-black text-purple-500 uppercase tracking-widest">История игр</h2>
+                <button onclick="closeSessions()" class="text-zinc-400 text-xs font-bold uppercase hover:text-white transition">Закрыть ✕</button>
+            </div>
+            <div id="sessions-list" class="flex flex-col space-y-3">
             </div>
         </div>
     </div>
@@ -95,7 +138,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Твой конфиг Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyD1wjcRJdVy8gOoUUEb2ACgSpFbYmeAkCk",
             authDomain: "pokerstats-5fc3e.firebaseapp.com",
@@ -108,30 +150,36 @@
 
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
-        const dbRef = ref(database, 'zalubank_data'); // Ссылка на корень нашей базы
+        const dbRef = ref(database, 'zalubank_data');
 
-        // Глобальный объект (основа)
-        let db = { game: [], history: {} };
+        let db = { game: [], history: {}, sessions: {} };
         let isFirstLoad = true;
 
-        // --- МАГИЯ СИНХРОНИЗАЦИИ ---
-        // Срабатывает каждый раз, когда кто-то из 15 человек обновляет базу
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 db = data;
                 if (!db.game) db.game = [];
                 if (!db.history) db.history = {};
+                if (!db.sessions) db.sessions = {};
             } else {
-                db = { game: [], history: {} };
+                db = { game: [], history: {}, sessions: {} };
             }
             
             updateDatalist();
             render();
+            if(!document.getElementById('history-modal').classList.contains('hidden')) window.openHistory();
+            if(!document.getElementById('sessions-modal').classList.contains('hidden')) window.openSessions();
+            
+            // Если открыт профиль, обновляем и его
+            if(!document.getElementById('profile-modal').classList.contains('hidden')) {
+                const currentPlayer = document.getElementById('profile-name').innerText;
+                window.openPlayerProfile(currentPlayer);
+            }
+            
             isFirstLoad = false;
         });
 
-        // Функция отправки данных в облако
         function saveToCloud() {
             set(dbRef, db);
         }
@@ -156,7 +204,7 @@
 
             if (!db.game || db.game.length === 0) {
                 if(isFirstLoad) {
-                    list.innerHTML = '<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Подключение к базе...</p>';
+                    list.innerHTML = '<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Подключение...</p>';
                 } else {
                     list.innerHTML = '<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Стол пуст. Зови фишей.</p>';
                 }
@@ -177,29 +225,28 @@
                     const buyInDisplay = p.buyIn === null || p.buyIn === undefined ? '' : p.buyIn;
                     const cashOutDisplay = p.cashOut === null || p.cashOut === undefined ? '' : p.cashOut;
 
-                    // ВАЖНО: onchange вместо oninput, чтобы можно было вводить числа без сброса фокуса при чужом обновлении
                     list.innerHTML += `
-                        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col shadow-lg relative">
-                            <div class="flex justify-between items-center mb-3">
-                                <span class="font-black text-white text-lg tracking-tight">${p.name}</span>
-                                <span class="text-xs font-bold ${netClass} bg-[#111] px-2 py-1 rounded-md">Итог: ${netText}</span>
+                        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 flex flex-col relative">
+                            <div class="flex justify-between items-center mb-1.5 pr-4">
+                                <span class="font-black text-white text-sm tracking-tight">${p.name}</span>
+                                <span class="text-[9px] font-bold ${netClass}">Итог: ${netText}</span>
                             </div>
                             
-                            <div class="flex space-x-2">
-                                <div class="flex-1">
-                                    <span class="text-[8px] font-bold text-zinc-500 uppercase tracking-widest ml-1">Докупы</span>
-                                    <div class="flex mt-1">
-                                        <input type="number" value="${buyInDisplay}" placeholder="0" onchange="updateBuyIn(${index}, this.value)" class="w-full bg-zinc-800 rounded-l-xl px-3 py-2 text-sm font-bold text-white outline-none border border-transparent focus:border-zinc-500 transition">
-                                        <button onclick="addRebuy(${index}, 500)" class="bg-zinc-700 text-xs font-bold text-white px-3 rounded-r-xl border-l border-zinc-800 hover:bg-zinc-600 transition active:bg-zinc-500">+500</button>
+                            <div class="flex space-x-2 items-end">
+                                <div class="flex-[1.2]">
+                                    <span class="text-[7px] font-bold text-zinc-500 uppercase tracking-widest ml-1 block mb-0.5">Докупка</span>
+                                    <div class="flex">
+                                        <input type="number" value="${buyInDisplay}" placeholder="0" onchange="updateBuyIn(${index}, this.value)" class="w-full bg-zinc-800 rounded-l-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-zinc-500 transition">
+                                        <button onclick="addRebuy(${index}, 500)" class="bg-zinc-700 text-[10px] font-bold text-white px-2 rounded-r-md border-l border-zinc-800 hover:bg-zinc-600 transition active:bg-zinc-500">+500</button>
                                     </div>
                                 </div>
                                 <div class="flex-1">
-                                    <span class="text-[8px] font-bold text-zinc-500 uppercase tracking-widest ml-1">Стэк</span>
-                                    <input type="number" value="${cashOutDisplay}" placeholder="Конец" onchange="updateCashOut(${index}, this.value)" class="w-full mt-1 bg-zinc-800 rounded-xl px-3 py-2 text-sm font-bold text-white outline-none border border-transparent focus:border-blue-500 transition">
+                                    <span class="text-[7px] font-bold text-zinc-500 uppercase tracking-widest ml-1 block mb-0.5">Стэк</span>
+                                    <input type="number" value="${cashOutDisplay}" placeholder="0" onchange="updateCashOut(${index}, this.value)" class="w-full bg-zinc-800 rounded-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-blue-500 transition">
                                 </div>
                             </div>
                             
-                            <button onclick="removePlayer(${index})" class="absolute -top-2 -right-2 w-6 h-6 bg-red-900/80 text-white rounded-full text-xs font-bold flex items-center justify-center hover:scale-110 transition shadow-lg border border-red-800/50">✕</button>
+                            <button onclick="removePlayer(${index})" class="absolute top-2 right-2 w-5 h-5 bg-red-900/50 text-red-400 rounded-full text-[10px] font-bold flex items-center justify-center hover:bg-red-600 hover:text-white transition">✕</button>
                         </div>
                     `;
                 });
@@ -213,12 +260,12 @@
 
             if (!isFirstLoad) {
                 if (totalBuyIns > 0 && totalBuyIns === totalCashouts) {
-                    badge.className = "text-[9px] font-bold px-2 py-1 rounded-md bg-emerald-900/50 text-emerald-400 border border-emerald-800 uppercase tracking-wider shadow-[0_0_10px_rgba(16,185,129,0.2)]";
+                    badge.className = "text-[9px] font-bold px-2 py-1 rounded-md bg-emerald-900/50 text-emerald-400 border border-emerald-800 uppercase tracking-wider";
                     badge.innerText = "Касса сошлась ✓";
                     bg.className = "absolute inset-0 bg-emerald-500/10 transition-colors duration-500";
                 } else if (totalBuyIns > 0 && totalCashouts > 0) {
                     let diff = totalBuyIns - totalCashouts;
-                    badge.className = "text-[9px] font-bold px-2 py-1 rounded-md bg-red-900/50 text-red-400 border border-red-800 uppercase tracking-wider shadow-[0_0_10px_rgba(239,68,68,0.2)]";
+                    badge.className = "text-[9px] font-bold px-2 py-1 rounded-md bg-red-900/50 text-red-400 border border-red-800 uppercase tracking-wider";
                     badge.innerText = diff > 0 ? `Не хватает ${diff}` : `Лишние ${Math.abs(diff)}`;
                     bg.className = "absolute inset-0 bg-red-500/10 transition-colors duration-500";
                 } else {
@@ -229,23 +276,18 @@
             }
         }
 
-        // --- ДЕЛАЕМ ФУНКЦИИ ДОСТУПНЫМИ ДЛЯ HTML ---
         window.addPlayer = function() {
             const nameInput = document.getElementById('new-player-name');
             let name = nameInput.value.trim();
-            
             if (!name) return;
             if (db.game.some(p => p.name.toLowerCase() === name.toLowerCase())) {
                 alert("Этот игрок уже за столом!");
                 return;
             }
-
             db.game.push({ name: name, buyIn: null, cashOut: null });
-            
             if (!db.history[name]) {
                 db.history[name] = { net: 0, games: 0 };
             }
-
             nameInput.value = '';
             document.getElementById('results-panel').classList.add('hidden');
             saveToCloud();
@@ -280,23 +322,31 @@
 
         window.endGame = function() {
             if (db.game.length === 0) return alert('Стол пуст!');
-
             let totalB = db.game.reduce((sum, p) => sum + (p.buyIn || 0), 0);
             let totalC = db.game.reduce((sum, p) => sum + (p.cashOut || 0), 0);
 
             if (totalB !== totalC) {
-                if(!confirm(`ВНИМАНИЕ: Касса не сходится! Разница: ${Math.abs(totalB - totalC)} руб.\n\nВсё равно завершить игру и записать эти результаты в историю?`)) {
+                if(!confirm(`ВНИМАНИЕ: Касса не сходится! Разница: ${Math.abs(totalB - totalC)} руб.\n\nВсё равно завершить игру и записать эти результаты?`)) {
                     return;
                 }
             } else {
                 if(!confirm('Завершить игру? Результаты будут записаны в историю.')) return;
             }
 
+            const sessionId = "sess_" + Date.now();
+            const dateStr = new Date().toLocaleString('ru-RU', {day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute:'2-digit'});
+            
+            if(!db.sessions) db.sessions = {};
+            db.sessions[sessionId] = {
+                date: dateStr,
+                players: JSON.parse(JSON.stringify(db.game)), 
+                totalB: totalB,
+                totalC: totalC
+            };
+
             db.game.forEach(p => {
                 const net = (p.cashOut || 0) - (p.buyIn || 0);
-                if (!db.history[p.name]) {
-                    db.history[p.name] = { net: 0, games: 0 };
-                }
+                if (!db.history[p.name]) db.history[p.name] = { net: 0, games: 0 };
                 db.history[p.name].net += net;
                 db.history[p.name].games += 1;
             });
@@ -304,7 +354,7 @@
             db.game = [];
             document.getElementById('results-panel').classList.add('hidden');
             saveToCloud();
-            alert("Игра завершена! Статистика сохранена в Зале Славы.");
+            alert("Игра завершена и записана в историю!");
         }
 
         window.openHistory = function() {
@@ -332,10 +382,14 @@
                     else if (index === 2) medal = '🥉 ';
 
                     list.innerHTML += `
-                        <div class="flex px-4 py-3 items-center border-b border-zinc-800/30 last:border-0 hover:bg-zinc-800/20 transition">
-                            <div class="w-1/2 font-bold text-sm text-white truncate">${medal}${p.name}</div>
-                            <div class="w-1/4 text-center text-xs text-zinc-500 font-medium">${p.games}</div>
-                            <div class="w-1/4 text-right text-sm font-black ${netClass}">${netText}</div>
+                        <div class="flex px-3 py-2 items-center border-b border-zinc-800/30 last:border-0 hover:bg-zinc-800/40 transition group">
+                            <button onclick="openPlayerProfile('${p.name}')" class="w-2/5 font-bold text-xs text-blue-400 text-left truncate hover:text-blue-300 transition underline decoration-blue-900/50 underline-offset-4">${medal}${p.name}</button>
+                            <div class="w-1/5 text-center text-[10px] text-zinc-500 font-medium">${p.games}</div>
+                            <div class="w-1/4 text-right text-xs font-black ${netClass}">${netText}</div>
+                            <div class="w-1/5 flex justify-end space-x-2">
+                                <button onclick="editHistoryPlayer('${p.name}')" class="text-zinc-500 hover:text-blue-400 transition text-xs">✏️</button>
+                                <button onclick="deleteHistoryPlayer('${p.name}')" class="text-zinc-500 hover:text-red-400 transition text-xs">🗑️</button>
+                            </div>
                         </div>
                     `;
                 });
@@ -346,6 +400,140 @@
 
         window.closeHistory = function() {
             document.getElementById('history-modal').classList.add('hidden');
+        }
+
+        // --- ЛОГИКА ПРОФИЛЯ ИГРОКА ---
+        window.openPlayerProfile = function(name) {
+            const stats = db.history[name];
+            if(!stats) return;
+
+            document.getElementById('profile-name').innerText = name;
+            document.getElementById('profile-games').innerText = stats.games;
+            
+            const netClass = stats.net > 0 ? 'text-emerald-400' : (stats.net < 0 ? 'text-red-400' : 'text-white');
+            const netText = stats.net > 0 ? `+${stats.net} ₽` : `${stats.net} ₽`;
+            
+            document.getElementById('profile-net').className = `text-2xl font-black relative z-10 ${netClass}`;
+            document.getElementById('profile-net').innerText = netText;
+
+            // Собираем сессии игрока
+            const list = document.getElementById('profile-sessions-list');
+            list.innerHTML = '';
+            
+            let playerSessions = [];
+            if(db.sessions) {
+                Object.keys(db.sessions).forEach(id => {
+                    const sess = db.sessions[id];
+                    const pData = sess.players.find(pl => pl.name === name);
+                    if(pData) {
+                        const net = (pData.cashOut || 0) - (pData.buyIn || 0);
+                        playerSessions.push({ date: sess.date, net: net, id: id });
+                    }
+                });
+            }
+
+            playerSessions.sort((a, b) => b.id.localeCompare(a.id));
+
+            if(playerSessions.length === 0) {
+                list.innerHTML = '<p class="text-center text-xs text-zinc-500 italic py-4">Нет записей об играх.</p>';
+            } else {
+                playerSessions.forEach(s => {
+                    const sNetClass = s.net > 0 ? 'text-emerald-400' : (s.net < 0 ? 'text-red-400' : 'text-zinc-500');
+                    const sNetText = s.net > 0 ? `+${s.net}` : s.net;
+                    list.innerHTML += `
+                        <div class="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-zinc-800/50">
+                            <span class="text-xs font-bold text-zinc-400">${s.date}</span>
+                            <span class="text-sm font-black ${sNetClass}">${sNetText} ₽</span>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('profile-modal').classList.remove('hidden');
+        }
+
+        window.closePlayerProfile = function() {
+            document.getElementById('profile-modal').classList.add('hidden');
+        }
+
+        window.editHistoryPlayer = function(name) {
+            const p = db.history[name];
+            let newNet = prompt(`Редактируем ПРОФИТ для игрока ${name}:`, p.net);
+            if(newNet === null) return;
+            let newGames = prompt(`Редактируем КОЛ-ВО ИГР для игрока ${name}:`, p.games);
+            if(newGames === null) return;
+
+            db.history[name].net = parseInt(newNet) || 0;
+            db.history[name].games = parseInt(newGames) || 0;
+            saveToCloud();
+        }
+
+        window.deleteHistoryPlayer = function(name) {
+            if(confirm(`Точно удалить игрока ${name} из Зала Славы навсегда?`)) {
+                delete db.history[name];
+                saveToCloud();
+            }
+        }
+
+        window.openSessions = function() {
+            const list = document.getElementById('sessions-list');
+            list.innerHTML = '';
+            
+            if(!db.sessions || Object.keys(db.sessions).length === 0) {
+                list.innerHTML = '<p class="text-center text-xs text-zinc-500 italic mt-10">Пока нет завершенных игр.</p>';
+                document.getElementById('sessions-modal').classList.remove('hidden');
+                return;
+            }
+
+            let sessArray = Object.keys(db.sessions).map(id => {
+                return { id: id, ...db.sessions[id] };
+            });
+            sessArray.sort((a, b) => b.id.localeCompare(a.id));
+
+            sessArray.forEach(s => {
+                let playersHTML = s.players.map(p => {
+                    let net = (p.cashOut || 0) - (p.buyIn || 0);
+                    let nClass = net > 0 ? 'text-emerald-400' : (net < 0 ? 'text-red-400' : 'text-zinc-500');
+                    return `<div class="flex justify-between text-[10px]"><span class="text-zinc-300">${p.name}</span><span class="${nClass} font-bold">${net > 0 ? '+'+net : net}</span></div>`;
+                }).join('');
+
+                list.innerHTML += `
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 relative">
+                        <button onclick="deleteSession('${s.id}')" class="absolute top-2 right-2 text-red-900 hover:text-red-500 transition text-xs">🗑️ Удалить</button>
+                        <div class="text-[10px] font-bold text-purple-500 mb-2">${s.date}</div>
+                        <div class="space-y-1 mb-2 border-b border-zinc-800 pb-2">
+                            ${playersHTML}
+                        </div>
+                        <div class="flex justify-between text-[9px] text-zinc-500 font-bold uppercase tracking-widest">
+                            <span>Банк: ${s.totalB}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('sessions-modal').classList.remove('hidden');
+        }
+
+        window.closeSessions = function() {
+            document.getElementById('sessions-modal').classList.add('hidden');
+        }
+
+        window.deleteSession = function(id) {
+            if(!confirm('Точно удалить эту сессию? ВНИМАНИЕ: Её результаты будут автоматически вычтены из Зала Славы у всех игроков!')) return;
+            
+            const session = db.sessions[id];
+            if(session) {
+                session.players.forEach(p => {
+                    const net = (p.cashOut || 0) - (p.buyIn || 0);
+                    if(db.history[p.name]) {
+                        db.history[p.name].net -= net;
+                        db.history[p.name].games -= 1;
+                        if(db.history[p.name].games < 0) db.history[p.name].games = 0;
+                    }
+                });
+                delete db.sessions[id];
+                saveToCloud();
+            }
         }
 
         window.calculateDebts = function() {
@@ -400,12 +588,12 @@
                 transactions.forEach(t => {
                     list.innerHTML += `
                         <div class="flex items-center justify-between bg-zinc-900/80 p-3 rounded-xl border border-zinc-800">
-                            <span class="text-sm font-bold text-red-400 w-1/3 truncate">${t.from}</span>
-                            <div class="flex-1 flex flex-col items-center px-2">
-                                <span class="text-xs font-black text-white bg-zinc-800 px-3 py-1 rounded-full border border-zinc-700 shadow-md">${t.amount} ₽</span>
-                                <span class="text-[8px] text-zinc-500 mt-1 uppercase tracking-widest">переводит ➔</span>
+                            <span class="text-xs font-bold text-red-400 w-1/3 truncate">${t.from}</span>
+                            <div class="flex-1 flex flex-col items-center px-1">
+                                <span class="text-[10px] font-black text-white bg-zinc-800 px-3 py-1 rounded-full border border-zinc-700 shadow-md">${t.amount} ₽</span>
+                                <span class="text-[7px] text-zinc-500 mt-1 uppercase tracking-widest">переводит ➔</span>
                             </div>
-                            <span class="text-sm font-bold text-emerald-400 w-1/3 text-right truncate">${t.to}</span>
+                            <span class="text-xs font-bold text-emerald-400 w-1/3 text-right truncate">${t.to}</span>
                         </div>
                     `;
                 });
