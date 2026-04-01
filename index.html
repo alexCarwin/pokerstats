@@ -88,7 +88,7 @@
                     <div class="w-2/5">Игрок (Жми для профиля)</div>
                     <div class="w-1/5 text-center">Игр</div>
                     <div class="w-1/4 text-right">Профит</div>
-                    <div class="w-1/5 text-right">Упр.</div>
+                    <div class="w-1/5 text-right"></div>
                 </div>
                 <div id="history-list" class="flex flex-col">
                 </div>
@@ -388,13 +388,13 @@
                 historyArray.forEach((p, index) => {
                     const netClass = p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400');
                     const netText = p.net > 0 ? `+${p.net}` : p.net;
-                    
-                    // Заменили медали на нумерацию
-                    const rank = `${index + 1}. `;
 
                     list.innerHTML += `
                         <div class="flex px-3 py-2 items-center border-b border-zinc-800/30 last:border-0 hover:bg-zinc-800/40 transition group">
-                            <button onclick="openPlayerProfile('${p.name}')" class="w-2/5 font-bold text-xs text-blue-400 text-left truncate hover:text-blue-300 transition underline decoration-blue-900/50 underline-offset-4">${rank}${p.name}</button>
+                            <div class="w-2/5 flex items-center truncate pr-2">
+                                <span class="text-[10px] text-zinc-600 font-bold mr-2 flex-shrink-0">${index + 1}.</span>
+                                <button onclick="openPlayerProfile('${p.name}')" class="font-bold text-xs text-blue-400 text-left truncate hover:text-blue-300 transition underline decoration-blue-900/50 underline-offset-4">${p.name}</button>
+                            </div>
                             <div class="w-1/5 text-center text-[10px] text-zinc-500 font-medium">${p.games}</div>
                             <div class="w-1/4 text-right text-xs font-black ${netClass}">${netText}</div>
                             <div class="w-1/5 flex justify-end space-x-2">
