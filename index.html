@@ -119,7 +119,7 @@
 
             <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 px-1">История сессий</h3>
             <div id="profile-sessions-list" class="space-y-2">
-                </div>
+            </div>
         </div>
     </div>
 
@@ -171,7 +171,6 @@
             if(!document.getElementById('history-modal').classList.contains('hidden')) window.openHistory();
             if(!document.getElementById('sessions-modal').classList.contains('hidden')) window.openSessions();
             
-            // Если открыт профиль, обновляем и его
             if(!document.getElementById('profile-modal').classList.contains('hidden')) {
                 const currentPlayer = document.getElementById('profile-name').innerText;
                 window.openPlayerProfile(currentPlayer);
@@ -281,7 +280,6 @@
             let rawName = nameInput.value.trim();
             if (!rawName) return;
 
-            // Ищем, есть ли уже такой игрок в истории (игнорируя регистр)
             let existingName = null;
             if (db.history) {
                 existingName = Object.keys(db.history).find(k => k.toLowerCase() === rawName.toLowerCase());
@@ -289,14 +287,11 @@
 
             let name;
             if (existingName) {
-                // Если нашли, используем точное имя из базы
                 name = existingName;
             } else {
-                // Иначе делаем красивое имя: первая буква большая, остальные маленькие
                 name = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
             }
 
-            // Проверяем, не сидит ли он уже за столом
             if (db.game.some(p => p.name === name)) {
                 alert("Этот игрок уже за столом!");
                 return;
@@ -394,14 +389,12 @@
                     const netClass = p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400');
                     const netText = p.net > 0 ? `+${p.net}` : p.net;
                     
-                    let medal = '';
-                    if (index === 0) medal = '🥇 ';
-                    else if (index === 1) medal = '🥈 ';
-                    else if (index === 2) medal = '🥉 ';
+                    // Заменили медали на нумерацию
+                    const rank = `${index + 1}. `;
 
                     list.innerHTML += `
                         <div class="flex px-3 py-2 items-center border-b border-zinc-800/30 last:border-0 hover:bg-zinc-800/40 transition group">
-                            <button onclick="openPlayerProfile('${p.name}')" class="w-2/5 font-bold text-xs text-blue-400 text-left truncate hover:text-blue-300 transition underline decoration-blue-900/50 underline-offset-4">${medal}${p.name}</button>
+                            <button onclick="openPlayerProfile('${p.name}')" class="w-2/5 font-bold text-xs text-blue-400 text-left truncate hover:text-blue-300 transition underline decoration-blue-900/50 underline-offset-4">${rank}${p.name}</button>
                             <div class="w-1/5 text-center text-[10px] text-zinc-500 font-medium">${p.games}</div>
                             <div class="w-1/4 text-right text-xs font-black ${netClass}">${netText}</div>
                             <div class="w-1/5 flex justify-end space-x-2">
