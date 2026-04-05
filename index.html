@@ -33,7 +33,7 @@
             
             <div class="flex space-x-4 relative z-10">
                 <div class="flex-1">
-                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Всего докупок</p>
+                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Всего бай-инов</p>
                     <p id="total-buyins" class="text-xl font-black text-white">0 ₽</p>
                 </div>
                 <div class="flex-1">
@@ -158,9 +158,7 @@
         let db = { game: [], history: {}, sessions: {} };
         let isFirstLoad = true;
         
-        // ПИН-КОД АДМИНА (можешь поменять)
         const SECRET_PIN = "7777";
-        // Проверяем, есть ли у нас права админа
         let isAdmin = localStorage.getItem('zalubank_admin') === 'true';
 
         onValue(dbRef, (snapshot) => {
@@ -189,7 +187,6 @@
             set(dbRef, db);
         }
 
-        // ФУНКЦИЯ СКРЫТОГО ЛОГИНА
         window.secretLogin = function() {
             if(isAdmin) {
                 if(confirm("Выйти из режима Администратора? Все опасные кнопки будут скрыты.")) {
@@ -226,7 +223,6 @@
         }
 
         function render() {
-            // Показываем или скрываем кнопку завершения игры
             document.getElementById('btn-end-game').classList.toggle('hidden', !isAdmin);
 
             const list = document.getElementById('players-list');
@@ -258,7 +254,6 @@
                     const buyInDisplay = p.buyIn === null || p.buyIn === undefined ? '' : p.buyIn;
                     const cashOutDisplay = p.cashOut === null || p.cashOut === undefined ? '' : p.cashOut;
 
-                    // Кнопка удаления со стола рендерится только для админа
                     let deleteBtnHTML = isAdmin ? `<button onclick="removePlayer(${index})" class="absolute top-2 right-2 w-5 h-5 bg-red-900/50 text-red-400 rounded-full text-[10px] font-bold flex items-center justify-center hover:bg-red-600 hover:text-white transition">✕</button>` : '';
 
                     list.innerHTML += `
@@ -270,10 +265,10 @@
                             
                             <div class="flex space-x-2 items-end">
                                 <div class="flex-[1.2]">
-                                    <span class="text-[7px] font-bold text-zinc-500 uppercase tracking-widest ml-1 block mb-0.5">Докупка</span>
+                                    <span class="text-[7px] font-bold text-zinc-500 uppercase tracking-widest ml-1 block mb-0.5">Бай-ин</span>
                                     <div class="flex">
                                         <input type="number" value="${buyInDisplay}" placeholder="0" onchange="updateBuyIn(${index}, this.value)" class="w-full bg-zinc-800 rounded-l-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-zinc-500 transition">
-                                        <button onclick="addRebuy(${index}, 500)" class="bg-zinc-700 text-[10px] font-bold text-white px-2 rounded-r-md border-l border-zinc-800 hover:bg-zinc-600 transition active:bg-zinc-500">+500</button>
+                                        <button onclick="addRebuy(${index}, 1000)" class="bg-zinc-700 text-[10px] font-bold text-white px-2 rounded-r-md border-l border-zinc-800 hover:bg-zinc-600 transition active:bg-zinc-500">+1000</button>
                                     </div>
                                 </div>
                                 <div class="flex-1">
@@ -400,7 +395,6 @@
         }
 
         window.openHistory = function() {
-            // Переключаем ширину столбцов в зависимости от того, админ мы или нет
             document.getElementById('history-admin-header').classList.toggle('hidden', !isAdmin);
 
             const list = document.getElementById('history-list');
@@ -421,7 +415,6 @@
                     const netClass = p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400');
                     const netText = p.net > 0 ? `+${p.net}` : p.net;
 
-                    // Кнопки управления рендерятся только для админа
                     let adminButtons = isAdmin ? `
                         <div class="w-[15%] flex justify-end space-x-2">
                             <button onclick="editHistoryPlayer('${p.name}')" class="text-zinc-500 hover:text-blue-400 transition text-xs">✏️</button>
@@ -429,7 +422,7 @@
                         </div>
                     ` : '';
 
-                    let nameWidth = isAdmin ? 'w-[45%]' : 'w-[60%]'; // Если кнопок нет, имя занимает больше места
+                    let nameWidth = isAdmin ? 'w-[45%]' : 'w-[60%]'; 
 
                     list.innerHTML += `
                         <div class="flex px-3 py-2 items-center border-b border-zinc-800/30 last:border-0 hover:bg-zinc-800/40 transition group">
@@ -452,7 +445,6 @@
             document.getElementById('history-modal').classList.add('hidden');
         }
 
-        // ПРОФИЛЬ ИГРОКА НЕ ИЗМЕНИЛСЯ
         window.openPlayerProfile = function(name) {
             const stats = db.history[name];
             if(!stats) return;
@@ -548,7 +540,6 @@
                     return `<div class="flex justify-between text-[10px]"><span class="text-zinc-300">${p.name}</span><span class="${nClass} font-bold">${net > 0 ? '+'+net : net}</span></div>`;
                 }).join('');
 
-                // Кнопки управления сессией только для админа
                 let deleteBtn = isAdmin ? `<button onclick="deleteSession('${s.id}')" class="absolute top-2 right-2 text-red-900 hover:text-red-500 transition text-xs">🗑️ Удалить</button>` : '';
                 let editBtn = isAdmin ? `<button onclick="editSessionDate('${s.id}')" class="ml-2 text-zinc-500 hover:text-purple-400 transition text-xs">✏️</button>` : '';
 
@@ -615,7 +606,7 @@
 
             if (totalB === 0) return alert('Никто не делал бай-ины!');
             if (totalB !== totalC) {
-                alert(`ВНИМАНИЕ: Дебет с кредитом не сходится!\nСумма докупок: ${totalB}\nФишек на руках: ${totalC}\n\nНайдите ошибку перед расчетом.`);
+                alert(`ВНИМАНИЕ: Дебет с кредитом не сходится!\nСумма бай-инов: ${totalB}\nФишек на руках: ${totalC}\n\nНайдите ошибку перед расчетом.`);
                 return;
             }
 
