@@ -54,7 +54,7 @@
         </div>
 
         <div class="flex space-x-2 mb-4">
-            <input type="text" id="new-player-name" list="db-players" placeholder="Имя игрока" class="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm font-bold text-white outline-none focus:border-emerald-500 transition placeholder-zinc-700">
+            <input type="text" id="new-player-name" list="db-players" placeholder="Имя игрока" class="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm font-bold text-white outline-none focus:border-emerald-500 transition placeholder-zinc-700" onkeyup="if(event.key === 'Enter') addPlayer()">
             <datalist id="db-players"></datalist>
             <button onclick="addPlayer()" class="bg-emerald-600 text-white font-black text-xs uppercase tracking-wider px-4 rounded-lg hover:bg-emerald-500 active:scale-95 transition shadow-lg shadow-emerald-900/50">В игру</button>
         </div>
@@ -161,6 +161,13 @@
         const SECRET_PIN = "7777";
         let isAdmin = localStorage.getItem('zalubank_admin') === 'true';
 
+        // АВТО-СОХРАНЕНИЕ ПРИ СВОРАЧИВАНИИ БРАУЗЕРА ИЛИ БЛОКИРОВКЕ
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden' && document.activeElement && document.activeElement.tagName === 'INPUT') {
+                document.activeElement.blur(); // Принудительно запускаем onchange
+            }
+        });
+
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -225,17 +232,24 @@
         function render() {
             document.getElementById('btn-end-game').classList.toggle('hidden', !isAdmin);
 
+            // --- ЗАЩИТА ФОКУСА ОТ ПЕРЕЗАПИСИ ---
+            let activeId = document.activeElement ? document.activeElement.id : null;
+            let activeVal = null;
+            if (activeId && (activeId.startsWith('buyin-') || activeId.startsWith('cashout-'))) {
+                activeVal = document.activeElement.value;
+            }
+
             const list = document.getElementById('players-list');
-            list.innerHTML = '';
+            let newHTML = '';
             
             let totalBuyIns = 0;
             let totalCashouts = 0;
 
             if (!db.game || db.game.length === 0) {
                 if(isFirstLoad) {
-                    list.innerHTML = '<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Подключение...</p>';
+                    newHTML = '<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Подключение...</p>';
                 } else {
-                    list.innerHTML = '<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Стол пуст. Зови фишей.</p>';
+                    newHTML = '<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Стол пуст. Зови фишей.</p>';
                 }
             }
 
@@ -256,7 +270,8 @@
 
                     let deleteBtnHTML = isAdmin ? `<button onclick="removePlayer(${index})" class="absolute top-2 right-2 w-5 h-5 bg-red-900/50 text-red-400 rounded-full text-[10px] font-bold flex items-center justify-center hover:bg-red-600 hover:text-white transition">✕</button>` : '';
 
-                    list.innerHTML += `
+                    // Добавлены ID для защиты фокуса и onkeyup для Enter
+                    newHTML += `
                         <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 flex flex-col relative">
                             <div class="flex justify-between items-center mb-1.5 pr-4">
                                 <span class="font-black text-white text-sm tracking-tight">${p.name}</span>
@@ -267,19 +282,31 @@
                                 <div class="flex-[1.2]">
                                     <span class="text-[7px] font-bold text-zinc-500 uppercase tracking-widest ml-1 block mb-0.5">Бай-ин</span>
                                     <div class="flex">
-                                        <input type="number" value="${buyInDisplay}" placeholder="0" onchange="updateBuyIn(${index}, this.value)" class="w-full bg-zinc-800 rounded-l-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-zinc-500 transition">
+                                        <input id="buyin-${index}" type="number" value="${buyInDisplay}" placeholder="0" onchange="updateBuyIn(${index}, this.value)" onkeyup="if(event.key === 'Enter') this.blur()" class="w-full bg-zinc-800 rounded-l-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-zinc-500 transition">
                                         <button onclick="addRebuy(${index}, 1000)" class="bg-zinc-700 text-[10px] font-bold text-white px-2 rounded-r-md border-l border-zinc-800 hover:bg-zinc-600 transition active:bg-zinc-500">+1000</button>
                                     </div>
                                 </div>
                                 <div class="flex-1">
                                     <span class="text-[7px] font-bold text-zinc-500 uppercase tracking-widest ml-1 block mb-0.5">Стэк</span>
-                                    <input type="number" value="${cashOutDisplay}" placeholder="0" onchange="updateCashOut(${index}, this.value)" class="w-full bg-zinc-800 rounded-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-blue-500 transition">
+                                    <input id="cashout-${index}" type="number" value="${cashOutDisplay}" placeholder="0" onchange="updateCashOut(${index}, this.value)" onkeyup="if(event.key === 'Enter') this.blur()" class="w-full bg-zinc-800 rounded-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-blue-500 transition">
                                 </div>
                             </div>
                             ${deleteBtnHTML}
                         </div>
                     `;
                 });
+            }
+
+            // Оптимизированная отрисовка одним махом
+            list.innerHTML = newHTML;
+
+            // --- ВОЗВРАЩАЕМ ФОКУС И ТЕКСТ ПОЛЬЗОВАТЕЛЮ ---
+            if (activeId) {
+                let el = document.getElementById(activeId);
+                if (el) {
+                    el.focus();
+                    if (activeVal !== null) el.value = activeVal;
+                }
             }
 
             document.getElementById('total-buyins').innerText = totalBuyIns + ' ₽';
@@ -315,6 +342,7 @@
             if (db.history) {
                 existingName = Object.keys(db.history).find(k => k.toLowerCase() === rawName.toLowerCase());
             }
+
             let name = existingName ? existingName : rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
 
             if (db.game.some(p => p.name === name)) return alert("Этот игрок уже за столом!");
@@ -323,6 +351,7 @@
             if (!db.history[name]) db.history[name] = { net: 0, games: 0 };
             
             nameInput.value = '';
+            nameInput.blur(); // Убираем клаву
             document.getElementById('results-panel').classList.add('hidden');
             saveToCloud();
         }
@@ -411,6 +440,7 @@
             if (historyArray.length === 0) {
                 list.innerHTML = '<div class="p-6 text-center text-xs text-zinc-500 italic">Сыграйте хотя бы одну игру</div>';
             } else {
+                let html = '';
                 historyArray.forEach((p, index) => {
                     const netClass = p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400');
                     const netText = p.net > 0 ? `+${p.net}` : p.net;
@@ -424,7 +454,7 @@
 
                     let nameWidth = isAdmin ? 'w-[45%]' : 'w-[60%]'; 
 
-                    list.innerHTML += `
+                    html += `
                         <div class="flex px-3 py-2 items-center border-b border-zinc-800/30 last:border-0 hover:bg-zinc-800/40 transition group">
                             <div class="${nameWidth} flex items-center pr-1 truncate">
                                 <span class="w-4 inline-block text-[10px] text-zinc-600 font-bold text-right flex-shrink-0">${index + 1}</span>
@@ -436,6 +466,7 @@
                         </div>
                     `;
                 });
+                list.innerHTML = html;
             }
 
             document.getElementById('history-modal').classList.remove('hidden');
@@ -478,16 +509,18 @@
             if(playerSessions.length === 0) {
                 list.innerHTML = '<p class="text-center text-xs text-zinc-500 italic py-4">Нет записей об играх.</p>';
             } else {
+                let html = '';
                 playerSessions.forEach(s => {
                     const sNetClass = s.net > 0 ? 'text-emerald-400' : (s.net < 0 ? 'text-red-400' : 'text-zinc-500');
                     const sNetText = s.net > 0 ? `+${s.net}` : s.net;
-                    list.innerHTML += `
+                    html += `
                         <div class="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-zinc-800/50">
                             <span class="text-xs font-bold text-zinc-400">${s.date}</span>
                             <span class="text-sm font-black ${sNetClass}">${sNetText} ₽</span>
                         </div>
                     `;
                 });
+                list.innerHTML = html;
             }
 
             document.getElementById('profile-modal').classList.remove('hidden');
@@ -533,6 +566,7 @@
             });
             sessArray.sort((a, b) => b.id.localeCompare(a.id));
 
+            let html = '';
             sessArray.forEach(s => {
                 let playersHTML = s.players.map(p => {
                     let net = (p.cashOut || 0) - (p.buyIn || 0);
@@ -543,7 +577,7 @@
                 let deleteBtn = isAdmin ? `<button onclick="deleteSession('${s.id}')" class="absolute top-2 right-2 text-red-900 hover:text-red-500 transition text-xs">🗑️ Удалить</button>` : '';
                 let editBtn = isAdmin ? `<button onclick="editSessionDate('${s.id}')" class="ml-2 text-zinc-500 hover:text-purple-400 transition text-xs">✏️</button>` : '';
 
-                list.innerHTML += `
+                html += `
                     <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 relative">
                         ${deleteBtn}
                         <div class="flex items-center text-[10px] font-bold text-purple-500 mb-2">
@@ -559,6 +593,7 @@
                     </div>
                 `;
             });
+            list.innerHTML = html;
 
             document.getElementById('sessions-modal').classList.remove('hidden');
         }
@@ -647,8 +682,9 @@
             if (transactions.length === 0) {
                 list.innerHTML = '<p class="text-xs text-zinc-400">Все остались при своих!</p>';
             } else {
+                let html = '';
                 transactions.forEach(t => {
-                    list.innerHTML += `
+                    html += `
                         <div class="flex items-center justify-between bg-zinc-900/80 p-3 rounded-xl border border-zinc-800">
                             <span class="text-xs font-bold text-red-400 w-1/3 truncate">${t.from}</span>
                             <div class="flex-1 flex flex-col items-center px-1">
@@ -659,6 +695,7 @@
                         </div>
                     `;
                 });
+                list.innerHTML = html;
             }
 
             panel.classList.remove('hidden');
