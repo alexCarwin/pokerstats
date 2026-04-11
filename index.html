@@ -195,7 +195,7 @@
 
         window.secretLogin = function() {
             if(isAdmin) {
-                if(confirm("Выйти из режима Администратора? Все опасные кнопки будут скрыты.")) {
+                if(confirm("Выйти из режима Администратора? Все опасные кнопки и скрытые профиты будут закрыты.")) {
                     isAdmin = false;
                     localStorage.removeItem('zalubank_admin');
                     render();
@@ -203,7 +203,7 @@
                     if(!document.getElementById('sessions-modal').classList.contains('hidden')) window.openSessions();
                 }
             } else {
-                let pin = prompt("Введите PIN-код для доступа к удалению и редактированию:");
+                let pin = prompt("Введите PIN-код для доступа к админке и полным статам:");
                 if(pin === SECRET_PIN) {
                     isAdmin = true;
                     localStorage.setItem('zalubank_admin', 'true');
@@ -397,7 +397,6 @@
             const sessionId = "sess_" + Date.now();
             const dateStr = new Date().toLocaleString('ru-RU', {day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute:'2-digit'});
             
-            // Если игрок сыграл в 0, автоматически отмечаем его рассчитанным
             let finalPlayers = JSON.parse(JSON.stringify(db.game)).map(p => {
                 let net = (p.cashOut || 0) - (p.buyIn || 0);
                 if (net === 0) p.settled = true;
@@ -444,8 +443,9 @@
             } else {
                 let html = '';
                 historyArray.forEach((p, index) => {
-                    const netClass = p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400');
-                    const netText = p.net > 0 ? `+${p.net}` : p.net;
+                    // ЛОГИКА СКРЫТИЯ ПРОФИТА
+                    const netClass = isAdmin ? (p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400')) : 'text-zinc-600 font-bold tracking-widest';
+                    const netText = isAdmin ? (p.net > 0 ? `+${p.net}` : p.net) : '***';
 
                     let adminButtons = isAdmin ? `
                         <div class="w-[15%] flex justify-end space-x-2">
@@ -485,8 +485,9 @@
             document.getElementById('profile-name').innerText = name;
             document.getElementById('profile-games').innerText = stats.games;
             
-            const netClass = stats.net > 0 ? 'text-emerald-400' : (stats.net < 0 ? 'text-red-400' : 'text-white');
-            const netText = stats.net > 0 ? `+${stats.net} ₽` : `${stats.net} ₽`;
+            // ЛОГИКА СКРЫТИЯ В ПРОФИЛЕ
+            const netClass = isAdmin ? (stats.net > 0 ? 'text-emerald-400' : (stats.net < 0 ? 'text-red-400' : 'text-white')) : 'text-zinc-600 tracking-widest';
+            const netText = isAdmin ? (stats.net > 0 ? `+${stats.net} ₽` : `${stats.net} ₽`) : '*** ₽';
             
             document.getElementById('profile-net').className = `text-2xl font-black relative z-10 ${netClass}`;
             document.getElementById('profile-net').innerText = netText;
@@ -573,7 +574,6 @@
                 let playersHTML = s.players.map(p => {
                     let net = (p.cashOut || 0) - (p.buyIn || 0);
                     
-                    // Проверяем статус (если старая запись без статуса, нули считаем рассчитанными)
                     let isSettled = p.settled !== undefined ? p.settled : (net === 0);
                     
                     let nClass = net > 0 ? 'text-emerald-400' : (net < 0 ? 'text-red-400' : 'text-zinc-400');
