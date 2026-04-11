@@ -397,10 +397,17 @@
             const sessionId = "sess_" + Date.now();
             const dateStr = new Date().toLocaleString('ru-RU', {day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute:'2-digit'});
             
+            // Если игрок сыграл в 0, автоматически отмечаем его рассчитанным
+            let finalPlayers = JSON.parse(JSON.stringify(db.game)).map(p => {
+                let net = (p.cashOut || 0) - (p.buyIn || 0);
+                if (net === 0) p.settled = true;
+                return p;
+            });
+
             if(!db.sessions) db.sessions = {};
             db.sessions[sessionId] = {
                 date: dateStr,
-                players: JSON.parse(JSON.stringify(db.game)), 
+                players: finalPlayers, 
                 totalB: totalB,
                 totalC: totalC
             };
@@ -565,47 +572,45 @@
             sessArray.forEach(s => {
                 let playersHTML = s.players.map(p => {
                     let net = (p.cashOut || 0) - (p.buyIn || 0);
-                    // Если сыграл в ноль, ничего не отмечаем
-                    if (net === 0) {
-                        return `<div class="flex justify-between items-center text-[10px] py-0.5"><span class="text-zinc-500">${p.name}</span><span class="text-zinc-500 font-bold">0</span></div>`;
-                    }
                     
-                    let nClass = net > 0 ? 'text-emerald-400' : 'text-red-400';
+                    // Проверяем статус (если старая запись без статуса, нули считаем рассчитанными)
+                    let isSettled = p.settled !== undefined ? p.settled : (net === 0);
+                    
+                    let nClass = net > 0 ? 'text-emerald-400' : (net < 0 ? 'text-red-400' : 'text-zinc-400');
+                    if(isSettled && net > 0) nClass = 'text-emerald-500'; 
+                    if(isSettled && net < 0) nClass = 'text-red-500';
+                    
                     let netStr = net > 0 ? '+'+net : net;
-                    
-                    // Логика чекбокса "рассчитался"
-                    let isSettled = p.settled ? true : false;
                     let settledIcon = isSettled ? '✅' : '⏳';
-                    let settledOpacity = isSettled ? 'opacity-50' : 'opacity-100'; 
-                    let strikeClass = isSettled ? 'line-through text-zinc-500' : 'text-zinc-300';
-                    let netStrikeClass = isSettled ? 'line-through opacity-50' : '';
+                    let rowOpacity = isSettled ? 'opacity-70' : 'opacity-100'; 
                     
-                    // Кликать может только админ
-                    let toggleAction = isAdmin ? `onclick="toggleSettled('${s.id}', '${p.name}')" class="cursor-pointer hover:scale-125 transition ml-2"` : `class="ml-2"`;
+                    let toggleAction = isAdmin ? `onclick="toggleSettled('${s.id}', '${p.name}')" class="cursor-pointer hover:scale-125 transition ml-2.5 text-sm"` : `class="ml-2.5 text-sm"`;
 
-                    return `<div class="flex justify-between items-center text-[10px] py-0.5 ${settledOpacity}">
-                        <span class="${strikeClass} transition-colors">${p.name}</span>
-                        <div class="flex items-center">
-                            <span class="${nClass} font-bold ${netStrikeClass} transition-colors">${netStr}</span>
-                            <span ${toggleAction}>${settledIcon}</span>
+                    return `
+                        <div class="flex justify-between items-center text-[13px] py-1 ${rowOpacity} transition-opacity duration-300">
+                            <span class="text-zinc-200 font-medium">${p.name}</span>
+                            <div class="flex items-center">
+                                <span class="${nClass} font-bold">${netStr}</span>
+                                <span ${toggleAction}>${settledIcon}</span>
+                            </div>
                         </div>
-                    </div>`;
+                    `;
                 }).join('');
 
-                let deleteBtn = isAdmin ? `<button onclick="deleteSession('${s.id}')" class="absolute top-2 right-2 text-red-900 hover:text-red-500 transition text-xs">🗑️ Удалить</button>` : '';
+                let deleteBtn = isAdmin ? `<button onclick="deleteSession('${s.id}')" class="absolute top-3 right-3 text-red-900 hover:text-red-500 transition text-xs font-bold">🗑️ Удалить</button>` : '';
                 let editBtn = isAdmin ? `<button onclick="editSessionDate('${s.id}')" class="ml-2 text-zinc-500 hover:text-purple-400 transition text-xs">✏️</button>` : '';
 
                 html += `
-                    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 relative">
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 relative shadow-lg">
                         ${deleteBtn}
-                        <div class="flex items-center text-[10px] font-bold text-purple-500 mb-2">
+                        <div class="flex items-center text-xs font-bold text-purple-500 mb-3">
                             <span>${s.date}</span>
                             ${editBtn}
                         </div>
-                        <div class="space-y-1 mb-2 border-b border-zinc-800 pb-2">
+                        <div class="space-y-1.5 mb-3 border-b border-zinc-800 pb-3">
                             ${playersHTML}
                         </div>
-                        <div class="flex justify-between text-[9px] text-zinc-500 font-bold uppercase tracking-widest">
+                        <div class="flex justify-between text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
                             <span>Банк: ${s.totalB}</span>
                         </div>
                     </div>
@@ -620,14 +625,16 @@
             document.getElementById('sessions-modal').classList.add('hidden');
         }
 
-        // ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ СТАТУСА "РАССЧИТАЛСЯ"
         window.toggleSettled = function(id, playerName) {
             if(!isAdmin) return;
             const session = db.sessions[id];
             if(session && session.players) {
                 const playerIndex = session.players.findIndex(p => p.name === playerName);
                 if(playerIndex !== -1) {
-                    db.sessions[id].players[playerIndex].settled = !db.sessions[id].players[playerIndex].settled;
+                    let p = db.sessions[id].players[playerIndex];
+                    let net = (p.cashOut || 0) - (p.buyIn || 0);
+                    let currentStatus = p.settled !== undefined ? p.settled : (net === 0);
+                    db.sessions[id].players[playerIndex].settled = !currentStatus;
                     saveToCloud();
                 }
             }
