@@ -17,9 +17,12 @@
 <body class="p-3 min-h-screen flex flex-col pb-24 relative">
 
     <div class="max-w-md mx-auto w-full flex justify-between items-center mb-4 pt-1">
-        <h1 onclick="secretLogin()" class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg cursor-pointer">
-            <span class="text-white">ZALU</span><span class="text-emerald-500">BANK</span>
-        </h1>
+        <div class="flex items-center space-x-2">
+            <h1 onclick="secretLogin()" class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg cursor-pointer">
+                <span class="text-white">ZALU</span><span class="text-emerald-500">BANK</span>
+            </h1>
+            <div id="network-status" class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] transition-colors duration-300" title="Подключение..."></div>
+        </div>
         <button id="btn-end-game" onclick="endGame()" class="hidden text-[10px] font-bold text-red-400 uppercase tracking-widest bg-red-900/20 px-3 py-2 rounded-lg border border-red-900/50 hover:bg-red-900/40 active:scale-95 transition">Завершить игру</button>
     </div>
 
@@ -162,13 +165,47 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
         const dbRef = ref(database, 'zalubank_data');
+        const connectedRef = ref(database, '.info/connected');
 
         let db = { game: [], history: {}, sessions: {} };
         let isFirstLoad = true;
         
-        const SECRET_PIN = "888"; // НОВЫЙ ПАРОЛЬ
+        const SECRET_PIN = "888";
         let isAdmin = localStorage.getItem('zalubank_admin') === 'true';
-        let isProfitsVisible = false; // По умолчанию профиты скрыты
+        let isProfitsVisible = false; 
+
+        // СИСТЕМА ЗАЩИТЫ СОХРАНЕНИЙ
+        let isOnline = false;
+        let pendingSaves = 0;
+
+        onValue(connectedRef, (snap) => {
+            isOnline = snap.val() === true;
+            updateNetworkUI();
+        });
+
+        function updateNetworkUI() {
+            const indicator = document.getElementById('network-status');
+            if (!indicator) return;
+            
+            if (!isOnline) {
+                indicator.className = "w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]";
+                indicator.title = "Нет сети (Оффлайн)";
+            } else if (pendingSaves > 0) {
+                indicator.className = "w-2 h-2 rounded-full bg-yellow-400 animate-pulse shadow-[0_0_8px_rgba(250,204,21,0.8)]";
+                indicator.title = "Сохранение...";
+            } else {
+                indicator.className = "w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] transition-colors duration-300";
+                indicator.title = "Синхронизировано";
+            }
+        }
+
+        // Предупреждение при попытке обновить/закрыть страницу во время сохранения или оффлайна
+        window.addEventListener('beforeunload', (e) => {
+            if (pendingSaves > 0 || !isOnline) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
 
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden' && document.activeElement && document.activeElement.tagName === 'INPUT') {
@@ -199,12 +236,21 @@
         });
 
         function saveToCloud() {
-            set(dbRef, db);
+            pendingSaves++;
+            updateNetworkUI();
+            set(dbRef, db).then(() => {
+                pendingSaves--;
+                updateNetworkUI();
+            }).catch(e => {
+                pendingSaves--;
+                updateNetworkUI();
+                console.error("Ошибка сохранения:", e);
+            });
         }
 
         window.secretLogin = function() {
             if(isAdmin) {
-                if(confirm("Выйти из режима Администратора? Поля редактирования закроются.")) {
+                if(confirm("Выйти из режима Администратора? Все опасные кнопки и поля редактирования будут закрыты.")) {
                     isAdmin = false;
                     localStorage.removeItem('zalubank_admin');
                     render();
@@ -226,7 +272,6 @@
             }
         }
 
-        // ПЕРЕКЛЮЧЕНИЕ ВИДИМОСТИ ПРОФИТА
         window.toggleProfits = function() {
             isProfitsVisible = !isProfitsVisible;
             
@@ -262,7 +307,6 @@
         }
 
         function render() {
-            // УПРАВЛЕНИЕ ВИДИМОСТЬЮ ДЛЯ АДМИНА
             document.getElementById('btn-end-game').classList.toggle('hidden', !isAdmin);
             document.getElementById('add-player-section').classList.toggle('hidden', !isAdmin);
 
@@ -303,7 +347,6 @@
 
                     let deleteBtnHTML = isAdmin ? `<button onclick="removePlayer(${index})" class="absolute top-2 right-2 w-5 h-5 bg-red-900/50 text-red-400 rounded-full text-[10px] font-bold flex items-center justify-center hover:bg-red-600 hover:text-white transition">✕</button>` : '';
 
-                    // Если админ - показываем поля ввода, если нет - просто красивые статичные плашки с цифрами
                     let buyInHtml = isAdmin ? `
                         <div class="flex">
                             <input id="buyin-${index}" type="number" value="${buyInDisplay}" placeholder="0" onchange="updateBuyIn(${index}, this.value)" onkeyup="if(event.key === 'Enter') this.blur()" class="w-full bg-zinc-800 rounded-l-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-zinc-500 transition">
@@ -499,7 +542,6 @@
             } else {
                 let html = '';
                 historyArray.forEach((p, index) => {
-                    // ЕСЛИ ПОЛЗУНОК ВЫКЛЮЧЕН - СКРЫВАЕМ ПРОФИТ ДЛЯ ВСЕХ
                     const netClass = isProfitsVisible ? (p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400')) : 'text-zinc-600 font-bold tracking-widest';
                     const netText = isProfitsVisible ? (p.net > 0 ? `+${p.net}` : p.net) : '***';
 
@@ -541,7 +583,6 @@
             document.getElementById('profile-name').innerText = name;
             document.getElementById('profile-games').innerText = stats.games;
             
-            // В ПРОФИЛЕ ТОЖЕ СКРЫВАЕМ
             const netClass = isProfitsVisible ? (stats.net > 0 ? 'text-emerald-400' : (stats.net < 0 ? 'text-red-400' : 'text-white')) : 'text-zinc-600 tracking-widest';
             const netText = isProfitsVisible ? (stats.net > 0 ? `+${stats.net} ₽` : `${stats.net} ₽`) : '*** ₽';
             
