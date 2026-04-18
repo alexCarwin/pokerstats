@@ -56,9 +56,13 @@
             </button>
         </div>
 
-        <div id="add-player-section" class="flex space-x-2 mb-4 hidden">
-            <input type="text" id="new-player-name" list="db-players" placeholder="Имя игрока" class="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm font-bold text-white outline-none focus:border-emerald-500 transition placeholder-zinc-700" onkeyup="if(event.key === 'Enter') addPlayer()">
-            <datalist id="db-players"></datalist>
+        <div id="add-player-section" class="flex space-x-2 mb-4 hidden relative">
+            <div class="flex-1 relative">
+                <input type="text" id="new-player-name" placeholder="Имя игрока" autocomplete="off" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm font-bold text-white outline-none focus:border-emerald-500 transition placeholder-zinc-700" oninput="handlePlayerSearch()" onkeyup="if(event.key === 'Enter') addPlayer()">
+                
+                <div id="autocomplete-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto scrollbar-hide"></div>
+            </div>
+            
             <button onclick="addPlayer()" class="bg-emerald-600 text-white font-black text-xs uppercase tracking-wider px-4 rounded-lg hover:bg-emerald-500 active:scale-95 transition shadow-lg shadow-emerald-900/50">В игру</button>
         </div>
 
@@ -170,11 +174,10 @@
         let db = { game: [], history: {}, sessions: {} };
         let isFirstLoad = true;
         
-        const SECRET_PIN = "888";
+        const SECRET_PIN = "888"; 
         let isAdmin = localStorage.getItem('zalubank_admin') === 'true';
         let isProfitsVisible = false; 
 
-        // СИСТЕМА ЗАЩИТЫ СОХРАНЕНИЙ
         let isOnline = false;
         let pendingSaves = 0;
 
@@ -199,7 +202,6 @@
             }
         }
 
-        // Предупреждение при попытке обновить/закрыть страницу во время сохранения или оффлайна
         window.addEventListener('beforeunload', (e) => {
             if (pendingSaves > 0 || !isOnline) {
                 e.preventDefault();
@@ -210,6 +212,15 @@
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden' && document.activeElement && document.activeElement.tagName === 'INPUT') {
                 document.activeElement.blur(); 
+            }
+        });
+
+        // Закрытие выпадающего списка при клике вне него
+        document.addEventListener('click', function(e) {
+            const input = document.getElementById('new-player-name');
+            const dropdown = document.getElementById('autocomplete-dropdown');
+            if (input && dropdown && e.target !== input && e.target !== dropdown) {
+                dropdown.classList.add('hidden');
             }
         });
 
@@ -224,7 +235,6 @@
                 db = { game: [], history: {}, sessions: {} };
             }
             
-            updateDatalist();
             render();
             if(!document.getElementById('history-modal').classList.contains('hidden')) window.openHistory();
             if(!document.getElementById('sessions-modal').classList.contains('hidden')) window.openSessions();
@@ -250,7 +260,7 @@
 
         window.secretLogin = function() {
             if(isAdmin) {
-                if(confirm("Выйти из режима Администратора? Все опасные кнопки и поля редактирования будут закрыты.")) {
+                if(confirm("Выйти из режима Администратора? Поля редактирования закроются.")) {
                     isAdmin = false;
                     localStorage.removeItem('zalubank_admin');
                     render();
@@ -295,19 +305,47 @@
             }
         }
 
-        function updateDatalist() {
-            const datalist = document.getElementById('db-players');
-            datalist.innerHTML = '';
-            if(!db.history) return;
-            Object.keys(db.history).forEach(name => {
-                const option = document.createElement('option');
-                option.value = name;
-                datalist.appendChild(option);
-            });
+        // УМНЫЙ ПОИСК ИГРОКА (АВТОКОМПЛИТ)
+        window.handlePlayerSearch = function() {
+            const inputVal = document.getElementById('new-player-name').value.trim().toLowerCase();
+            const dropdown = document.getElementById('autocomplete-dropdown');
+            dropdown.innerHTML = '';
+
+            if (!inputVal || !db.history) {
+                dropdown.classList.add('hidden');
+                return;
+            }
+
+            // Исключаем тех, кто уже за столом
+            const currentPlayers = db.game ? db.game.map(p => p.name.toLowerCase()) : [];
+            
+            const matches = Object.keys(db.history).filter(name => 
+                name.toLowerCase().includes(inputVal) && !currentPlayers.includes(name.toLowerCase())
+            );
+
+            if (matches.length > 0) {
+                matches.forEach(name => {
+                    const div = document.createElement('div');
+                    div.className = 'px-3 py-2.5 text-sm font-bold text-white hover:bg-zinc-700 cursor-pointer border-b border-zinc-700 last:border-0 transition-colors';
+                    div.innerText = name;
+                    // При клике вставляем имя и сразу добавляем в игру!
+                    div.onclick = function() {
+                        document.getElementById('new-player-name').value = name;
+                        dropdown.classList.add('hidden');
+                        window.addPlayer();
+                    };
+                    dropdown.appendChild(div);
+                });
+                dropdown.classList.remove('hidden');
+            } else {
+                dropdown.classList.add('hidden');
+            }
         }
 
         function render() {
-            document.getElementById('btn-end-game').classList.toggle('hidden', !isAdmin);
+            // Кнопка завершения игры видна ТОЛЬКО админу и ТОЛЬКО если есть люди за столом
+            const hasPlayers = db.game && db.game.length > 0;
+            document.getElementById('btn-end-game').classList.toggle('hidden', !isAdmin || !hasPlayers);
             document.getElementById('add-player-section').classList.toggle('hidden', !isAdmin);
 
             let activeId = document.activeElement ? document.activeElement.id : null;
@@ -436,12 +474,14 @@
 
             let name = existingName ? existingName : rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
 
+            if (!db.game) db.game = [];
             if (db.game.some(p => p.name === name)) return alert("Этот игрок уже за столом!");
 
             db.game.push({ name: name, buyIn: null, cashOut: null });
             if (!db.history[name]) db.history[name] = { net: 0, games: 0 };
             
             nameInput.value = '';
+            document.getElementById('autocomplete-dropdown').classList.add('hidden');
             nameInput.blur();
             document.getElementById('results-panel').classList.add('hidden');
             saveToCloud();
@@ -479,8 +519,8 @@
         }
 
         window.endGame = function() {
-            if(!isAdmin) return alert("Сорри, только админ может завершать игру!");
-            if (db.game.length === 0) return alert('Стол пуст!');
+            if(!isAdmin) return;
+            if (!db.game || db.game.length === 0) return alert('Стол пуст!');
             
             let totalB = db.game.reduce((sum, p) => sum + (p.buyIn || 0), 0);
             let totalC = db.game.reduce((sum, p) => sum + (p.cashOut || 0), 0);
