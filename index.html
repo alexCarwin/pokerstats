@@ -499,7 +499,7 @@
                 });
 
                 if (hasDebt) {
-                    alert(`❌ НЕЛЬЗЯ ДОБАВИТЬ ИГРОКА!\n\nУ игрока "${name}" есть нерассчитанный минус в прошлых играх. Пусть сначала вернет долги!`);
+                    alert(`❌ НЕЛЬЗЯ ДОБАВИТЬ ИГРОКА!\n\nУ игрока "${name}" есть нерассчитанный минус в прошлых играх.`);
                     nameInput.value = '';
                     document.getElementById('autocomplete-dropdown').classList.add('hidden');
                     nameInput.blur();
