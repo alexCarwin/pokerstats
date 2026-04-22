@@ -16,6 +16,13 @@
 </head>
 <body class="p-3 min-h-screen flex flex-col pb-24 relative">
 
+    <div id="saving-overlay" class="fixed top-14 left-0 right-0 z-[999] hidden flex justify-center pointer-events-none transition-opacity duration-300">
+        <div class="bg-zinc-900/95 border border-zinc-700 px-4 py-2 rounded-full flex items-center shadow-[0_0_20px_rgba(0,0,0,0.6)] backdrop-blur-md">
+            <div class="w-4 h-4 border-2 border-zinc-600 border-t-emerald-500 rounded-full animate-spin mr-2"></div>
+            <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Синхронизация...</span>
+        </div>
+    </div>
+
     <div class="max-w-md mx-auto w-full flex justify-between items-center mb-4 pt-1">
         <div class="flex items-center space-x-2">
             <h1 onclick="secretLogin()" class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg cursor-pointer">
@@ -245,13 +252,21 @@
         function saveToCloud() {
             pendingSaves++;
             updateNetworkUI();
-            set(dbRef, db).then(() => {
+            
+            // Показываем лоадер при старте сохранения
+            const loader = document.getElementById('saving-overlay');
+            loader.classList.remove('hidden');
+            
+            return set(dbRef, db).then(() => {
                 pendingSaves--;
                 updateNetworkUI();
+                if(pendingSaves === 0) loader.classList.add('hidden');
             }).catch(e => {
                 pendingSaves--;
                 updateNetworkUI();
+                if(pendingSaves === 0) loader.classList.add('hidden');
                 console.error("Ошибка сохранения:", e);
+                alert("Ошибка соединения! Проверьте интернет.");
             });
         }
 
@@ -467,6 +482,32 @@
 
             let name = existingName ? existingName : rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
 
+            // --- ЖЕСТКАЯ ПРОВЕРКА НА ДОЛГИ ПЕРЕД ПОСАДКОЙ ЗА СТОЛ ---
+            if (db.sessions) {
+                let hasDebt = false;
+                Object.keys(db.sessions).forEach(sessionId => {
+                    const session = db.sessions[sessionId];
+                    const pData = session.players.find(p => p.name === name);
+                    if (pData) {
+                        const net = (pData.cashOut || 0) - (pData.buyIn || 0);
+                        const isSettled = pData.settled !== undefined ? pData.settled : (net === 0);
+                        // Если есть минус и нет галочки - это неоплаченный долг!
+                        if (net < 0 && !isSettled) {
+                            hasDebt = true;
+                        }
+                    }
+                });
+
+                if (hasDebt) {
+                    alert(`❌ НЕЛЬЗЯ ДОБАВИТЬ ИГРОКА!\n\nУ игрока "${name}" есть нерассчитанный минус в прошлых играх. Пусть сначала вернет долги!`);
+                    nameInput.value = '';
+                    document.getElementById('autocomplete-dropdown').classList.add('hidden');
+                    nameInput.blur();
+                    return; 
+                }
+            }
+            // ---------------------------------------------------------
+
             if (!db.game) db.game = [];
             if (db.game.some(p => p.name === name)) return alert("Этот игрок уже за столом!");
 
@@ -481,7 +522,7 @@
         }
 
         window.removePlayer = function(index) {
-            if(!isAdmin) return;
+            if(!isAdmin) return alert("Только админ может удалять игроков со стола!");
             if(confirm(`Точно удалить игрока ${db.game[index].name} со стола?`)) {
                 db.game.splice(index, 1);
                 document.getElementById('results-panel').classList.add('hidden');
@@ -512,8 +553,8 @@
         }
 
         window.endGame = function() {
-            if(!isAdmin) return;
-            if (!db.game || db.game.length === 0) return alert('Стол пуст!');
+            if(!isAdmin) return alert("Сорри, только админ может завершать игру!");
+            if (db.game.length === 0) return alert('Стол пуст!');
             
             let totalB = db.game.reduce((sum, p) => sum + (p.buyIn || 0), 0);
             let totalC = db.game.reduce((sum, p) => sum + (p.cashOut || 0), 0);
@@ -757,7 +798,6 @@
             document.getElementById('sessions-modal').classList.add('hidden');
         }
 
-        // НОВАЯ ФУНКЦИЯ ДЛЯ РЕДАКТИРОВАНИЯ ИГРОКА ВНУТРИ СЕССИИ
         window.editSessionPlayer = function(id, playerName) {
             if(!isAdmin) return;
             const session = db.sessions[id];
@@ -780,11 +820,10 @@
             let newC = parseInt(newCStr) || 0;
             let newNet = newC - newB;
 
-            // Обновляем данные сессии
             session.players[playerIndex].buyIn = newB;
             session.players[playerIndex].cashOut = newC;
+            session.players[playerIndex].settled = (newNet === 0);
 
-            // Пересчет общего банка игры
             let tb = 0; let tc = 0;
             session.players.forEach(pl => {
                 tb += (pl.buyIn || 0);
@@ -793,7 +832,6 @@
             session.totalB = tb;
             session.totalC = tc;
 
-            // Корректируем общую стату в Зале Славы
             if(db.history[playerName]) {
                 db.history[playerName].net = db.history[playerName].net - oldNet + newNet;
             }
