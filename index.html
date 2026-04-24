@@ -253,7 +253,6 @@
             pendingSaves++;
             updateNetworkUI();
             
-            // Показываем лоадер при старте сохранения
             const loader = document.getElementById('saving-overlay');
             loader.classList.remove('hidden');
             
@@ -482,7 +481,6 @@
 
             let name = existingName ? existingName : rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
 
-            // --- ЖЕСТКАЯ ПРОВЕРКА НА ДОЛГИ ПЕРЕД ПОСАДКОЙ ЗА СТОЛ ---
             if (db.sessions) {
                 let hasDebt = false;
                 Object.keys(db.sessions).forEach(sessionId => {
@@ -491,7 +489,6 @@
                     if (pData) {
                         const net = (pData.cashOut || 0) - (pData.buyIn || 0);
                         const isSettled = pData.settled !== undefined ? pData.settled : (net === 0);
-                        // Если есть минус и нет галочки - это неоплаченный долг!
                         if (net < 0 && !isSettled) {
                             hasDebt = true;
                         }
@@ -499,14 +496,13 @@
                 });
 
                 if (hasDebt) {
-                    alert(`❌ НЕЛЬЗЯ ДОБАВИТЬ ИГРОКА!\n\nУ игрока "${name}" есть нерассчитанный минус в прошлых играх.`);
+                    alert(`❌ НЕЛЬЗЯ ДОБАВИТЬ ИГРОКА!\n\nУ игрока "${name}" есть нерассчитанный минус в прошлых играх. Пусть сначала вернет долги!`);
                     nameInput.value = '';
                     document.getElementById('autocomplete-dropdown').classList.add('hidden');
                     nameInput.blur();
                     return; 
                 }
             }
-            // ---------------------------------------------------------
 
             if (!db.game) db.game = [];
             if (db.game.some(p => p.name === name)) return alert("Этот игрок уже за столом!");
@@ -522,7 +518,7 @@
         }
 
         window.removePlayer = function(index) {
-            if(!isAdmin) return alert("Только админ может удалять игроков со стола!");
+            if(!isAdmin) return;
             if(confirm(`Точно удалить игрока ${db.game[index].name} со стола?`)) {
                 db.game.splice(index, 1);
                 document.getElementById('results-panel').classList.add('hidden');
@@ -773,6 +769,24 @@
                 let deleteBtn = isAdmin ? `<button onclick="deleteSession('${s.id}')" class="absolute top-3 right-3 text-red-900 hover:text-red-500 transition text-xs font-bold">🗑️ Удалить</button>` : '';
                 let editBtn = isAdmin ? `<button onclick="editSessionDate('${s.id}')" class="ml-2 text-zinc-500 hover:text-purple-400 transition text-xs">✏️</button>` : '';
 
+                // --- БЛОК ЗАМЕТОК ---
+                let noteText = s.note || '';
+                let noteUI = '';
+                if (noteText || isAdmin) {
+                    let editNoteBtn = isAdmin ? `<button onclick="editSessionNote('${s.id}')" class="ml-2 text-zinc-500 hover:text-purple-400 transition text-[10px]">✏️</button>` : '';
+                    let displayNote = noteText ? `<div class="text-[11px] text-zinc-300 mt-1.5 leading-tight whitespace-pre-wrap">${noteText}</div>` : (isAdmin ? `<div class="text-[10px] text-zinc-600 mt-1 italic">Нажмите ✏️ чтобы добавить заметку...</div>` : '');
+                    
+                    noteUI = `
+                        <div class="mb-3 bg-zinc-950/40 rounded-xl p-2.5 border border-zinc-800/50">
+                            <div class="flex items-center text-[9px] font-bold text-zinc-500 uppercase tracking-widest">
+                                <span>📝 Заметки</span>
+                                ${editNoteBtn}
+                            </div>
+                            ${displayNote}
+                        </div>
+                    `;
+                }
+
                 html += `
                     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 relative shadow-lg">
                         ${deleteBtn}
@@ -783,6 +797,7 @@
                         <div class="space-y-1.5 mb-3 border-b border-zinc-800 pb-3">
                             ${playersHTML}
                         </div>
+                        ${noteUI}
                         <div class="flex justify-between text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
                             <span>Банк: ${s.totalB}</span>
                         </div>
@@ -866,6 +881,19 @@
             let newDate = prompt(`Редактируем дату игры:`, session.date);
             if(newDate !== null && newDate.trim() !== '') {
                 db.sessions[id].date = newDate.trim();
+                saveToCloud();
+            }
+        }
+
+        // ФУНКЦИЯ ДОБАВЛЕНИЯ ЗАМЕТКИ К СЕССИИ
+        window.editSessionNote = function(id) {
+            if(!isAdmin) return;
+            const session = db.sessions[id];
+            if(!session) return;
+            
+            let newNote = prompt(`Заметки для игры ${session.date}:\n(Например: Вася скинул Пете 500р)`, session.note || '');
+            if(newNote !== null) {
+                db.sessions[id].note = newNote.trim();
                 saveToCloud();
             }
         }
