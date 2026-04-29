@@ -619,7 +619,6 @@
 
         // --- ЛОГИКА ИЗВЛЕЧЕНИЯ МЕСЯЦЕВ ---
         function getMonthKey(dateStr) {
-            // dateStr format: "24.04.26, 00:14"
             const parts = dateStr.split(',')[0].split('.');
             if (parts.length >= 3) {
                 return parts[1] + '.' + parts[2]; // MM.YY
@@ -630,7 +629,6 @@
         window.openHistory = function() {
             const filterSelect = document.getElementById('history-filter');
             
-            // Собираем все уникальные месяцы из сессий
             let monthsSet = new Set();
             if (db.sessions) {
                 Object.values(db.sessions).forEach(s => {
@@ -639,7 +637,6 @@
                 });
             }
             
-            // Сортируем от новых к старым
             let monthsArr = Array.from(monthsSet).sort((a, b) => {
                 let [m1, y1] = a.split('.');
                 let [m2, y2] = b.split('.');
@@ -647,23 +644,21 @@
                 return parseInt(m2) - parseInt(m1);
             });
 
-            // Устанавливаем дефолтный месяц при первом открытии
             let currentFilter = filterSelect.value;
             if (!filterSelect.hasAttribute('data-initialized')) {
                 currentFilter = monthsArr.length > 0 ? monthsArr[0] : 'all';
                 filterSelect.setAttribute('data-initialized', 'true');
             }
 
-            // Обновляем список селекта
             let optionsHtml = '<option value="all">За всё время</option>';
             monthsArr.forEach(m => {
                 let sel = (currentFilter === m) ? 'selected' : '';
                 let [mm, yy] = m.split('.');
                 let monthName = monthNames[mm] || mm;
-                optionsHtml += `<option value="${m}" ${sel}>${monthName} '2${yy}</option>`;
+                optionsHtml += `<option value="${m}" ${sel}>${monthName} '${yy}</option>`;
             });
             filterSelect.innerHTML = optionsHtml;
-            currentFilter = filterSelect.value; // Перечитываем после обновления
+            currentFilter = filterSelect.value; 
 
             document.getElementById('history-admin-header').classList.toggle('hidden', !isAdmin || currentFilter !== 'all');
 
@@ -674,7 +669,6 @@
 
             let historyArray = [];
 
-            // ЕСЛИ ВЫБРАН КОНКРЕТНЫЙ МЕСЯЦ - СЧИТАЕМ НА ЛЕТУ
             if (currentFilter !== 'all') {
                 let tempStats = {};
                 if (db.sessions) {
@@ -693,7 +687,6 @@
                     return { name: name, ...tempStats[name] };
                 });
             } else {
-                // ЕСЛИ ЗА ВСЁ ВРЕМЯ - БЕРЕМ ГЛОБАЛЬНУЮ ИСТОРИЮ
                 historyArray = Object.keys(db.history).map(name => {
                     return { name: name, ...db.history[name] };
                 });
@@ -709,7 +702,6 @@
                     const netClass = isProfitsVisible ? (p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400')) : 'text-zinc-600 font-bold tracking-widest';
                     const netText = isProfitsVisible ? (p.net > 0 ? `+${p.net}` : p.net) : '***';
 
-                    // КНОПКИ РЕДАКТИРОВАНИЯ ТОЛЬКО В РЕЖИМЕ "ЗА ВСЁ ВРЕМЯ"
                     let adminButtons = (isAdmin && currentFilter === 'all') ? `
                         <div class="w-[15%] flex justify-end space-x-2">
                             <button onclick="editHistoryPlayer('${p.name}')" class="text-zinc-500 hover:text-blue-400 transition text-xs">✏️</button>
