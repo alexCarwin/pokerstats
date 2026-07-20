@@ -16,6 +16,7 @@
 </head>
 <body class="p-3 min-h-screen flex flex-col pb-24 relative">
 
+    <!-- ГЛОБАЛЬНЫЙ ЛОАДЕР -->
     <div id="saving-overlay" class="fixed top-14 left-0 right-0 z-[999] hidden flex justify-center pointer-events-none transition-opacity duration-300">
         <div class="bg-zinc-900/95 border border-zinc-700 px-4 py-2 rounded-full flex items-center shadow-[0_0_20px_rgba(0,0,0,0.6)] backdrop-blur-md">
             <div class="w-4 h-4 border-2 border-zinc-600 border-t-emerald-500 rounded-full animate-spin mr-2"></div>
@@ -23,6 +24,7 @@
         </div>
     </div>
 
+    <!-- ОКНО РЕДАКТИРОВАНИЯ ЗАМЕТКИ -->
     <div id="note-modal" class="fixed inset-0 hidden z-[100] p-4 flex items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-4 rounded-2xl w-full max-w-sm flex flex-col shadow-2xl">
             <h3 class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-3">📝 Редактировать заметку</h3>
@@ -34,6 +36,7 @@
         </div>
     </div>
 
+    <!-- ШАПКА -->
     <div class="max-w-md mx-auto w-full flex justify-between items-center mb-4 pt-1">
         <div class="flex items-center space-x-2">
             <h1 onclick="secretLogin()" class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg cursor-pointer">
@@ -46,6 +49,7 @@
 
     <div class="max-w-md mx-auto w-full flex-1 flex flex-col">
         
+        <!-- СТАТИСТИКА ИГРЫ -->
         <div class="glass-panel rounded-2xl p-4 mb-4 shadow-2xl relative overflow-hidden">
             <div class="flex justify-between items-center mb-3 relative z-10">
                 <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Касса</span>
@@ -65,6 +69,7 @@
             <div id="status-bg" class="absolute inset-0 opacity-10 transition-colors duration-500"></div>
         </div>
 
+        <!-- КНОПКИ МЕНЮ -->
         <div class="flex space-x-2 mb-5">
             <button onclick="openHistory()" class="flex-1 py-2.5 bg-blue-900/20 text-blue-400 text-[9px] font-black uppercase tracking-widest rounded-xl border border-blue-900/50 hover:bg-blue-900/40 transition shadow-lg active:scale-95 flex items-center justify-center">
                 🏆 Стата
@@ -74,6 +79,7 @@
             </button>
         </div>
 
+        <!-- ДОБАВЛЕНИЕ ИГРОКА -->
         <div id="add-player-section" class="flex space-x-2 mb-4 hidden relative">
             <div class="flex-1 relative">
                 <input type="text" id="new-player-name" placeholder="Имя игрока" autocomplete="off" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm font-bold text-white outline-none focus:border-emerald-500 transition placeholder-zinc-700" oninput="handlePlayerSearch()" onkeyup="if(event.key === 'Enter') addPlayer()">
@@ -82,14 +88,17 @@
             <button onclick="addPlayer()" class="bg-emerald-600 text-white font-black text-xs uppercase tracking-wider px-4 rounded-lg hover:bg-emerald-500 active:scale-95 transition shadow-lg shadow-emerald-900/50">В игру</button>
         </div>
 
+        <!-- СПИСОК ИГРОКОВ -->
         <div class="mb-6">
             <div id="players-list" class="space-y-2">
                 <p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Загрузка данных...</p>
             </div>
         </div>
 
+        <!-- КНОПКА РАСЧЕТА ДОЛГОВ -->
         <button onclick="calculateDebts()" class="w-full py-3 bg-zinc-100 text-zinc-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white transition shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 mb-4">Рассчитать долги</button>
 
+        <!-- БЛОК РЕЗУЛЬТАТОВ -->
         <div id="results-panel" class="hidden glass-panel rounded-2xl p-4 border-emerald-900/50 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-blue-500"></div>
             <h2 class="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-3">Кому куда переводить</h2>
@@ -99,12 +108,14 @@
 
     </div>
 
+    <!-- ОКНО ИСТОРИИ (РЕЙТИНГА) -->
     <div id="history-modal" class="fixed inset-0 hidden z-50 p-3 flex flex-col bg-black/95 backdrop-blur-md overflow-y-auto">
         <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
             <div class="flex justify-between items-center mb-4 mt-2">
                 
                 <div class="flex items-center space-x-2">
                     <h2 class="text-sm font-black text-blue-500 uppercase tracking-widest">Зал Славы</h2>
+                    <!-- СЕЛЕКТОР МЕСЯЦЕВ -->
                     <select id="history-filter" onchange="openHistory()" class="bg-zinc-800 text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded border border-blue-900/50 outline-none px-1.5 py-1">
                         <option value="all">За всё время</option>
                     </select>
@@ -136,6 +147,7 @@
         </div>
     </div>
 
+    <!-- ПРОФИЛЬ ИГРОКА -->
     <div id="profile-modal" class="fixed inset-0 hidden z-50 p-3 flex flex-col bg-black/95 backdrop-blur-md overflow-y-auto">
         <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
             <div class="flex justify-between items-start mb-6 mt-4">
@@ -146,7 +158,8 @@
                 <button onclick="closePlayerProfile()" class="text-zinc-400 text-xs font-bold uppercase hover:text-white transition bg-zinc-900 p-2 rounded-lg border border-zinc-800">Назад ✕</button>
             </div>
             
-            <div class="flex space-x-3 mb-6">
+            <!-- Блок: Отыграно / Общий профит -->
+            <div class="flex space-x-3 mb-4">
                 <div class="flex-1 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-center items-center shadow-lg">
                     <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-1">Сыграно</span>
                     <span id="profile-games" class="text-2xl font-black text-white">0</span>
@@ -157,12 +170,25 @@
                 </div>
             </div>
 
+            <!-- Блок: Долги -->
+            <div class="flex space-x-3 mb-6">
+                <div class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
+                    <span class="text-[8px] font-bold text-red-500/70 uppercase tracking-widest mb-1">Игрок должен</span>
+                    <span id="profile-owes" class="text-lg font-black text-red-500">0 ₽</span>
+                </div>
+                <div class="flex-1 bg-zinc-900 border border-emerald-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
+                    <span class="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Ему должны</span>
+                    <span id="profile-owed" class="text-lg font-black text-emerald-500">0 ₽</span>
+                </div>
+            </div>
+
             <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 px-1">История сессий</h3>
             <div id="profile-sessions-list" class="space-y-2">
             </div>
         </div>
     </div>
 
+    <!-- ОКНО ПРОШЛЫХ СЕССИЙ -->
     <div id="sessions-modal" class="fixed inset-0 hidden z-50 p-3 flex flex-col bg-black/95 backdrop-blur-md overflow-y-auto">
         <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
             <div class="flex justify-between items-center mb-4 mt-2">
@@ -174,6 +200,7 @@
         </div>
     </div>
 
+    <!-- FIREBASE СКРИПТ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -505,29 +532,7 @@
 
             let name = existingName ? existingName : rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
 
-            if (db.sessions) {
-                let hasDebt = false;
-                Object.keys(db.sessions).forEach(sessionId => {
-                    const session = db.sessions[sessionId];
-                    const pData = session.players.find(p => p.name === name);
-                    if (pData) {
-                        const net = (pData.cashOut || 0) - (pData.buyIn || 0);
-                        const isSettled = pData.settled !== undefined ? pData.settled : (net === 0);
-                        if (net < 0 && !isSettled) {
-                            hasDebt = true;
-                        }
-                    }
-                });
-
-                if (hasDebt) {
-                    alert(`❌ НЕЛЬЗЯ ДОБАВИТЬ ИГРОКА!\n\nУ игрока "${name}" есть нерассчитанный минус в прошлых играх. Пусть сначала вернет долги!`);
-                    nameInput.value = '';
-                    document.getElementById('autocomplete-dropdown').classList.add('hidden');
-                    nameInput.blur();
-                    return; 
-                }
-            }
-
+            // Блокировка отключена - добавляем кого угодно
             if (!db.game) db.game = [];
             if (db.game.some(p => p.name === name)) return alert("Этот игрок уже за столом!");
 
@@ -592,7 +597,13 @@
             
             let finalPlayers = JSON.parse(JSON.stringify(db.game)).map(p => {
                 let net = (p.cashOut || 0) - (p.buyIn || 0);
-                if (net === 0) p.settled = true;
+                if (net === 0) {
+                    p.settled = true;
+                    p.settledAmount = 0; // Для 0 профита долгов нет
+                } else {
+                    p.settled = false;
+                    p.settledAmount = 0; // Изначально отдано/получено 0
+                }
                 return p;
             });
 
@@ -621,7 +632,7 @@
         function getMonthKey(dateStr) {
             const parts = dateStr.split(',')[0].split('.');
             if (parts.length >= 3) {
-                return parts[1] + '.' + parts[2]; // MM.YY
+                return parts[1] + '.' + parts[2]; 
             }
             return null;
         }
@@ -750,6 +761,9 @@
             list.innerHTML = '';
             
             let playerSessions = [];
+            let totalOwes = 0; 
+            let totalOwed = 0; 
+
             if(db.sessions) {
                 Object.keys(db.sessions).forEach(id => {
                     const sess = db.sessions[id];
@@ -757,8 +771,29 @@
                     if(pData) {
                         const net = (pData.cashOut || 0) - (pData.buyIn || 0);
                         playerSessions.push({ date: sess.date, net: net, id: id });
+
+                        // Подсчет долгов
+                        let absNet = Math.abs(net);
+                        let settledAmt = pData.settledAmount !== undefined ? pData.settledAmount : (pData.settled ? absNet : 0);
+                        let remaining = absNet - settledAmt;
+
+                        if (remaining > 0) {
+                            if (net < 0) totalOwes += remaining;
+                            else if (net > 0) totalOwed += remaining;
+                        }
                     }
                 });
+            }
+
+            // Обновляем UI долгов
+            const owesEl = document.getElementById('profile-owes');
+            const owedEl = document.getElementById('profile-owed');
+            if (isProfitsVisible) {
+                owesEl.innerText = totalOwes > 0 ? `${totalOwes} ₽` : '0 ₽';
+                owedEl.innerText = totalOwed > 0 ? `${totalOwed} ₽` : '0 ₽';
+            } else {
+                owesEl.innerText = '*** ₽';
+                owedEl.innerText = '*** ₽';
             }
 
             playerSessions.sort((a, b) => b.id.localeCompare(a.id));
@@ -852,19 +887,33 @@
             sessArray.forEach(s => {
                 let playersHTML = s.players.map(p => {
                     let net = (p.cashOut || 0) - (p.buyIn || 0);
+                    let absNet = Math.abs(net);
                     
-                    let isSettled = p.settled !== undefined ? p.settled : (net === 0);
+                    // Расчет дробных платежей
+                    let settledAmount = p.settledAmount !== undefined ? p.settledAmount : (p.settled ? absNet : 0);
+                    let isFullySettled = (settledAmount === absNet) || (net === 0);
                     
                     let nClass = net > 0 ? 'text-emerald-400' : (net < 0 ? 'text-red-400' : 'text-zinc-400');
-                    if(isSettled && net > 0) nClass = 'text-emerald-500'; 
-                    if(isSettled && net < 0) nClass = 'text-red-500';
+                    if(isFullySettled && net > 0) nClass = 'text-emerald-500'; 
+                    if(isFullySettled && net < 0) nClass = 'text-red-500';
                     
                     let netStr = net > 0 ? '+'+net : net;
-                    let settledIcon = isSettled ? '✅' : '⏳';
-                    let rowOpacity = isSettled ? 'opacity-70' : 'opacity-100'; 
+                    let rowOpacity = isFullySettled ? 'opacity-70' : 'opacity-100'; 
                     
+                    // Визуал часиков и частичной оплаты
+                    let statusDisplay = '';
+                    if (isFullySettled) {
+                        statusDisplay = '✅';
+                    } else {
+                        if (settledAmount > 0) {
+                            statusDisplay = `<span class="text-[9px] font-bold text-yellow-500 bg-yellow-500/10 border border-yellow-500/20 px-1 rounded mr-1 whitespace-nowrap">${settledAmount} / ${absNet}</span>⏳`;
+                        } else {
+                            statusDisplay = '⏳';
+                        }
+                    }
+
                     let editPlayerAction = isAdmin ? `<button onclick="editSessionPlayer('${s.id}', '${p.name}')" class="ml-2 text-zinc-500 hover:text-blue-400 transition text-xs">✏️</button>` : '';
-                    let toggleAction = isAdmin ? `onclick="toggleSettled('${s.id}', '${p.name}')" class="cursor-pointer hover:scale-125 transition ml-2.5 text-sm"` : `class="ml-2.5 text-sm"`;
+                    let toggleAction = isAdmin ? `onclick="toggleSettled('${s.id}', '${p.name}')" class="cursor-pointer hover:scale-105 transition ml-2.5 text-sm flex items-center"` : `class="ml-2.5 text-sm flex items-center"`;
 
                     return `
                         <div class="flex justify-between items-center text-[13px] py-1 ${rowOpacity} transition-opacity duration-300">
@@ -872,7 +921,7 @@
                             <div class="flex items-center">
                                 <span class="${nClass} font-bold">${netStr}</span>
                                 ${editPlayerAction}
-                                <span ${toggleAction}>${settledIcon}</span>
+                                <div ${toggleAction}>${statusDisplay}</div>
                             </div>
                         </div>
                     `;
@@ -951,7 +1000,14 @@
 
             session.players[playerIndex].buyIn = newB;
             session.players[playerIndex].cashOut = newC;
-            session.players[playerIndex].settled = (newNet === 0);
+            
+            // Корректировка дробного платежа при изменении цифр
+            let absNewNet = Math.abs(newNet);
+            let currentSettled = p.settledAmount !== undefined ? p.settledAmount : (p.settled ? Math.abs(oldNet) : 0);
+            if (currentSettled > absNewNet) currentSettled = absNewNet; // обрезаем лишнее
+            
+            session.players[playerIndex].settledAmount = currentSettled;
+            session.players[playerIndex].settled = (currentSettled === absNewNet);
 
             let tb = 0; let tc = 0;
             session.players.forEach(pl => {
@@ -972,17 +1028,32 @@
             }
         }
 
+        // НОВАЯ ЛОГИКА ДРОБНЫХ ДОЛГОВ
         window.toggleSettled = function(id, playerName) {
             if(!isAdmin) return;
             const session = db.sessions[id];
-            if(session && session.players) {
-                const playerIndex = session.players.findIndex(p => p.name === playerName);
-                if(playerIndex !== -1) {
-                    let p = db.sessions[id].players[playerIndex];
-                    let net = (p.cashOut || 0) - (p.buyIn || 0);
-                    let currentStatus = p.settled !== undefined ? p.settled : (net === 0);
-                    db.sessions[id].players[playerIndex].settled = !currentStatus;
+            if(!session) return;
+            const playerIndex = session.players.findIndex(p => p.name === playerName);
+            if(playerIndex === -1) return;
+
+            let p = session.players[playerIndex];
+            let net = (p.cashOut || 0) - (p.buyIn || 0);
+            if (net === 0) return; 
+
+            let absNet = Math.abs(net);
+            let currentSettled = p.settledAmount !== undefined ? p.settledAmount : (p.settled ? absNet : 0);
+            let typeStr = net > 0 ? 'получил(а)' : 'отдал(а)';
+            
+            let amountStr = prompt(`Игрок: ${playerName}\nИтог в игре: ${net > 0 ? '+'+net : net} ₽\n\nСколько он(а) уже ${typeStr}?\n(Введите сумму от 0 до ${absNet})`, currentSettled);
+
+            if (amountStr !== null) {
+                let parsed = parseInt(amountStr);
+                if (!isNaN(parsed) && parsed >= 0 && parsed <= absNet) {
+                    db.sessions[id].players[playerIndex].settledAmount = parsed;
+                    db.sessions[id].players[playerIndex].settled = (parsed === absNet);
                     saveToCloud();
+                } else {
+                    alert("❌ Некорректная сумма! Нужно ввести число от 0 до " + absNet);
                 }
             }
         }
