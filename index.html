@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ZALUBANK</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { background-color: #050505; color: #e5e7eb; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .glass-panel { background: rgba(24, 24, 27, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(63, 63, 70, 0.5); }
@@ -12,6 +13,15 @@
         input[type=number] { -moz-appearance: textfield; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Золотой стиль для Топ-1 игрока */
+        .golden-text {
+            background: linear-gradient(to right, #fde047, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 12px rgba(234, 179, 8, 0.4);
+            font-weight: 900 !important;
+        }
     </style>
 </head>
 <body class="p-3 min-h-screen flex flex-col pb-24 relative">
@@ -152,7 +162,7 @@
         <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
             <div class="flex justify-between items-start mb-6 mt-4">
                 <div>
-                    <h2 id="profile-name" class="text-3xl font-black text-white uppercase tracking-tighter drop-shadow-md">Имя</h2>
+                    <h2 id="profile-name" class="text-3xl font-black text-white uppercase tracking-tighter drop-shadow-md transition-colors">Имя</h2>
                     <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">Досье игрока</p>
                 </div>
                 <button onclick="closePlayerProfile()" class="text-zinc-400 text-xs font-bold uppercase hover:text-white transition bg-zinc-900 p-2 rounded-lg border border-zinc-800">Назад ✕</button>
@@ -171,14 +181,22 @@
             </div>
 
             <!-- Блок: Долги -->
-            <div class="flex space-x-3 mb-6">
+            <div class="flex space-x-3 mb-5">
                 <div class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
                     <span class="text-[8px] font-bold text-red-500/70 uppercase tracking-widest mb-1">Игрок должен</span>
                     <span id="profile-owes" class="text-lg font-black text-red-500">0 ₽</span>
                 </div>
                 <div class="flex-1 bg-zinc-900 border border-emerald-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
-                    <span class="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Игроку должны</span>
+                    <span class="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Ему должны</span>
                     <span id="profile-owed" class="text-lg font-black text-emerald-500">0 ₽</span>
+                </div>
+            </div>
+
+            <!-- График Лудомании -->
+            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 shadow-lg mb-5 relative">
+                <h3 class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-2 px-1">График профита</h3>
+                <div class="w-full h-40">
+                    <canvas id="profileChart"></canvas>
                 </div>
             </div>
 
@@ -230,6 +248,7 @@
         let isOnline = false;
         let pendingSaves = 0;
         let currentNoteSessionId = null;
+        let topPlayerName = null; // Для хранения имени Топ-1
 
         const monthNames = {
             '01': 'Янв', '02': 'Фев', '03': 'Мар', '04': 'Апр', 
@@ -265,19 +284,18 @@
             }
         });
 
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden' && document.activeElement && document.activeElement.tagName === 'INPUT') {
-                document.activeElement.blur(); 
-            }
-        });
-
-        document.addEventListener('click', function(e) {
-            const input = document.getElementById('new-player-name');
-            const dropdown = document.getElementById('autocomplete-dropdown');
-            if (input && dropdown && e.target !== input && e.target !== dropdown) {
-                dropdown.classList.add('hidden');
-            }
-        });
+        // Функция вычисления Топ-1 Игрока за всё время
+        function updateTopPlayer() {
+            topPlayerName = null;
+            if (!db.history) return;
+            let maxNet = 0; // Игрок должен быть хотя бы в плюсе
+            Object.keys(db.history).forEach(name => {
+                if (db.history[name].net > maxNet) {
+                    maxNet = db.history[name].net;
+                    topPlayerName = name;
+                }
+            });
+        }
 
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
@@ -290,7 +308,9 @@
                 db = { game: [], history: {}, sessions: {} };
             }
             
+            updateTopPlayer();
             render();
+            
             if(!document.getElementById('history-modal').classList.contains('hidden')) window.openHistory();
             if(!document.getElementById('sessions-modal').classList.contains('hidden')) window.openSessions();
             if(!document.getElementById('profile-modal').classList.contains('hidden')) {
@@ -386,7 +406,8 @@
             if (matches.length > 0) {
                 matches.forEach(name => {
                     const div = document.createElement('div');
-                    div.className = 'px-3 py-2.5 text-sm font-bold text-white hover:bg-zinc-700 cursor-pointer border-b border-zinc-700 last:border-0 transition-colors';
+                    let isGolden = (name === topPlayerName);
+                    div.className = `px-3 py-2.5 text-sm font-bold hover:bg-zinc-700 cursor-pointer border-b border-zinc-700 last:border-0 transition-colors ${isGolden ? 'golden-text' : 'text-white'}`;
                     div.innerText = name;
                     div.onclick = function() {
                         document.getElementById('new-player-name').value = name;
@@ -441,6 +462,9 @@
                     const buyInDisplay = p.buyIn === null || p.buyIn === undefined ? '' : p.buyIn;
                     const cashOutDisplay = p.cashOut === null || p.cashOut === undefined ? '' : p.cashOut;
 
+                    let isGolden = (p.name === topPlayerName);
+                    let nameTitleClass = isGolden ? 'golden-text' : 'text-white';
+
                     let deleteBtnHTML = isAdmin ? `<button onclick="removePlayer(${index})" class="absolute top-2 right-2 w-5 h-5 bg-red-900/50 text-red-400 rounded-full text-[10px] font-bold flex items-center justify-center hover:bg-red-600 hover:text-white transition">✕</button>` : '';
 
                     let buyInHtml = isAdmin ? `
@@ -465,7 +489,7 @@
                     newHTML += `
                         <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 flex flex-col relative">
                             <div class="flex justify-between items-center mb-1.5 pr-4">
-                                <span class="font-black text-white text-sm tracking-tight">${p.name}</span>
+                                <span class="font-black text-sm tracking-tight ${nameTitleClass}">${p.name}</span>
                                 <span class="text-[9px] font-bold ${netClass}">Итог: ${netText}</span>
                             </div>
                             
@@ -532,7 +556,6 @@
 
             let name = existingName ? existingName : rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
 
-            // Блокировка отключена - добавляем кого угодно
             if (!db.game) db.game = [];
             if (db.game.some(p => p.name === name)) return alert("Этот игрок уже за столом!");
 
@@ -599,10 +622,10 @@
                 let net = (p.cashOut || 0) - (p.buyIn || 0);
                 if (net === 0) {
                     p.settled = true;
-                    p.settledAmount = 0; // Для 0 профита долгов нет
+                    p.settledAmount = 0; 
                 } else {
                     p.settled = false;
-                    p.settledAmount = 0; // Изначально отдано/получено 0
+                    p.settledAmount = 0; 
                 }
                 return p;
             });
@@ -623,12 +646,12 @@
             });
 
             db.game = [];
+            updateTopPlayer();
             document.getElementById('results-panel').classList.add('hidden');
             saveToCloud();
             alert("Игра завершена и записана в историю!");
         }
 
-        // --- ЛОГИКА ИЗВЛЕЧЕНИЯ МЕСЯЦЕВ ---
         function getMonthKey(dateStr) {
             const parts = dateStr.split(',')[0].split('.');
             if (parts.length >= 3) {
@@ -721,12 +744,14 @@
                     ` : '';
 
                     let nameWidth = (isAdmin && currentFilter === 'all') ? 'w-[45%]' : 'w-[60%]'; 
+                    let isGolden = (p.name === topPlayerName);
+                    let rowNameClass = isGolden ? 'golden-text' : 'text-blue-400';
 
                     html += `
                         <div class="flex px-3 py-2 items-center border-b border-zinc-800/30 last:border-0 hover:bg-zinc-800/40 transition group">
                             <div class="${nameWidth} flex items-center pr-1 truncate">
                                 <span class="w-4 inline-block text-[10px] text-zinc-600 font-bold text-right flex-shrink-0">${index + 1}</span>
-                                <button onclick="openPlayerProfile('${p.name}')" class="ml-2 font-bold text-xs text-blue-400 text-left truncate hover:text-blue-300 transition underline decoration-blue-900/50 underline-offset-4">${p.name}</button>
+                                <button onclick="openPlayerProfile('${p.name}')" class="ml-2 font-bold text-xs text-left truncate hover:opacity-80 transition underline decoration-blue-900/50 underline-offset-4 ${rowNameClass}">${p.name}</button>
                             </div>
                             <div class="w-[15%] text-center text-[10px] text-zinc-500 font-medium">${p.games}</div>
                             <div class="w-[25%] text-right text-xs font-black ${netClass}">${netText}</div>
@@ -748,7 +773,10 @@
             const stats = db.history[name];
             if(!stats) return;
 
+            let isGolden = (name === topPlayerName);
+            document.getElementById('profile-name').className = `text-3xl font-black uppercase tracking-tighter drop-shadow-md transition-colors ${isGolden ? 'golden-text' : 'text-white'}`;
             document.getElementById('profile-name').innerText = name;
+            
             document.getElementById('profile-games').innerText = stats.games;
             
             const netClass = isProfitsVisible ? (stats.net > 0 ? 'text-emerald-400' : (stats.net < 0 ? 'text-red-400' : 'text-white')) : 'text-zinc-600 tracking-widest';
@@ -772,7 +800,6 @@
                         const net = (pData.cashOut || 0) - (pData.buyIn || 0);
                         playerSessions.push({ date: sess.date, net: net, id: id });
 
-                        // Подсчет долгов
                         let absNet = Math.abs(net);
                         let settledAmt = pData.settledAmount !== undefined ? pData.settledAmount : (pData.settled ? absNet : 0);
                         let remaining = absNet - settledAmt;
@@ -785,7 +812,6 @@
                 });
             }
 
-            // Обновляем UI долгов
             const owesEl = document.getElementById('profile-owes');
             const owedEl = document.getElementById('profile-owed');
             if (isProfitsVisible) {
@@ -796,7 +822,60 @@
                 owedEl.innerText = '*** ₽';
             }
 
-            playerSessions.sort((a, b) => b.id.localeCompare(a.id));
+            // --- ОТРИСОВКА ГРАФИКА ЛУДОМАНИИ ---
+            let chartSessions = [...playerSessions].sort((a, b) => a.id.localeCompare(b.id)); // от старых к новым
+            let labels = ['Старт'];
+            let dataPts = [0];
+            let currentTotal = 0;
+
+            chartSessions.forEach(s => {
+                currentTotal += s.net;
+                labels.push(s.date.split(',')[0]); // Только дата без времени
+                dataPts.push(currentTotal);
+            });
+
+            const ctx = document.getElementById('profileChart').getContext('2d');
+            if (window.profileChartInstance) {
+                window.profileChartInstance.destroy();
+            }
+
+            window.profileChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Профит',
+                        data: dataPts,
+                        borderColor: '#10b981', // Изумрудный цвет линии
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: dataPts.map(v => v >= 0 ? '#10b981' : '#ef4444'),
+                        pointRadius: 3,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false } 
+                    },
+                    scales: {
+                        x: { 
+                            ticks: { color: '#71717a', font: {size: 8} }, 
+                            grid: { color: '#27272a' } 
+                        },
+                        y: { 
+                            ticks: { color: '#71717a', font: {size: 8} }, 
+                            grid: { color: '#27272a' } 
+                        }
+                    }
+                }
+            });
+            // ------------------------------------
+
+            playerSessions.sort((a, b) => b.id.localeCompare(a.id)); // обратно для списка (от новых к старым)
 
             if(playerSessions.length === 0) {
                 list.innerHTML = '<p class="text-center text-xs text-zinc-500 italic py-4">Нет записей об играх.</p>';
@@ -832,6 +911,7 @@
 
             db.history[name].net = parseInt(newNet) || 0;
             db.history[name].games = parseInt(newGames) || 0;
+            updateTopPlayer();
             saveToCloud();
         }
 
@@ -839,11 +919,11 @@
             if(!isAdmin) return;
             if(confirm(`Точно удалить игрока ${name} из Зала Славы навсегда?`)) {
                 delete db.history[name];
+                updateTopPlayer();
                 saveToCloud();
             }
         }
 
-        // ФУНКЦИИ МОДАЛКИ ЗАМЕТОК
         window.openNoteModal = function(id) {
             if(!isAdmin) return;
             currentNoteSessionId = id;
@@ -889,7 +969,6 @@
                     let net = (p.cashOut || 0) - (p.buyIn || 0);
                     let absNet = Math.abs(net);
                     
-                    // Расчет дробных платежей
                     let settledAmount = p.settledAmount !== undefined ? p.settledAmount : (p.settled ? absNet : 0);
                     let isFullySettled = (settledAmount === absNet) || (net === 0);
                     
@@ -900,7 +979,6 @@
                     let netStr = net > 0 ? '+'+net : net;
                     let rowOpacity = isFullySettled ? 'opacity-70' : 'opacity-100'; 
                     
-                    // Визуал часиков и частичной оплаты
                     let statusDisplay = '';
                     if (isFullySettled) {
                         statusDisplay = '✅';
@@ -912,12 +990,15 @@
                         }
                     }
 
+                    let isGolden = (p.name === topPlayerName);
+                    let rowNameClass = isGolden ? 'golden-text' : 'text-zinc-200';
+
                     let editPlayerAction = isAdmin ? `<button onclick="editSessionPlayer('${s.id}', '${p.name}')" class="ml-2 text-zinc-500 hover:text-blue-400 transition text-xs">✏️</button>` : '';
                     let toggleAction = isAdmin ? `onclick="toggleSettled('${s.id}', '${p.name}')" class="cursor-pointer hover:scale-105 transition ml-2.5 text-sm flex items-center"` : `class="ml-2.5 text-sm flex items-center"`;
 
                     return `
                         <div class="flex justify-between items-center text-[13px] py-1 ${rowOpacity} transition-opacity duration-300">
-                            <span class="text-zinc-200 font-medium">${p.name}</span>
+                            <span class="font-medium ${rowNameClass}">${p.name}</span>
                             <div class="flex items-center">
                                 <span class="${nClass} font-bold">${netStr}</span>
                                 ${editPlayerAction}
@@ -1001,10 +1082,9 @@
             session.players[playerIndex].buyIn = newB;
             session.players[playerIndex].cashOut = newC;
             
-            // Корректировка дробного платежа при изменении цифр
             let absNewNet = Math.abs(newNet);
             let currentSettled = p.settledAmount !== undefined ? p.settledAmount : (p.settled ? Math.abs(oldNet) : 0);
-            if (currentSettled > absNewNet) currentSettled = absNewNet; // обрезаем лишнее
+            if (currentSettled > absNewNet) currentSettled = absNewNet; 
             
             session.players[playerIndex].settledAmount = currentSettled;
             session.players[playerIndex].settled = (currentSettled === absNewNet);
@@ -1021,6 +1101,7 @@
                 db.history[playerName].net = db.history[playerName].net - oldNet + newNet;
             }
 
+            updateTopPlayer();
             saveToCloud();
             
             if (tb !== tc) {
@@ -1028,7 +1109,6 @@
             }
         }
 
-        // НОВАЯ ЛОГИКА ДРОБНЫХ ДОЛГОВ
         window.toggleSettled = function(id, playerName) {
             if(!isAdmin) return;
             const session = db.sessions[id];
@@ -1085,6 +1165,7 @@
                     }
                 });
                 delete db.sessions[id];
+                updateTopPlayer();
                 saveToCloud();
             }
         }
@@ -1140,14 +1221,17 @@
             } else {
                 let html = '';
                 transactions.forEach(t => {
+                    let fromGolden = (t.from === topPlayerName) ? 'golden-text' : 'text-red-400';
+                    let toGolden = (t.to === topPlayerName) ? 'golden-text' : 'text-emerald-400';
+
                     html += `
                         <div class="flex items-center justify-between bg-zinc-900/80 p-3 rounded-xl border border-zinc-800">
-                            <span class="text-xs font-bold text-red-400 w-1/3 truncate">${t.from}</span>
+                            <span class="text-xs font-bold w-1/3 truncate ${fromGolden}">${t.from}</span>
                             <div class="flex-1 flex flex-col items-center px-1">
                                 <span class="text-[10px] font-black text-white bg-zinc-800 px-3 py-1 rounded-full border border-zinc-700 shadow-md">${t.amount} ₽</span>
                                 <span class="text-[7px] text-zinc-500 mt-1 uppercase tracking-widest">переводит ➔</span>
                             </div>
-                            <span class="text-xs font-bold text-emerald-400 w-1/3 text-right truncate">${t.to}</span>
+                            <span class="text-xs font-bold w-1/3 text-right truncate ${toGolden}">${t.to}</span>
                         </div>
                     `;
                 });
