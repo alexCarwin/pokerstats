@@ -14,7 +14,6 @@
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Золотой стиль для Топ-1 игрока */
         .golden-text {
             background: linear-gradient(to right, #fde047, #d97706);
             -webkit-background-clip: text;
@@ -65,15 +64,16 @@
     <!-- ШАПКА -->
     <div class="max-w-md mx-auto w-full flex justify-between items-center mb-4 pt-1">
         <div class="flex items-center space-x-2">
-            <h1 class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg cursor-pointer">
+            <h1 class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg">
                 <span class="text-white">ZALU</span><span class="text-emerald-500">BANK</span>
             </h1>
             <span id="room-badge" class="text-[9px] font-bold text-zinc-500 border border-zinc-700 bg-zinc-800/50 px-2 py-0.5 rounded uppercase tracking-widest hidden mt-0.5"></span>
             <div id="network-status" class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] transition-colors duration-300" title="Подключение..."></div>
         </div>
-        <div class="flex space-x-2">
-            <button id="btn-end-game" onclick="endGame()" class="hidden text-[10px] font-bold text-red-400 uppercase tracking-widest bg-red-900/20 px-3 py-2 rounded-lg border border-red-900/50 hover:bg-red-900/40 active:scale-95 transition">Завершить</button>
-            <button onclick="logoutClub()" class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest bg-zinc-900 px-3 py-2 rounded-lg border border-zinc-800 hover:text-white transition">🚪 Выйти</button>
+        <div class="flex space-x-1.5">
+            <button id="edit-mode-toggle" onclick="toggleEditMode()" class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest bg-zinc-900 px-2.5 py-2 rounded-lg border border-zinc-800 transition">🔒 Чтение</button>
+            <button id="btn-end-game" onclick="endGame()" class="hidden text-[9px] font-bold text-red-400 uppercase tracking-widest bg-red-900/20 px-2.5 py-2 rounded-lg border border-red-900/50 hover:bg-red-900/40 active:scale-95 transition">Завершить</button>
+            <button onclick="logoutClub()" class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest bg-zinc-900 px-2.5 py-2 rounded-lg border border-zinc-800 hover:text-white transition">🚪</button>
         </div>
     </div>
 
@@ -110,7 +110,7 @@
         </div>
 
         <!-- ДОБАВЛЕНИЕ ИГРОКА -->
-        <div id="add-player-section" class="flex space-x-2 mb-4 relative">
+        <div id="add-player-section" class="flex space-x-2 mb-4 hidden relative">
             <div class="flex-1 relative">
                 <input type="text" id="new-player-name" placeholder="Имя игрока" autocomplete="off" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm font-bold text-white outline-none focus:border-emerald-500 transition placeholder-zinc-700" oninput="handlePlayerSearch()" onkeyup="if(event.key === 'Enter') addPlayer()">
                 <div id="autocomplete-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto scrollbar-hide"></div>
@@ -145,7 +145,6 @@
                 
                 <div class="flex items-center space-x-2">
                     <h2 class="text-sm font-black text-blue-500 uppercase tracking-widest">Зал Славы</h2>
-                    <!-- СЕЛЕКТОР МЕСЯЦЕВ -->
                     <select id="history-filter" onchange="openHistory()" class="bg-zinc-800 text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded border border-blue-900/50 outline-none px-1.5 py-1">
                         <option value="all">За всё время</option>
                     </select>
@@ -188,7 +187,6 @@
                 <button onclick="closePlayerProfile()" class="text-zinc-400 text-xs font-bold uppercase hover:text-white transition bg-zinc-900 p-2 rounded-lg border border-zinc-800">Назад ✕</button>
             </div>
             
-            <!-- Блок: Отыграно / Общий профит -->
             <div class="flex space-x-3 mb-4">
                 <div class="flex-1 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-center items-center shadow-lg">
                     <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-1">Сыграно</span>
@@ -200,7 +198,6 @@
                 </div>
             </div>
 
-            <!-- Блок: Долги -->
             <div class="flex space-x-3 mb-5">
                 <div class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
                     <span class="text-[8px] font-bold text-red-500/70 uppercase tracking-widest mb-1">Игрок должен</span>
@@ -212,7 +209,6 @@
                 </div>
             </div>
 
-            <!-- График Лудомании -->
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 shadow-lg mb-5 relative">
                 <h3 class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-2 px-1">График профита</h3>
                 <div class="w-full h-40">
@@ -261,6 +257,7 @@
         let db = { game: [], history: {}, sessions: {} };
         let isFirstLoad = true;
         
+        let isEditMode = false; // Режим защиты от дурака
         let isProfitsVisible = false; 
         let isOnline = false;
         let pendingSaves = 0;
@@ -315,7 +312,6 @@
             }
         });
 
-        // --- ЛОГИКА ВХОДА И АВТОРИЗАЦИИ ---
         window.loginToClub = async function() {
             let name = document.getElementById('lobby-club').value.trim().toLowerCase();
             let pwd = document.getElementById('lobby-pwd').value.trim();
@@ -328,14 +324,12 @@
 
             try {
                 if (name === 'osnova') {
-                    // Ваша легаси комната
                     if (pwd === '1337') {
                         startSession('osnova', pwd, 'zalubank_data');
                     } else {
                         alert("❌ Неверный пароль для главной комнаты!");
                     }
                 } else {
-                    // Новые комнаты на платформе
                     const clubRef = ref(database, 'clubs/' + name + '/password');
                     const snap = await get(clubRef);
                     if (snap.exists()) {
@@ -347,7 +341,6 @@
                     } else {
                         if(confirm(`Комната "${name.toUpperCase()}" еще не существует.\nСоздать новую комнату с этим паролем?`)) {
                             await set(ref(database, 'clubs/' + name + '/password'), pwd);
-                            // Инициализация пустой базы, чтобы onValue сработал корректно
                             await set(ref(database, 'clubs/' + name + '/data'), { game: [], history: {}, sessions: {} });
                             startSession(name, pwd, 'clubs/' + name + '/data');
                         }
@@ -366,7 +359,6 @@
             localStorage.setItem('zalubank_club', name);
             localStorage.setItem('zalubank_pwd', pwd);
             
-            // Обновляем ссылку в браузере для шаринга без перезагрузки
             const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?club=' + name;
             window.history.pushState({path:newUrl}, '', newUrl);
 
@@ -403,10 +395,9 @@
         window.logoutClub = function() {
             localStorage.removeItem('zalubank_club');
             localStorage.removeItem('zalubank_pwd');
-            window.location.search = ''; // Очистка URL и перезагрузка в Лобби
+            window.location.search = ''; 
         }
 
-        // Проверка при загрузке страницы
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const clubFromUrl = urlParams.get('club');
@@ -414,20 +405,16 @@
             let savedPwd = localStorage.getItem('zalubank_pwd');
 
             if (clubFromUrl && clubFromUrl !== savedClub) {
-                // Перешли по ссылке-приглашению
                 document.getElementById('lobby-club').value = clubFromUrl;
                 document.getElementById('lobby-modal').classList.remove('hidden');
             } else if (savedClub && savedPwd) {
-                // Пытаемся зайти автоматически
                 document.getElementById('lobby-club').value = savedClub;
                 document.getElementById('lobby-pwd').value = savedPwd;
                 window.loginToClub();
             } else {
-                // Чистый заход
                 document.getElementById('lobby-modal').classList.remove('hidden');
             }
         };
-        // ------------------------------------
 
         function updateTopPlayer() {
             topPlayerName = null;
@@ -460,6 +447,28 @@
                 console.error("Ошибка сохранения:", e);
                 alert("Ошибка соединения! Проверьте интернет.");
             });
+        }
+
+        // --- ЛОГИКА РЕЖИМА УПРАВЛЕНИЯ ---
+        window.toggleEditMode = function() {
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('edit-mode-toggle');
+            
+            if(isEditMode) {
+                btn.innerHTML = '🔓 Управление';
+                btn.classList.replace('text-zinc-400', 'text-purple-400');
+                btn.classList.replace('border-zinc-800', 'border-purple-900/50');
+                btn.classList.add('bg-purple-900/20');
+            } else {
+                btn.innerHTML = '🔒 Чтение';
+                btn.classList.replace('text-purple-400', 'text-zinc-400');
+                btn.classList.replace('border-purple-900/50', 'border-zinc-800');
+                btn.classList.remove('bg-purple-900/20');
+            }
+            
+            render();
+            if(!document.getElementById('history-modal').classList.contains('hidden')) window.openHistory();
+            if(!document.getElementById('sessions-modal').classList.contains('hidden')) window.openSessions();
         }
 
         window.toggleProfits = function() {
@@ -522,7 +531,8 @@
 
         function render() {
             const hasPlayers = db.game && db.game.length > 0;
-            document.getElementById('btn-end-game').classList.toggle('hidden', !hasPlayers);
+            document.getElementById('btn-end-game').classList.toggle('hidden', !isEditMode || !hasPlayers);
+            document.getElementById('add-player-section').classList.toggle('hidden', !isEditMode);
 
             let activeId = document.activeElement ? document.activeElement.id : null;
             let activeVal = null;
@@ -562,17 +572,25 @@
                     let isGolden = (p.name === topPlayerName);
                     let nameTitleClass = isGolden ? 'golden-text' : 'text-white';
 
-                    let deleteBtnHTML = `<button onclick="removePlayer(${index})" class="absolute top-2 right-2 w-5 h-5 bg-red-900/50 text-red-400 rounded-full text-[10px] font-bold flex items-center justify-center hover:bg-red-600 hover:text-white transition">✕</button>`;
+                    let deleteBtnHTML = isEditMode ? `<button onclick="removePlayer(${index})" class="absolute top-2 right-2 w-5 h-5 bg-red-900/50 text-red-400 rounded-full text-[10px] font-bold flex items-center justify-center hover:bg-red-600 hover:text-white transition">✕</button>` : '';
 
-                    let buyInHtml = `
+                    let buyInHtml = isEditMode ? `
                         <div class="flex">
                             <input id="buyin-${index}" type="number" value="${buyInDisplay}" placeholder="0" onchange="updateBuyIn(${index}, this.value)" onkeyup="if(event.key === 'Enter') this.blur()" class="w-full bg-zinc-800 rounded-l-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-zinc-500 transition">
                             <button onclick="addRebuy(${index}, 1000)" class="bg-zinc-700 text-[10px] font-bold text-white px-2 rounded-r-md border-l border-zinc-800 hover:bg-zinc-600 transition active:bg-zinc-500">+1000</button>
                         </div>
+                    ` : `
+                        <div class="flex h-[26px] items-center px-2 bg-zinc-800/50 rounded-md border border-zinc-800">
+                            <span class="text-xs font-bold text-white">${buyInDisplay || '0'}</span>
+                        </div>
                     `;
 
-                    let cashOutHtml = `
+                    let cashOutHtml = isEditMode ? `
                         <input id="cashout-${index}" type="number" value="${cashOutDisplay}" placeholder="0" onchange="updateCashOut(${index}, this.value)" onkeyup="if(event.key === 'Enter') this.blur()" class="w-full bg-zinc-800 rounded-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-blue-500 transition">
+                    ` : `
+                        <div class="flex h-[26px] items-center px-2 bg-zinc-800/50 rounded-md border border-zinc-800">
+                            <span class="text-xs font-bold text-white">${cashOutDisplay || '0'}</span>
+                        </div>
                     `;
 
                     newHTML += `
@@ -600,7 +618,7 @@
 
             list.innerHTML = newHTML;
 
-            if (activeId) {
+            if (activeId && isEditMode) {
                 let el = document.getElementById(activeId);
                 if (el) {
                     el.focus();
@@ -633,6 +651,7 @@
         }
 
         window.addPlayer = function() {
+            if(!isEditMode) return;
             const nameInput = document.getElementById('new-player-name');
             let rawName = nameInput.value.trim();
             if (!rawName) return;
@@ -658,6 +677,7 @@
         }
 
         window.removePlayer = function(index) {
+            if(!isEditMode) return;
             if(confirm(`Точно удалить игрока ${db.game[index].name} со стола?`)) {
                 db.game.splice(index, 1);
                 document.getElementById('results-panel').classList.add('hidden');
@@ -666,12 +686,14 @@
         }
 
         window.updateBuyIn = function(index, val) {
+            if(!isEditMode) return;
             db.game[index].buyIn = val === '' ? null : parseInt(val);
             document.getElementById('results-panel').classList.add('hidden');
             saveToCloud();
         }
 
         window.addRebuy = function(index, amount) {
+            if(!isEditMode) return;
             let current = db.game[index].buyIn || 0;
             db.game[index].buyIn = current + amount;
             document.getElementById('results-panel').classList.add('hidden');
@@ -679,12 +701,14 @@
         }
 
         window.updateCashOut = function(index, val) {
+            if(!isEditMode) return;
             db.game[index].cashOut = val === '' ? null : parseInt(val);
             document.getElementById('results-panel').classList.add('hidden');
             saveToCloud();
         }
 
         window.endGame = function() {
+            if(!isEditMode) return;
             if (db.game.length === 0) return alert('Стол пуст!');
             
             let totalB = db.game.reduce((sum, p) => sum + (p.buyIn || 0), 0);
@@ -777,7 +801,7 @@
             filterSelect.innerHTML = optionsHtml;
             currentFilter = filterSelect.value; 
 
-            document.getElementById('history-admin-header').classList.remove('hidden');
+            document.getElementById('history-admin-header').classList.toggle('hidden', !isEditMode || currentFilter !== 'all');
 
             const list = document.getElementById('history-list');
             list.innerHTML = '';
@@ -819,14 +843,14 @@
                     const netClass = isProfitsVisible ? (p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400')) : 'text-zinc-600 font-bold tracking-widest';
                     const netText = isProfitsVisible ? (p.net > 0 ? `+${p.net}` : p.net) : '***';
 
-                    let adminButtons = (currentFilter === 'all') ? `
+                    let adminButtons = (isEditMode && currentFilter === 'all') ? `
                         <div class="w-[15%] flex justify-end space-x-2">
                             <button onclick="editHistoryPlayer('${p.name}')" class="text-zinc-500 hover:text-blue-400 transition text-xs">✏️</button>
                             <button onclick="deleteHistoryPlayer('${p.name}')" class="text-zinc-500 hover:text-red-400 transition text-xs">🗑️</button>
                         </div>
-                    ` : '<div class="w-[15%]"></div>';
+                    ` : '';
 
-                    let nameWidth = 'w-[45%]'; 
+                    let nameWidth = (isEditMode && currentFilter === 'all') ? 'w-[45%]' : 'w-[60%]'; 
                     let isGolden = (p.name === topPlayerName);
                     let rowNameClass = isGolden ? 'golden-text' : 'text-blue-400';
 
@@ -983,6 +1007,7 @@
         }
 
         window.editHistoryPlayer = function(name) {
+            if(!isEditMode) return;
             const p = db.history[name];
             let newNet = prompt(`Редактируем ПРОФИТ для игрока ${name}:`, p.net);
             if(newNet === null) return;
@@ -996,6 +1021,7 @@
         }
 
         window.deleteHistoryPlayer = function(name) {
+            if(!isEditMode) return;
             if(confirm(`Точно удалить игрока ${name} из Зала Славы навсегда?`)) {
                 delete db.history[name];
                 updateTopPlayer();
@@ -1004,6 +1030,7 @@
         }
 
         window.openNoteModal = function(id) {
+            if(!isEditMode) return;
             currentNoteSessionId = id;
             const session = db.sessions[id];
             document.getElementById('note-textarea').value = session.note || '';
@@ -1017,6 +1044,7 @@
         }
 
         window.saveNoteModal = function() {
+            if(!isEditMode) return;
             if (currentNoteSessionId && db.sessions[currentNoteSessionId]) {
                 db.sessions[currentNoteSessionId].note = document.getElementById('note-textarea').value.trim();
                 saveToCloud();
@@ -1070,8 +1098,8 @@
                     let isGolden = (p.name === topPlayerName);
                     let rowNameClass = isGolden ? 'golden-text' : 'text-zinc-200';
 
-                    let editPlayerAction = `<button onclick="editSessionPlayer('${s.id}', '${p.name}')" class="ml-2 text-zinc-500 hover:text-blue-400 transition text-xs">✏️</button>`;
-                    let toggleAction = `onclick="toggleSettled('${s.id}', '${p.name}')" class="cursor-pointer hover:scale-105 transition ml-2.5 text-sm flex items-center"`;
+                    let editPlayerAction = isEditMode ? `<button onclick="editSessionPlayer('${s.id}', '${p.name}')" class="ml-2 text-zinc-500 hover:text-blue-400 transition text-xs">✏️</button>` : '';
+                    let toggleAction = isEditMode ? `onclick="toggleSettled('${s.id}', '${p.name}')" class="cursor-pointer hover:scale-105 transition ml-2.5 text-sm flex items-center"` : `class="ml-2.5 text-sm flex items-center"`;
 
                     return `
                         <div class="flex justify-between items-center text-[13px] py-1 ${rowOpacity} transition-opacity duration-300">
@@ -1085,25 +1113,31 @@
                     `;
                 }).join('');
 
-                let deleteBtn = `<button onclick="deleteSession('${s.id}')" class="absolute top-3 right-3 text-red-900 hover:text-red-500 transition text-xs font-bold">🗑️ Удалить</button>`;
-                let editBtn = `<button onclick="editSessionDate('${s.id}')" class="ml-2 text-zinc-500 hover:text-purple-400 transition text-xs">✏️</button>`;
+                let deleteBtn = isEditMode ? `<button onclick="deleteSession('${s.id}')" class="absolute top-3 right-3 text-red-900 hover:text-red-500 transition text-xs font-bold">🗑️ Удалить</button>` : '';
+                let editBtn = isEditMode ? `<button onclick="editSessionDate('${s.id}')" class="ml-2 text-zinc-500 hover:text-purple-400 transition text-xs">✏️</button>` : '';
 
                 let noteText = s.note || '';
-                let cursorClass = 'cursor-pointer hover:text-zinc-200 transition';
-                let onClickAction = `onclick="openNoteModal('${s.id}')"`;
+                let cursorClass = isEditMode ? 'cursor-pointer hover:text-zinc-200 transition' : '';
+                let onClickAction = isEditMode ? `onclick="openNoteModal('${s.id}')"` : '';
                 
-                let displayNote = noteText 
-                    ? `<div class="text-[11px] text-zinc-300 mt-1.5 leading-tight whitespace-pre-wrap ${cursorClass}" ${onClickAction}>${noteText}</div>` 
-                    : `<div class="text-[10px] text-zinc-600 mt-1 italic ${cursorClass}" ${onClickAction}>Нажмите сюда, чтобы добавить заметку...</div>`;
+                let displayNote = '';
+                if(noteText) {
+                    displayNote = `<div class="text-[11px] text-zinc-300 mt-1.5 leading-tight whitespace-pre-wrap ${cursorClass}" ${onClickAction}>${noteText}</div>`;
+                } else if(isEditMode) {
+                    displayNote = `<div class="text-[10px] text-zinc-600 mt-1 italic ${cursorClass}" ${onClickAction}>Нажмите сюда, чтобы добавить заметку...</div>`;
+                }
                 
-                let noteUI = `
-                    <div class="mb-3 bg-zinc-950/40 rounded-xl p-2.5 border border-zinc-800/50">
-                        <div class="flex items-center justify-between text-[9px] font-bold text-zinc-500 uppercase tracking-widest">
-                            <span>📝 Заметки</span>
+                let noteUI = '';
+                if(noteText || isEditMode) {
+                    noteUI = `
+                        <div class="mb-3 bg-zinc-950/40 rounded-xl p-2.5 border border-zinc-800/50">
+                            <div class="flex items-center justify-between text-[9px] font-bold text-zinc-500 uppercase tracking-widest">
+                                <span>📝 Заметки</span>
+                            </div>
+                            ${displayNote}
                         </div>
-                        ${displayNote}
-                    </div>
-                `;
+                    `;
+                }
 
                 html += `
                     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 relative shadow-lg">
@@ -1132,6 +1166,7 @@
         }
 
         window.editSessionPlayer = function(id, playerName) {
+            if(!isEditMode) return;
             const session = db.sessions[id];
             if(!session) return;
 
@@ -1183,6 +1218,7 @@
         }
 
         window.toggleSettled = function(id, playerName) {
+            if(!isEditMode) return;
             const session = db.sessions[id];
             if(!session) return;
             const playerIndex = session.players.findIndex(p => p.name === playerName);
@@ -1211,6 +1247,7 @@
         }
 
         window.editSessionDate = function(id) {
+            if(!isEditMode) return;
             const session = db.sessions[id];
             if(!session) return;
             
@@ -1222,6 +1259,7 @@
         }
 
         window.deleteSession = function(id) {
+            if(!isEditMode) return;
             if(!confirm('Точно удалить эту сессию? ВНИМАНИЕ: Её результаты будут автоматически вычтены из Зала Славы у всех игроков!')) return;
             
             const session = db.sessions[id];
