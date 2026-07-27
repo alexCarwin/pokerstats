@@ -46,9 +46,15 @@
             <input type="password" id="lobby-pwd" placeholder="Пароль" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-white text-center font-bold outline-none focus:border-emerald-500 transition placeholder-zinc-600">
             <button onclick="loginToClub()" id="loc-lobby-btn" class="w-full py-3.5 bg-emerald-600 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-emerald-500 transition shadow-[0_0_20px_rgba(16,185,129,0.3)] mt-2 active:scale-95">Войти / Создать</button>
         </div>
+        
         <p id="loc-lobby-desc" class="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mt-8 text-center max-w-xs leading-relaxed">
             Доступ имеют только те, кто знает пароль. Внутри комнаты все игроки имеют права на редактирование.
         </p>
+        
+        <!-- Ссылка "О приложении" в лобби -->
+        <button onclick="openAbout()" id="loc-lobby-about" class="text-[10px] text-blue-500 font-bold uppercase tracking-widest mt-4 hover:text-blue-400 transition underline decoration-blue-900/50 underline-offset-4">
+            Как это работает?
+        </button>
     </div>
 
     <!-- ГЛОБАЛЬНЫЙ ЛОАДЕР -->
@@ -75,6 +81,48 @@
             </div>
 
             <button onclick="saveSettings()" id="loc-settings-save" class="w-full py-3.5 bg-purple-600 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-purple-500 transition shadow-[0_0_15px_rgba(147,51,234,0.3)] active:scale-95">Сохранить и войти</button>
+        </div>
+    </div>
+
+    <!-- ОКНО "О ПРИЛОЖЕНИИ" -->
+    <div id="about-modal" class="fixed inset-0 hidden z-[3000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
+        <div class="bg-zinc-900 border border-zinc-700 p-6 rounded-3xl w-full max-w-md flex flex-col shadow-2xl relative">
+            <h3 id="loc-about-title" class="text-sm font-black text-blue-500 uppercase tracking-widest mb-1 text-center">О приложении</h3>
+            <p id="loc-about-desc" class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest text-center mb-6">Профессиональный трекер для покерных клубов</p>
+            
+            <div class="space-y-4 mb-8">
+                <div class="flex items-start">
+                    <div class="w-6 h-6 rounded bg-emerald-900/30 text-emerald-500 flex items-center justify-center mr-3 flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 id="loc-feat-1-title" class="text-xs font-bold text-white mb-0.5">Умный расчет долгов</h4>
+                        <p id="loc-feat-1-desc" class="text-[10px] text-zinc-500 leading-tight">Автоматическое сведение дебета и кредита. Алгоритм сам рассчитает, кто, кому и сколько должен перевести.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <div class="w-6 h-6 rounded bg-blue-900/30 text-blue-500 flex items-center justify-center mr-3 flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    </div>
+                    <div>
+                        <h4 id="loc-feat-2-title" class="text-xs font-bold text-white mb-0.5">Детальная статистика</h4>
+                        <p id="loc-feat-2-desc" class="text-[10px] text-zinc-500 leading-tight">Ведение глобального рейтинга игроков, графики профита и история всех прошедших сессий с заметками.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="w-6 h-6 rounded bg-purple-900/30 text-purple-500 flex items-center justify-center mr-3 flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 id="loc-feat-3-title" class="text-xs font-bold text-white mb-0.5">Умный ввод сумм</h4>
+                        <p id="loc-feat-3-desc" class="text-[10px] text-zinc-500 leading-tight">Используйте сокращения для быстрого ввода: <b>1k</b> = 1 000, <b>1.5m</b> = 1 500 000. Система всё поймет.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="closeAbout()" id="loc-about-close" class="w-full py-3.5 bg-zinc-800 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-zinc-700 transition active:scale-95">Закрыть</button>
         </div>
     </div>
 
@@ -115,16 +163,14 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
 
-                <!-- ОБНОВЛЕННОЕ ВЫПАДАЮЩЕЕ МЕНЮ -->
+                <!-- ВЫПАДАЮЩЕЕ МЕНЮ -->
                 <div id="dropdown-menu" class="hidden absolute top-full right-3 mt-2 w-56 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl py-2 overflow-hidden z-50">
                     
-                    <!-- Клуб -->
                     <div class="px-4 py-2 border-b border-zinc-800/50 mb-2">
                         <span id="loc-menu-club" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest block mb-1">Клуб</span>
                         <p id="menu-room-badge" class="text-sm font-black text-white uppercase truncate">---</p>
                     </div>
                     
-                    <!-- Выбор языка (Стильный свитчер) -->
                     <div class="px-4 py-2 border-b border-zinc-800/50 mb-2 flex justify-center">
                         <div class="flex w-full bg-zinc-950 border border-zinc-800 rounded-lg p-1 relative">
                             <button onclick="setLang('ru')" id="menu-lang-ru" class="flex-1 text-[10px] font-bold py-2 rounded-md bg-zinc-700 text-white transition z-10 relative shadow-sm">RU</button>
@@ -132,19 +178,22 @@
                         </div>
                     </div>
 
-                    <!-- Настройки -->
-                    <button id="btn-settings" onclick="openSettings()" class="hidden w-full text-left px-4 py-3 text-zinc-300 hover:text-white hover:bg-zinc-800 transition flex items-center group">
+                    <!-- О приложении (Новая кнопка) -->
+                    <button onclick="openAbout()" class="w-full text-left px-4 py-3 text-blue-400 hover:text-blue-300 hover:bg-zinc-800 transition flex items-center group">
+                        <svg class="w-4 h-4 mr-3 text-blue-500/70 group-hover:text-blue-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span id="loc-menu-about" class="text-xs font-bold uppercase tracking-widest">О приложении</span>
+                    </button>
+
+                    <button id="btn-settings" onclick="openSettings()" class="hidden w-full text-left px-4 py-3 text-purple-400 hover:text-purple-300 hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
                         <svg class="w-4 h-4 mr-3 text-zinc-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         <span id="loc-menu-settings" class="text-xs font-bold uppercase tracking-widest">Настройки</span>
                     </button>
 
-                    <!-- Завершить игру -->
                     <button id="btn-end-game" onclick="endGame()" class="hidden w-full text-left px-4 py-3 text-red-400 hover:text-red-300 hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
                         <svg class="w-4 h-4 mr-3 text-red-500/70 group-hover:text-red-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg>
                         <span id="loc-menu-end" class="text-xs font-bold uppercase tracking-widest">Завершить сессию</span>
                     </button>
 
-                    <!-- Выход -->
                     <button onclick="logoutClub()" class="w-full text-left px-4 py-3 text-zinc-300 hover:text-white hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
                         <svg class="w-4 h-4 mr-3 text-zinc-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         <span id="loc-menu-exit" class="text-xs font-bold uppercase tracking-widest">Выйти из комнаты</span>
@@ -305,7 +354,7 @@
         </div>
     </div>
 
-    <!-- FIREBASE СКРИПТ -->
+    <!-- FIREBASE СКРИПТ И ЛОГИКА -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -343,9 +392,10 @@
             ru: {
                 lobbyTitle: "Вход в закрытый клуб", lobbyBtn: "Войти / Создать",
                 lobbyDesc: "Доступ имеют только те, кто знает пароль. Внутри комнаты все игроки имеют права на редактирование.",
+                lobbyAbout: "Как это работает?",
                 modeRead: "Чтение", modeEdit: "Управление", tabTable: "Стол", tabRating: "Рейтинг", tabHist: "История",
                 btnAdd: "Добавить", btnCalc: "Рассчитать", tableCash: "Касса стола", totalBuy: "Сумма бай-инов", totalStack: "Общий стэк",
-                menuClub: "Клуб", menuSettings: "Настройки", menuEnd: "Завершить сессию", menuExit: "Выйти из комнаты",
+                menuClub: "Клуб", menuSettings: "Настройки", menuEnd: "Завершить сессию", menuExit: "Выйти из комнаты", menuAbout: "О приложении",
                 sync: "Синхронизация...", empty: "Стол пуст", results: "Взаиморасчеты", ratingTitle: "Рейтинг",
                 showProfits: "Показать", colProf: "Профиль", colGames: "Игр", colProfit: "Профит",
                 profDesc: "Статистика игрока", profPlayed: "Сыграно", profNet: "Общий профит", profOwes: "Игрок должен", profOwed: "Игроку должны",
@@ -353,14 +403,20 @@
                 statOk: "Сходится ✓", statDiff: "Не хватает", statOver: "Лишние", statWait: "В процессе",
                 bIn: "Бай-ин", stack: "Стэк", transfer: "переводит", notes: "Заметки", paid: "Оплачено", wait: "Ожидается",
                 setTit: "Настройки клуба", setCur: "Символ валюты", setStep: "Шаг кнопки добавления стэка", setSave: "Сохранить",
-                alertRoom: "Комната еще не существует.\nСоздать новую?", alertEmpty: "Стол пуст", alertDiff: "Касса не сходится! Разница:"
+                alertRoom: "Комната еще не существует.\nСоздать новую?", alertEmpty: "Стол пуст", alertDiff: "Касса не сходится! Разница:",
+                aboutTitle: "О приложении", aboutDesc: "Профессиональный трекер для покерных клубов", 
+                feat1Title: "Умный расчет долгов", feat1Desc: "Автоматическое сведение дебета и кредита. Алгоритм сам рассчитает, кто, кому и сколько должен перевести.",
+                feat2Title: "Детальная статистика", feat2Desc: "Ведение глобального рейтинга игроков, графики профита и история всех прошедших сессий с заметками.",
+                feat3Title: "Умный ввод сумм", feat3Desc: "Используйте сокращения для быстрого ввода: <b>1k</b> = 1 000, <b>1.5m</b> = 1 500 000. Система всё поймет.",
+                aboutClose: "Закрыть"
             },
             en: {
                 lobbyTitle: "Private Club Login", lobbyBtn: "Login / Create",
                 lobbyDesc: "Only users with the password can enter. Inside, everyone has editing rights.",
+                lobbyAbout: "How it works?",
                 modeRead: "Read", modeEdit: "Manage", tabTable: "Table", tabRating: "Ranking", tabHist: "History",
                 btnAdd: "Add", btnCalc: "Settle Up", tableCash: "Table Bank", totalBuy: "Total Buy-ins", totalStack: "Total Stack",
-                menuClub: "Club", menuSettings: "Settings", menuEnd: "End Session", menuExit: "Leave Room",
+                menuClub: "Club", menuSettings: "Settings", menuEnd: "End Session", menuExit: "Leave Room", menuAbout: "About App",
                 sync: "Syncing...", empty: "Table is empty", results: "Transactions", ratingTitle: "Leaderboard",
                 showProfits: "Show", colProf: "Profile", colGames: "Games", colProfit: "Profit",
                 profDesc: "Player Stats", profPlayed: "Played", profNet: "Total Net", profOwes: "Player Owes", profOwed: "Player is Owed",
@@ -368,7 +424,12 @@
                 statOk: "Balanced ✓", statDiff: "Missing", statOver: "Over", statWait: "Pending",
                 bIn: "Buy-in", stack: "Stack", transfer: "sends to", notes: "Notes", paid: "Paid", wait: "Pending",
                 setTit: "Club Settings", setCur: "Currency Symbol", setStep: "Add Stack Button Step", setSave: "Save",
-                alertRoom: "Room doesn't exist.\nCreate new one?", alertEmpty: "Table is empty", alertDiff: "Bank mismatch! Difference:"
+                alertRoom: "Room doesn't exist.\nCreate new one?", alertEmpty: "Table is empty", alertDiff: "Bank mismatch! Difference:",
+                aboutTitle: "About App", aboutDesc: "Professional tracker for poker clubs", 
+                feat1Title: "Smart Debt Calculation", feat1Desc: "Automatic debit and credit reconciliation. The algorithm calculates exactly who owes whom.",
+                feat2Title: "Detailed Statistics", feat2Desc: "Global player leaderboard, individual profit charts, and complete session history with notes.",
+                feat3Title: "Smart Input", feat3Desc: "Use shortcuts for quick data entry: <b>1k</b> = 1,000, <b>1.5m</b> = 1,500,000. The system handles the rest.",
+                aboutClose: "Close"
             }
         };
 
@@ -404,6 +465,7 @@
             document.getElementById('loc-lobby-title').innerText = t.lobbyTitle;
             document.getElementById('loc-lobby-btn').innerText = t.lobbyBtn;
             document.getElementById('loc-lobby-desc').innerText = t.lobbyDesc;
+            document.getElementById('loc-lobby-about').innerText = t.lobbyAbout;
             document.getElementById('loc-tab-table').innerText = t.tabTable;
             document.getElementById('loc-tab-rating').innerText = t.tabRating;
             document.getElementById('loc-tab-hist').innerText = t.tabHist;
@@ -414,10 +476,10 @@
             document.getElementById('loc-total-stack').innerText = t.totalStack;
             document.getElementById('loc-menu-club').innerText = t.menuClub;
             
-            // Новые span'ы для меню (с защитой от перезаписи иконок)
             document.getElementById('loc-menu-settings').innerText = t.menuSettings;
             document.getElementById('loc-menu-end').innerText = t.menuEnd;
             document.getElementById('loc-menu-exit').innerText = t.menuExit;
+            document.getElementById('loc-menu-about').innerText = t.menuAbout;
             
             document.getElementById('loc-results-title').innerText = t.results;
             document.getElementById('loc-rating-title').innerText = t.ratingTitle;
@@ -438,6 +500,16 @@
             document.getElementById('loc-prof-chart').innerText = t.profChart;
             document.getElementById('loc-prof-history').innerText = t.profHist;
             document.getElementById('loc-hist-title').innerText = t.histTitle;
+
+            document.getElementById('loc-about-title').innerText = t.aboutTitle;
+            document.getElementById('loc-about-desc').innerText = t.aboutDesc;
+            document.getElementById('loc-feat-1-title').innerText = t.feat1Title;
+            document.getElementById('loc-feat-1-desc').innerHTML = t.feat1Desc;
+            document.getElementById('loc-feat-2-title').innerText = t.feat2Title;
+            document.getElementById('loc-feat-2-desc').innerHTML = t.feat2Desc;
+            document.getElementById('loc-feat-3-title').innerText = t.feat3Title;
+            document.getElementById('loc-feat-3-desc').innerHTML = t.feat3Desc;
+            document.getElementById('loc-about-close').innerText = t.aboutClose;
 
             document.getElementById('lobby-club').placeholder = currentLang === 'ru' ? "Название комнаты" : "Room name";
             document.getElementById('lobby-pwd').placeholder = currentLang === 'ru' ? "Пароль" : "Password";
@@ -515,6 +587,17 @@
 
         window.toggleMenu = function() {
             document.getElementById('dropdown-menu').classList.toggle('hidden');
+        };
+
+        window.openAbout = function() {
+            if (document.getElementById('dropdown-menu')) {
+                document.getElementById('dropdown-menu').classList.add('hidden');
+            }
+            document.getElementById('about-modal').classList.remove('hidden');
+        };
+
+        window.closeAbout = function() {
+            document.getElementById('about-modal').classList.add('hidden');
         };
 
         window.showTab = function(tabName) {
