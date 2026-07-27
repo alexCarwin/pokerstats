@@ -32,16 +32,22 @@
 
     <!-- ЛОББИ (ВХОД / СОЗДАНИЕ КОМНАТЫ) -->
     <div id="lobby-modal" class="fixed inset-0 z-[1000] p-4 flex items-center justify-center bg-[#050505] flex-col hidden">
+        <!-- Переключатель языка -->
+        <div class="absolute top-4 right-4 flex space-x-2 bg-zinc-900 border border-zinc-800 rounded-lg p-1">
+            <button onclick="setLang('ru')" id="lang-ru" class="text-[10px] font-bold px-2 py-1 rounded bg-zinc-700 text-white transition">RU</button>
+            <button onclick="setLang('en')" id="lang-en" class="text-[10px] font-bold px-2 py-1 rounded text-zinc-500 hover:text-white transition">EN</button>
+        </div>
+
         <h1 class="text-4xl font-black uppercase italic tracking-tighter drop-shadow-lg mb-8">
             <span class="text-white">ZALU</span><span class="text-emerald-500">BANK</span>
         </h1>
         <div class="glass-panel w-full max-w-sm rounded-3xl p-6 shadow-2xl flex flex-col space-y-4 border border-zinc-800">
-            <h2 class="text-center text-sm font-bold text-zinc-400 uppercase tracking-widest mb-2">Вход в закрытый клуб</h2>
+            <h2 id="loc-lobby-title" class="text-center text-sm font-bold text-zinc-400 uppercase tracking-widest mb-2">Вход в закрытый клуб</h2>
             <input type="text" id="lobby-club" placeholder="Название комнаты" autocomplete="off" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-white text-center font-bold outline-none focus:border-emerald-500 transition placeholder-zinc-600">
             <input type="password" id="lobby-pwd" placeholder="Пароль" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-white text-center font-bold outline-none focus:border-emerald-500 transition placeholder-zinc-600">
-            <button onclick="loginToClub()" class="w-full py-3.5 bg-emerald-600 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-emerald-500 transition shadow-[0_0_20px_rgba(16,185,129,0.3)] mt-2 active:scale-95">Войти / Создать</button>
+            <button onclick="loginToClub()" id="loc-lobby-btn" class="w-full py-3.5 bg-emerald-600 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-emerald-500 transition shadow-[0_0_20px_rgba(16,185,129,0.3)] mt-2 active:scale-95">Войти / Создать</button>
         </div>
-        <p class="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mt-8 text-center max-w-xs leading-relaxed">
+        <p id="loc-lobby-desc" class="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mt-8 text-center max-w-xs leading-relaxed">
             Доступ имеют только те, кто знает пароль. Внутри комнаты все игроки имеют права на редактирование.
         </p>
     </div>
@@ -50,18 +56,38 @@
     <div id="saving-overlay" class="fixed top-[70px] left-0 right-0 z-[999] hidden flex justify-center pointer-events-none transition-opacity duration-300">
         <div class="bg-zinc-900/95 border border-zinc-700 px-4 py-2 rounded-full flex items-center shadow-[0_0_20px_rgba(0,0,0,0.6)] backdrop-blur-md">
             <div class="w-4 h-4 border-2 border-zinc-600 border-t-emerald-500 rounded-full animate-spin mr-2"></div>
-            <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Синхронизация...</span>
+            <span id="loc-saving" class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Синхронизация...</span>
+        </div>
+    </div>
+
+    <!-- ОКНО НАСТРОЕК КЛУБА (ОНБОРДИНГ / РЕДАКТИРОВАНИЕ) -->
+    <div id="settings-modal" class="fixed inset-0 hidden z-[2000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
+        <div class="bg-zinc-900 border border-zinc-700 p-5 rounded-3xl w-full max-w-sm flex flex-col shadow-2xl relative">
+            <h3 id="loc-settings-title" class="text-xs font-black text-purple-400 uppercase tracking-widest mb-4 text-center">Настройки клуба</h3>
+            
+            <div class="mb-4">
+                <label id="loc-currency-label" class="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5 ml-1">Символ валюты</label>
+                <input type="text" id="setting-currency" placeholder="₽, $, €, USDT..." class="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-sm font-bold text-white outline-none focus:border-purple-500 transition placeholder-zinc-600">
+            </div>
+
+            <div class="mb-6">
+                <label id="loc-step-label" class="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5 ml-1">Шаг кнопки добавления стэка</label>
+                <input type="number" id="setting-step" placeholder="1000" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-sm font-bold text-white outline-none focus:border-purple-500 transition placeholder-zinc-600">
+                <p class="text-[9px] text-zinc-500 mt-1 ml-1">Сумма, которая будет прибавляться при нажатии на кнопку "+".</p>
+            </div>
+
+            <button onclick="saveSettings()" id="loc-settings-save" class="w-full py-3.5 bg-purple-600 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-purple-500 transition shadow-[0_0_15px_rgba(147,51,234,0.3)] active:scale-95">Сохранить и войти</button>
         </div>
     </div>
 
     <!-- ОКНО РЕДАКТИРОВАНИЯ ЗАМЕТКИ -->
     <div id="note-modal" class="fixed inset-0 hidden z-[100] p-4 flex items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-4 rounded-2xl w-full max-w-sm flex flex-col shadow-2xl">
-            <h3 class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-3">Редактировать заметку</h3>
+            <h3 id="loc-note-title" class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-3">Редактировать заметку</h3>
             <textarea id="note-textarea" rows="4" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-sm text-white outline-none focus:border-purple-500 resize-none mb-4 placeholder-zinc-600 shadow-inner" placeholder="Детали взаиморасчетов..."></textarea>
             <div class="flex space-x-3">
-                <button onclick="closeNoteModal()" class="flex-1 py-2.5 bg-zinc-800 text-zinc-400 text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-zinc-700 transition">Отмена</button>
-                <button onclick="saveNoteModal()" class="flex-1 py-2.5 bg-purple-600 text-white text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-purple-500 transition shadow-[0_0_15px_rgba(147,51,234,0.3)]">Сохранить</button>
+                <button onclick="closeNoteModal()" id="loc-btn-cancel" class="flex-1 py-2.5 bg-zinc-800 text-zinc-400 text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-zinc-700 transition">Отмена</button>
+                <button onclick="saveNoteModal()" id="loc-btn-save" class="flex-1 py-2.5 bg-purple-600 text-white text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-purple-500 transition shadow-[0_0_15px_rgba(147,51,234,0.3)]">Сохранить</button>
             </div>
         </div>
     </div>
@@ -96,11 +122,12 @@
                 <!-- Выпадающий список -->
                 <div id="dropdown-menu" class="hidden absolute top-full right-3 mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl py-1 overflow-hidden z-50">
                     <div class="px-4 py-2 border-b border-zinc-800/50 mb-1">
-                        <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Клуб</span>
+                        <span id="loc-menu-club" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Клуб</span>
                         <p id="menu-room-badge" class="text-xs font-bold text-white uppercase truncate">---</p>
                     </div>
-                    <button id="btn-end-game" onclick="endGame()" class="hidden w-full text-left px-4 py-3 text-red-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition">Завершить сессию</button>
-                    <button onclick="logoutClub()" class="w-full text-left px-4 py-3 text-zinc-300 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition">Выйти из комнаты</button>
+                    <button id="btn-settings" onclick="openSettings()" class="hidden w-full text-left px-4 py-3 text-purple-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition">⚙ Настройки</button>
+                    <button id="btn-end-game" onclick="endGame()" class="hidden w-full text-left px-4 py-3 text-red-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition border-t border-zinc-800/50">Завершить сессию</button>
+                    <button onclick="logoutClub()" id="loc-menu-exit" class="w-full text-left px-4 py-3 text-zinc-300 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition border-t border-zinc-800/50">Выйти из комнаты</button>
                 </div>
             </div>
         </div>
@@ -112,18 +139,18 @@
         <!-- СТАТИСТИКА ИГРЫ -->
         <div class="glass-panel rounded-2xl p-4 mb-5 shadow-2xl relative overflow-hidden mt-1">
             <div class="flex justify-between items-center mb-3 relative z-10">
-                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Касса стола</span>
+                <span id="loc-table-cash" class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Касса стола</span>
                 <span id="status-badge" class="text-[9px] font-bold px-2 py-1 rounded-md bg-zinc-800 text-zinc-400 uppercase tracking-wider transition-colors">Синхронизация...</span>
             </div>
             
             <div class="flex space-x-4 relative z-10">
                 <div class="flex-1">
-                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Сумма бай-инов</p>
-                    <p id="total-buyins" class="text-xl font-black text-white">0 ₽</p>
+                    <p id="loc-total-buyins" class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Сумма бай-инов</p>
+                    <p id="total-buyins" class="text-xl font-black text-white">0</p>
                 </div>
                 <div class="flex-1">
-                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Общий стэк</p>
-                    <p id="total-cashouts" class="text-xl font-black text-zinc-400">0 ₽</p>
+                    <p id="loc-total-stack" class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Общий стэк</p>
+                    <p id="total-cashouts" class="text-xl font-black text-zinc-400">0</p>
                 </div>
             </div>
             <div id="status-bg" class="absolute inset-0 opacity-10 transition-colors duration-500"></div>
@@ -135,23 +162,23 @@
                 <input type="text" id="new-player-name" placeholder="Имя игрока" autocomplete="off" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm font-bold text-white outline-none focus:border-emerald-500 transition placeholder-zinc-700" oninput="handlePlayerSearch()" onkeyup="if(event.key === 'Enter') addPlayer()">
                 <div id="autocomplete-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto scrollbar-hide"></div>
             </div>
-            <button onclick="addPlayer()" class="bg-emerald-600 text-white font-black text-xs uppercase tracking-wider px-4 rounded-lg hover:bg-emerald-500 active:scale-95 transition shadow-lg shadow-emerald-900/50">Добавить</button>
+            <button onclick="addPlayer()" id="loc-btn-add" class="bg-emerald-600 text-white font-black text-xs uppercase tracking-wider px-4 rounded-lg hover:bg-emerald-500 active:scale-95 transition shadow-lg shadow-emerald-900/50">Добавить</button>
         </div>
 
         <!-- СПИСОК ИГРОКОВ -->
         <div class="mb-6">
             <div id="players-list" class="space-y-2">
-                <p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Загрузка данных...</p>
+                <p id="loc-empty-table" class="text-xs text-zinc-600 font-medium text-center py-4 italic">Загрузка данных...</p>
             </div>
         </div>
 
         <!-- КНОПКА РАСЧЕТА ДОЛГОВ -->
-        <button onclick="calculateDebts()" class="w-full py-3 bg-zinc-100 text-zinc-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white transition shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 mb-4 mt-auto">Рассчитать</button>
+        <button onclick="calculateDebts()" id="loc-btn-calc" class="w-full py-3 bg-zinc-100 text-zinc-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white transition shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 mb-4 mt-auto">Рассчитать</button>
 
         <!-- БЛОК РЕЗУЛЬТАТОВ -->
         <div id="results-panel" class="hidden glass-panel rounded-2xl p-4 border-emerald-900/50 relative overflow-hidden mb-6">
             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-blue-500"></div>
-            <h2 class="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-3">Взаиморасчеты</h2>
+            <h2 id="loc-results-title" class="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-3">Взаиморасчеты</h2>
             <div id="transactions-list" class="space-y-2">
             </div>
         </div>
@@ -161,14 +188,14 @@
     <div id="history-modal" class="hidden max-w-md mx-auto w-full flex-1 flex-col">
         <div class="flex justify-between items-center mb-4 mt-2">
             <div class="flex items-center space-x-2">
-                <h2 class="text-sm font-black text-blue-500 uppercase tracking-widest">Рейтинг</h2>
+                <h2 id="loc-rating-title" class="text-sm font-black text-blue-500 uppercase tracking-widest">Рейтинг</h2>
                 <select id="history-filter" onchange="renderHistory()" class="bg-zinc-800 text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded border border-blue-900/50 outline-none px-1.5 py-1">
                     <option value="all">За всё время</option>
                 </select>
             </div>
             
             <div class="flex items-center space-x-2 cursor-pointer" onclick="toggleProfits()">
-                <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Показать</span>
+                <span id="loc-show-profits" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Показать</span>
                 <div id="profit-toggle-bg" class="w-8 h-4 rounded-full bg-zinc-800 relative transition-colors duration-300">
                     <div id="profit-toggle-dot" class="w-3 h-3 rounded-full bg-zinc-400 absolute top-0.5 left-0.5 transition-transform duration-300"></div>
                 </div>
@@ -179,10 +206,10 @@
             <div class="flex px-3 py-2 text-[8px] font-bold text-zinc-500 uppercase tracking-widest border-b border-zinc-800/50">
                 <div class="w-[45%] flex items-center pr-1">
                     <span class="w-4 inline-block text-right">#</span>
-                    <span class="ml-2">Профиль</span>
+                    <span id="loc-col-profile" class="ml-2">Профиль</span>
                 </div>
-                <div class="w-[15%] text-center">Игр</div>
-                <div class="w-[25%] text-right">Профит</div>
+                <div id="loc-col-games" class="w-[15%] text-center">Игр</div>
+                <div id="loc-col-profit" class="w-[25%] text-right">Профит</div>
                 <div id="history-admin-header" class="w-[15%] text-right hidden"></div>
             </div>
             <div id="history-list" class="flex flex-col">
@@ -190,47 +217,47 @@
         </div>
     </div>
 
-    <!-- ПРОФИЛЬ ИГРОКА (Всплывает поверх всего) -->
+    <!-- ПРОФИЛЬ ИГРОКА -->
     <div id="profile-modal" class="fixed inset-0 hidden z-[60] p-3 flex flex-col bg-black/95 backdrop-blur-md overflow-y-auto">
         <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
             <div class="flex justify-between items-start mb-6 mt-4">
                 <div>
                     <h2 id="profile-name" class="text-3xl font-black text-white uppercase tracking-tighter drop-shadow-md transition-colors">Имя</h2>
-                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">Статистика игрока</p>
+                    <p id="loc-prof-desc" class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">Статистика игрока</p>
                 </div>
-                <button onclick="closePlayerProfile()" class="text-zinc-400 text-xs font-bold uppercase hover:text-white transition bg-zinc-900 px-3 py-2 rounded-lg border border-zinc-800">✕ Закрыть</button>
+                <button onclick="closePlayerProfile()" class="text-zinc-400 text-xs font-bold uppercase hover:text-white transition bg-zinc-900 px-3 py-2 rounded-lg border border-zinc-800">✕</button>
             </div>
             
             <div class="flex space-x-3 mb-4">
                 <div class="flex-1 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-center items-center shadow-lg">
-                    <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-1">Сыграно</span>
+                    <span id="loc-prof-played" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-1">Сыграно</span>
                     <span id="profile-games" class="text-2xl font-black text-white">0</span>
                 </div>
                 <div class="flex-[1.5] bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-center items-center shadow-lg relative overflow-hidden">
-                    <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-1 relative z-10">Общий профит</span>
-                    <span id="profile-net" class="text-2xl font-black relative z-10">0 ₽</span>
+                    <span id="loc-prof-net" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-1 relative z-10">Общий профит</span>
+                    <span id="profile-net" class="text-2xl font-black relative z-10">0</span>
                 </div>
             </div>
 
             <div class="flex space-x-3 mb-5">
                 <div class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
-                    <span class="text-[8px] font-bold text-red-500/70 uppercase tracking-widest mb-1">Игрок должен</span>
-                    <span id="profile-owes" class="text-lg font-black text-red-500">0 ₽</span>
+                    <span id="loc-prof-owes" class="text-[8px] font-bold text-red-500/70 uppercase tracking-widest mb-1">Игрок должен</span>
+                    <span id="profile-owes" class="text-lg font-black text-red-500">0</span>
                 </div>
                 <div class="flex-1 bg-zinc-900 border border-emerald-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
-                    <span class="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Игроку должны</span>
-                    <span id="profile-owed" class="text-lg font-black text-emerald-500">0 ₽</span>
+                    <span id="loc-prof-owed" class="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Игроку должны</span>
+                    <span id="profile-owed" class="text-lg font-black text-emerald-500">0</span>
                 </div>
             </div>
 
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 shadow-lg mb-5 relative">
-                <h3 class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-2 px-1">График профита</h3>
+                <h3 id="loc-prof-chart" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-2 px-1">График профита</h3>
                 <div class="w-full h-40">
                     <canvas id="profileChart"></canvas>
                 </div>
             </div>
 
-            <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 px-1">История игр</h3>
+            <h3 id="loc-prof-history" class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 px-1">История игр</h3>
             <div id="profile-sessions-list" class="space-y-2">
             </div>
         </div>
@@ -239,7 +266,7 @@
     <!-- ОКНО ИСТОРИИ СЕССИЙ -->
     <div id="sessions-modal" class="hidden max-w-md mx-auto w-full flex-1 flex-col">
         <div class="flex justify-between items-center mb-4 mt-2">
-            <h2 class="text-sm font-black text-purple-500 uppercase tracking-widest">История игр</h2>
+            <h2 id="loc-hist-title" class="text-sm font-black text-purple-500 uppercase tracking-widest">История игр</h2>
         </div>
         <div id="sessions-list" class="flex flex-col space-y-3">
         </div>
@@ -250,20 +277,20 @@
         <div class="max-w-md mx-auto flex h-full">
             <button id="tab-table" onclick="showTab('table')" class="flex-1 flex flex-col items-center justify-center text-white transition-colors">
                 <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                <span class="text-[9px] font-bold uppercase tracking-widest">Стол</span>
+                <span id="loc-tab-table" class="text-[9px] font-bold uppercase tracking-widest">Стол</span>
             </button>
             <button id="tab-rating" onclick="showTab('rating')" class="flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors">
                 <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                <span class="text-[9px] font-bold uppercase tracking-widest">Рейтинг</span>
+                <span id="loc-tab-rating" class="text-[9px] font-bold uppercase tracking-widest">Рейтинг</span>
             </button>
             <button id="tab-history" onclick="showTab('history')" class="flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors">
                 <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <span class="text-[9px] font-bold uppercase tracking-widest">История</span>
+                <span id="loc-tab-hist" class="text-[9px] font-bold uppercase tracking-widest">История</span>
             </button>
         </div>
     </div>
 
-    <!-- FIREBASE СКРИПТ -->
+    <!-- FIREBASE СКРИПТ И ЛОГИКА -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -283,21 +310,141 @@
         const connectedRef = ref(database, '.info/connected');
 
         let dbRef = null;
+        let settingsRef = null;
         let db = { game: [], history: {}, sessions: {} };
-        let isFirstLoad = true;
+        let roomSettings = { currency: '₽', step: 1000 };
         
+        let isFirstLoad = true;
         let isEditMode = false; 
         let isProfitsVisible = false; 
         let isOnline = false;
         let pendingSaves = 0;
         let currentNoteSessionId = null;
         let topPlayerName = null; 
+        let currentRoom = null;
+        let currentPwd = null;
 
-        const monthNames = {
-            '01': 'Янв', '02': 'Фев', '03': 'Мар', '04': 'Апр', 
-            '05': 'Май', '06': 'Июн', '07': 'Июл', '08': 'Авг', 
-            '09': 'Сен', '10': 'Окт', '11': 'Ноя', '12': 'Дек'
+        // --- ЛОГИКА ПЕРЕВОДОВ И ФОРМАТИРОВАНИЯ ---
+        const i18n = {
+            ru: {
+                lobbyTitle: "Вход в закрытый клуб", lobbyBtn: "Войти / Создать",
+                lobbyDesc: "Доступ имеют только те, кто знает пароль. Внутри комнаты все игроки имеют права на редактирование.",
+                modeRead: "Чтение", modeEdit: "Управление", tabTable: "Стол", tabRating: "Рейтинг", tabHist: "История",
+                btnAdd: "Добавить", btnCalc: "Рассчитать", tableCash: "Касса стола", totalBuy: "Сумма бай-инов", totalStack: "Общий стэк",
+                menuClub: "Клуб", menuSettings: "⚙ Настройки", menuEnd: "Завершить сессию", menuExit: "Выйти из комнаты",
+                sync: "Синхронизация...", empty: "Стол пуст", results: "Взаиморасчеты", ratingTitle: "Рейтинг",
+                showProfits: "Показать", colProf: "Профиль", colGames: "Игр", colProfit: "Профит",
+                profDesc: "Статистика игрока", profPlayed: "Сыграно", profNet: "Общий профит", profOwes: "Игрок должен", profOwed: "Игроку должны",
+                profChart: "График профита", profHist: "История игр", histTitle: "История игр",
+                statOk: "Сходится ✓", statDiff: "Не хватает", statOver: "Лишние", statWait: "В процессе",
+                bIn: "Бай-ин", stack: "Стэк", transfer: "переводит", notes: "Заметки", paid: "Оплачено", wait: "Ожидается",
+                setTit: "Настройки клуба", setCur: "Символ валюты", setStep: "Шаг кнопки добавления стэка", setSave: "Сохранить",
+                alertRoom: "Комната еще не существует.\nСоздать новую?", alertEmpty: "Стол пуст", alertDiff: "Касса не сходится! Разница:"
+            },
+            en: {
+                lobbyTitle: "Private Club Login", lobbyBtn: "Login / Create",
+                lobbyDesc: "Only users with the password can enter. Inside, everyone has editing rights.",
+                modeRead: "Read", modeEdit: "Manage", tabTable: "Table", tabRating: "Ranking", tabHist: "History",
+                btnAdd: "Add", btnCalc: "Settle Up", tableCash: "Table Bank", totalBuy: "Total Buy-ins", totalStack: "Total Stack",
+                menuClub: "Club", menuSettings: "⚙ Settings", menuEnd: "End Session", menuExit: "Leave Room",
+                sync: "Syncing...", empty: "Table is empty", results: "Transactions", ratingTitle: "Leaderboard",
+                showProfits: "Show", colProf: "Profile", colGames: "Games", colProfit: "Profit",
+                profDesc: "Player Stats", profPlayed: "Played", profNet: "Total Net", profOwes: "Player Owes", profOwed: "Player is Owed",
+                profChart: "Profit Chart", profHist: "Game History", histTitle: "Session History",
+                statOk: "Balanced ✓", statDiff: "Missing", statOver: "Over", statWait: "Pending",
+                bIn: "Buy-in", stack: "Stack", transfer: "sends to", notes: "Notes", paid: "Paid", wait: "Pending",
+                setTit: "Club Settings", setCur: "Currency Symbol", setStep: "Add Stack Button Step", setSave: "Save",
+                alertRoom: "Room doesn't exist.\nCreate new one?", alertEmpty: "Table is empty", alertDiff: "Bank mismatch! Difference:"
+            }
         };
+
+        let currentLang = localStorage.getItem('zalubank_lang') || 'ru';
+
+        window.setLang = function(l) {
+            currentLang = l;
+            localStorage.setItem('zalubank_lang', l);
+            document.getElementById('lang-ru').className = l === 'ru' ? "text-[10px] font-bold px-2 py-1 rounded bg-zinc-700 text-white transition" : "text-[10px] font-bold px-2 py-1 rounded text-zinc-500 hover:text-white transition";
+            document.getElementById('lang-en').className = l === 'en' ? "text-[10px] font-bold px-2 py-1 rounded bg-zinc-700 text-white transition" : "text-[10px] font-bold px-2 py-1 rounded text-zinc-500 hover:text-white transition";
+            applyLang();
+            if(dbRef) { renderTable(); if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory(); if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions(); }
+        }
+
+        function applyLang() {
+            const t = i18n[currentLang];
+            document.getElementById('loc-lobby-title').innerText = t.lobbyTitle;
+            document.getElementById('loc-lobby-btn').innerText = t.lobbyBtn;
+            document.getElementById('loc-lobby-desc').innerText = t.lobbyDesc;
+            document.getElementById('loc-tab-table').innerText = t.tabTable;
+            document.getElementById('loc-tab-rating').innerText = t.tabRating;
+            document.getElementById('loc-tab-hist').innerText = t.tabHist;
+            document.getElementById('loc-btn-add').innerText = t.btnAdd;
+            document.getElementById('loc-btn-calc').innerText = t.btnCalc;
+            document.getElementById('loc-table-cash').innerText = t.tableCash;
+            document.getElementById('loc-total-buyins').innerText = t.totalBuy;
+            document.getElementById('loc-total-stack').innerText = t.totalStack;
+            document.getElementById('loc-menu-club').innerText = t.menuClub;
+            document.getElementById('btn-settings').innerText = t.menuSettings;
+            document.getElementById('btn-end-game').innerText = t.menuEnd;
+            document.getElementById('loc-menu-exit').innerText = t.menuExit;
+            document.getElementById('loc-results-title').innerText = t.results;
+            document.getElementById('loc-rating-title').innerText = t.ratingTitle;
+            document.getElementById('loc-show-profits').innerText = t.showProfits;
+            document.getElementById('loc-col-profile').innerText = t.colProf;
+            document.getElementById('loc-col-games').innerText = t.colGames;
+            document.getElementById('loc-col-profit').innerText = t.colProfit;
+            document.getElementById('loc-saving').innerText = t.sync;
+            
+            document.getElementById('loc-settings-title').innerText = t.setTit;
+            document.getElementById('loc-currency-label').innerText = t.setCur;
+            document.getElementById('loc-step-label').innerText = t.setStep;
+            document.getElementById('loc-settings-save').innerText = t.setSave;
+            
+            document.getElementById('loc-prof-desc').innerText = t.profDesc;
+            document.getElementById('loc-prof-played').innerText = t.profPlayed;
+            document.getElementById('loc-prof-net').innerText = t.profNet;
+            document.getElementById('loc-prof-owes').innerText = t.profOwes;
+            document.getElementById('loc-prof-owed').innerText = t.profOwed;
+            document.getElementById('loc-prof-chart').innerText = t.profChart;
+            document.getElementById('loc-prof-history').innerText = t.profHist;
+            document.getElementById('loc-hist-title').innerText = t.histTitle;
+
+            document.getElementById('lobby-club').placeholder = currentLang === 'ru' ? "Название комнаты" : "Room name";
+            document.getElementById('lobby-pwd').placeholder = currentLang === 'ru' ? "Пароль" : "Password";
+            document.getElementById('new-player-name').placeholder = currentLang === 'ru' ? "Имя игрока" : "Player name";
+
+            const modeTxt = document.getElementById('mode-text');
+            modeTxt.innerText = isEditMode ? t.modeEdit : t.modeRead;
+        }
+
+        // Умное форматирование валюты
+        function formatMoney(amount) {
+            if (amount === null || amount === undefined) return '';
+            let formatted = new Intl.NumberFormat(currentLang === 'ru' ? 'ru-RU' : 'en-US').format(amount);
+            // Если валюта известная, можно использовать стиль 'currency', но так как мы разрешаем кастомные (например USDT), делаем конкатенацию
+            if (currentLang === 'ru') return `${formatted} ${roomSettings.currency}`;
+            return `${roomSettings.currency}${formatted}`; // для EN ставим слева
+        }
+
+        // Сокращение длинных чисел для кнопок (1K, 1M)
+        function formatShort(amount) {
+            if (amount >= 1000000000) return (amount / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
+            if (amount >= 1000000) return (amount / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+            if (amount >= 1000) return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+            return amount;
+        }
+
+        // Парсер умного ввода (превращает 1.5k в 1500)
+        function parseInput(val) {
+            if (!val) return null;
+            let str = String(val).toLowerCase().replace(/,/g, '.').trim();
+            if (str.endsWith('b')) return parseFloat(str) * 1000000000;
+            if (str.endsWith('m')) return parseFloat(str) * 1000000;
+            if (str.endsWith('k')) return parseFloat(str) * 1000;
+            let num = parseFloat(str);
+            return isNaN(num) ? null : num;
+        }
+
+        setLang(currentLang); // Init lang
 
         onValue(connectedRef, (snap) => {
             isOnline = snap.val() === true;
@@ -307,7 +454,6 @@
         function updateNetworkUI() {
             const indicator = document.getElementById('network-status');
             if (!indicator) return;
-            
             if (!isOnline) {
                 indicator.className = "w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] ml-1";
             } else if (pendingSaves > 0) {
@@ -317,23 +463,12 @@
             }
         }
 
-        window.addEventListener('beforeunload', (e) => {
-            if (pendingSaves > 0 || !isOnline) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        });
-
         document.addEventListener('click', function(e) {
             const dropdown = document.getElementById('dropdown-menu');
             const hamburger = document.querySelector('button[onclick="toggleMenu()"]');
-            
-            if (dropdown && !dropdown.classList.contains('hidden')) {
-                if (!dropdown.contains(e.target) && !hamburger.contains(e.target)) {
-                    dropdown.classList.add('hidden');
-                }
+            if (dropdown && !dropdown.classList.contains('hidden') && !dropdown.contains(e.target) && !hamburger.contains(e.target)) {
+                dropdown.classList.add('hidden');
             }
-            
             const autocomplete = document.getElementById('autocomplete-dropdown');
             const nameInput = document.getElementById('new-player-name');
             if (autocomplete && nameInput && e.target !== nameInput && e.target !== autocomplete) {
@@ -348,10 +483,8 @@
         window.showTab = function(tabName) {
             document.getElementById('main-table-view').classList.add('hidden');
             document.getElementById('main-table-view').classList.remove('flex');
-            
             document.getElementById('history-modal').classList.add('hidden');
             document.getElementById('history-modal').classList.remove('flex');
-            
             document.getElementById('sessions-modal').classList.add('hidden');
             document.getElementById('sessions-modal').classList.remove('flex');
             
@@ -363,6 +496,7 @@
                 document.getElementById('main-table-view').classList.remove('hidden');
                 document.getElementById('main-table-view').classList.add('flex');
                 document.getElementById('tab-table').className = "flex-1 flex flex-col items-center justify-center text-white transition-colors";
+                renderTable();
             } else if (tabName === 'rating') {
                 document.getElementById('history-modal').classList.remove('hidden');
                 document.getElementById('history-modal').classList.add('flex');
@@ -379,48 +513,83 @@
         window.loginToClub = async function() {
             let name = document.getElementById('lobby-club').value.trim().toLowerCase();
             let pwd = document.getElementById('lobby-pwd').value.trim();
-            if(!name || !pwd) return alert("Введите название комнаты и пароль!");
+            if(!name || !pwd) return;
 
-            const btn = document.querySelector('#lobby-modal button');
+            const btn = document.getElementById('loc-lobby-btn');
             const origText = btn.innerText;
-            btn.innerText = "Подключение...";
+            btn.innerText = "...";
             btn.disabled = true;
 
             try {
                 if (name === 'osnova') {
                     if (pwd === '1337') {
-                        startSession('osnova', pwd, 'zalubank_data');
+                        startSession('osnova', pwd, 'zalubank_data', null);
                     } else {
-                        alert("❌ Неверный пароль для главной комнаты!");
+                        alert("❌ Неверный пароль!");
                     }
                 } else {
                     const clubRef = ref(database, 'clubs/' + name + '/password');
                     const snap = await get(clubRef);
                     if (snap.exists()) {
                         if (snap.val() === pwd) {
-                            startSession(name, pwd, 'clubs/' + name + '/data');
+                            startSession(name, pwd, 'clubs/' + name + '/data', 'clubs/' + name + '/settings');
                         } else {
-                            alert("❌ Неверный пароль от комнаты!");
+                            alert("❌ Неверный пароль!");
                         }
                     } else {
-                        if(confirm(`Комната "${name.toUpperCase()}" еще не существует.
-Создать новую комнату с этим паролем?`)) {
+                        if(confirm(i18n[currentLang].alertRoom)) {
                             await set(ref(database, 'clubs/' + name + '/password'), pwd);
                             await set(ref(database, 'clubs/' + name + '/data'), { game: [], history: {}, sessions: {} });
-                            startSession(name, pwd, 'clubs/' + name + '/data');
+                            await set(ref(database, 'clubs/' + name + '/settings'), { currency: '₽', step: 1000 });
+                            
+                            // Показываем онбординг
+                            currentRoom = name;
+                            currentPwd = pwd;
+                            document.getElementById('lobby-modal').classList.add('hidden');
+                            document.getElementById('setting-currency').value = '₽';
+                            document.getElementById('setting-step').value = '1000';
+                            document.getElementById('settings-modal').classList.remove('hidden');
                         }
                     }
                 }
             } catch (e) {
-                alert("Ошибка сети. Проверьте интернет.");
                 console.error(e);
             }
-
             btn.innerText = origText;
             btn.disabled = false;
         }
 
-        function startSession(name, pwd, path) {
+        window.saveSettings = async function() {
+            let c = document.getElementById('setting-currency').value.trim();
+            let s = parseInt(document.getElementById('setting-step').value);
+            if(!c) c = '₽';
+            if(!s || s < 1) s = 1000;
+            
+            roomSettings = { currency: c, step: s };
+            if (currentRoom !== 'osnova' && settingsRef) {
+                await set(settingsRef, roomSettings);
+            }
+            
+            document.getElementById('settings-modal').classList.add('hidden');
+            if (!dbRef && currentRoom) {
+                startSession(currentRoom, currentPwd, 'clubs/' + currentRoom + '/data', 'clubs/' + currentRoom + '/settings');
+            } else {
+                renderTable();
+                if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
+                if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
+            }
+        }
+
+        window.openSettings = function() {
+            document.getElementById('dropdown-menu').classList.add('hidden');
+            document.getElementById('setting-currency').value = roomSettings.currency;
+            document.getElementById('setting-step').value = roomSettings.step;
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function startSession(name, pwd, dataPath, sPath) {
+            currentRoom = name;
+            currentPwd = pwd;
             localStorage.setItem('zalubank_club', name);
             localStorage.setItem('zalubank_pwd', pwd);
             
@@ -430,7 +599,16 @@
             document.getElementById('lobby-modal').classList.add('hidden');
             document.getElementById('menu-room-badge').innerText = name;
 
-            dbRef = ref(database, path);
+            dbRef = ref(database, dataPath);
+            settingsRef = sPath ? ref(database, sPath) : null;
+            
+            if (settingsRef) {
+                onValue(settingsRef, (snap) => {
+                    if(snap.exists()) roomSettings = snap.val();
+                });
+            } else {
+                roomSettings = { currency: '₽', step: 1000 };
+            }
             
             onValue(dbRef, (snapshot) => {
                 const data = snapshot.val();
@@ -449,8 +627,7 @@
                 if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
                 if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
                 if(!document.getElementById('profile-modal').classList.contains('hidden')) {
-                    const currentPlayer = document.getElementById('profile-name').innerText;
-                    window.openPlayerProfile(currentPlayer);
+                    window.openPlayerProfile(document.getElementById('profile-name').innerText);
                 }
                 isFirstLoad = false;
             });
@@ -508,8 +685,6 @@
                 pendingSaves--;
                 updateNetworkUI();
                 if(pendingSaves === 0) loader.classList.add('hidden');
-                console.error("Ошибка сохранения:", e);
-                alert("Ошибка соединения! Проверьте интернет.");
             });
         }
 
@@ -518,15 +693,20 @@
             isEditMode = checkbox.checked;
             const textLabel = document.getElementById('mode-text');
             const btnEndGame = document.getElementById('btn-end-game');
+            const btnSett = document.getElementById('btn-settings');
+            
+            const t = i18n[currentLang];
             
             if(isEditMode) {
-                textLabel.innerHTML = 'Управление';
+                textLabel.innerHTML = t.modeEdit;
                 textLabel.classList.replace('text-zinc-500', 'text-purple-400');
                 if (db.game && db.game.length > 0) btnEndGame.classList.remove('hidden');
+                btnSett.classList.remove('hidden');
             } else {
-                textLabel.innerHTML = 'Чтение';
+                textLabel.innerHTML = t.modeRead;
                 textLabel.classList.replace('text-purple-400', 'text-zinc-500');
                 btnEndGame.classList.add('hidden');
+                btnSett.classList.add('hidden');
             }
             
             renderTable();
@@ -606,6 +786,7 @@
                 activeVal = document.activeElement.value;
             }
 
+            const t = i18n[currentLang];
             const list = document.getElementById('players-list');
             let newHTML = '';
             
@@ -613,7 +794,7 @@
             let totalCashouts = 0;
 
             if (!db.game || db.game.length === 0) {
-                newHTML = '<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Стол пуст</p>';
+                newHTML = `<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">${isFirstLoad ? t.sync : t.empty}</p>`;
             }
 
             if(db.game) {
@@ -626,7 +807,7 @@
 
                     const net = cOut - bIn;
                     const netClass = net > 0 ? 'text-emerald-500' : (net < 0 ? 'text-red-500' : 'text-zinc-500');
-                    const netText = net > 0 ? `+${net}` : net;
+                    const netText = net > 0 ? `+${formatMoney(net)}` : formatMoney(net);
 
                     const buyInDisplay = p.buyIn === null || p.buyIn === undefined ? '' : p.buyIn;
                     const cashOutDisplay = p.cashOut === null || p.cashOut === undefined ? '' : p.cashOut;
@@ -641,20 +822,20 @@
 
                     let buyInHtml = isEditMode ? `
                         <div class="flex">
-                            <input id="buyin-${index}" type="number" value="${buyInDisplay}" placeholder="0" onchange="updateBuyIn(${index}, this.value)" onkeyup="if(event.key === 'Enter') this.blur()" class="w-full bg-zinc-800 rounded-l-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-zinc-500 transition">
-                            <button onclick="addRebuy(${index}, 1000)" class="bg-zinc-700 text-[10px] font-bold text-white px-2 rounded-r-md border-l border-zinc-800 hover:bg-zinc-600 transition active:bg-zinc-500">+1000</button>
+                            <input type="text" id="buyin-${index}" value="${buyInDisplay}" placeholder="0" onchange="updateBuyIn(${index}, this.value)" onkeyup="if(event.key === 'Enter') this.blur()" class="w-full bg-zinc-800 rounded-l-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-zinc-500 transition">
+                            <button onclick="addRebuy(${index})" class="bg-zinc-700 text-[10px] font-bold text-white px-2 rounded-r-md border-l border-zinc-800 hover:bg-zinc-600 transition active:bg-zinc-500">+${formatShort(roomSettings.step)}</button>
                         </div>
                     ` : `
                         <div class="flex h-[26px] items-center px-2 bg-zinc-800/50 rounded-md border border-zinc-800">
-                            <span class="text-xs font-bold text-white">${buyInDisplay || '0'}</span>
+                            <span class="text-xs font-bold text-white">${buyInDisplay ? formatMoney(buyInDisplay) : '0'}</span>
                         </div>
                     `;
 
                     let cashOutHtml = isEditMode ? `
-                        <input id="cashout-${index}" type="number" value="${cashOutDisplay}" placeholder="0" onchange="updateCashOut(${index}, this.value)" onkeyup="if(event.key === 'Enter') this.blur()" class="w-full bg-zinc-800 rounded-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-blue-500 transition">
+                        <input type="text" id="cashout-${index}" value="${cashOutDisplay}" placeholder="0" onchange="updateCashOut(${index}, this.value)" onkeyup="if(event.key === 'Enter') this.blur()" class="w-full bg-zinc-800 rounded-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-blue-500 transition">
                     ` : `
                         <div class="flex h-[26px] items-center px-2 bg-zinc-800/50 rounded-md border border-zinc-800">
-                            <span class="text-xs font-bold text-white">${cashOutDisplay || '0'}</span>
+                            <span class="text-xs font-bold text-white">${cashOutDisplay ? formatMoney(cashOutDisplay) : '0'}</span>
                         </div>
                     `;
 
@@ -662,16 +843,16 @@
                         <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 flex flex-col relative">
                             <div class="flex justify-between items-center mb-1.5 pr-4">
                                 <span class="font-black text-sm tracking-tight ${nameTitleClass}">${p.name}</span>
-                                <span class="text-[9px] font-bold ${netClass}">Итог: ${netText}</span>
+                                <span class="text-[9px] font-bold ${netClass}">${netText}</span>
                             </div>
                             
                             <div class="flex space-x-2 items-end">
                                 <div class="flex-[1.2]">
-                                    <span class="text-[7px] font-bold text-zinc-500 uppercase tracking-widest ml-1 block mb-0.5">Бай-ин</span>
+                                    <span class="text-[7px] font-bold text-zinc-500 uppercase tracking-widest ml-1 block mb-0.5">${t.bIn}</span>
                                     ${buyInHtml}
                                 </div>
                                 <div class="flex-1">
-                                    <span class="text-[7px] font-bold text-zinc-500 uppercase tracking-widest ml-1 block mb-0.5">Стэк</span>
+                                    <span class="text-[7px] font-bold text-zinc-500 uppercase tracking-widest ml-1 block mb-0.5">${t.stack}</span>
                                     ${cashOutHtml}
                                 </div>
                             </div>
@@ -691,8 +872,8 @@
                 }
             }
 
-            document.getElementById('total-buyins').innerText = totalBuyIns + ' ₽';
-            document.getElementById('total-cashouts').innerText = totalCashouts + ' ₽';
+            document.getElementById('total-buyins').innerText = formatMoney(totalBuyIns);
+            document.getElementById('total-cashouts').innerText = formatMoney(totalCashouts);
 
             const badge = document.getElementById('status-badge');
             const bg = document.getElementById('status-bg');
@@ -700,16 +881,16 @@
             if (!isFirstLoad) {
                 if (totalBuyIns > 0 && totalBuyIns === totalCashouts) {
                     badge.className = "text-[9px] font-bold px-2 py-1 rounded-md bg-emerald-900/50 text-emerald-400 border border-emerald-800 uppercase tracking-wider";
-                    badge.innerText = "Сходится ✓";
+                    badge.innerText = t.statOk;
                     bg.className = "absolute inset-0 bg-emerald-500/10 transition-colors duration-500";
                 } else if (totalBuyIns > 0 && totalCashouts > 0) {
                     let diff = totalBuyIns - totalCashouts;
                     badge.className = "text-[9px] font-bold px-2 py-1 rounded-md bg-red-900/50 text-red-400 border border-red-800 uppercase tracking-wider";
-                    badge.innerText = diff > 0 ? `Не хватает ${diff}` : `Лишние ${Math.abs(diff)}`;
+                    badge.innerText = diff > 0 ? `${t.statDiff} ${formatShort(diff)}` : `${t.statOver} ${formatShort(Math.abs(diff))}`;
                     bg.className = "absolute inset-0 bg-red-500/10 transition-colors duration-500";
                 } else {
                     badge.className = "text-[9px] font-bold px-2 py-1 rounded-md bg-zinc-800 text-zinc-400 uppercase tracking-wider";
-                    badge.innerText = "В процессе";
+                    badge.innerText = t.statWait;
                     bg.className = "absolute inset-0 opacity-10 transition-colors duration-500";
                 }
             }
@@ -729,7 +910,7 @@
             let name = existingName ? existingName : rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
 
             if (!db.game) db.game = [];
-            if (db.game.some(p => p.name === name)) return alert("Этот игрок уже за столом!");
+            if (db.game.some(p => p.name === name)) return;
 
             db.game.push({ name: name, buyIn: null, cashOut: null });
             if (!db.history[name]) db.history[name] = { net: 0, games: 0 };
@@ -743,53 +924,50 @@
 
         window.removePlayer = function(index) {
             if(!isEditMode) return;
-            if(confirm(`Удалить игрока ${db.game[index].name}?`)) {
-                db.game.splice(index, 1);
-                document.getElementById('results-panel').classList.add('hidden');
-                saveToCloud();
-            }
-        }
-
-        window.updateBuyIn = function(index, val) {
-            if(!isEditMode) return;
-            db.game[index].buyIn = val === '' ? null : parseInt(val);
+            db.game.splice(index, 1);
             document.getElementById('results-panel').classList.add('hidden');
             saveToCloud();
         }
 
-        window.addRebuy = function(index, amount) {
+        window.updateBuyIn = function(index, val) {
+            if(!isEditMode) return;
+            let parsed = parseInput(val);
+            db.game[index].buyIn = parsed;
+            document.getElementById('results-panel').classList.add('hidden');
+            saveToCloud();
+        }
+
+        window.addRebuy = function(index) {
             if(!isEditMode) return;
             let current = db.game[index].buyIn || 0;
-            db.game[index].buyIn = current + amount;
+            db.game[index].buyIn = current + roomSettings.step;
             document.getElementById('results-panel').classList.add('hidden');
             saveToCloud();
         }
 
         window.updateCashOut = function(index, val) {
             if(!isEditMode) return;
-            db.game[index].cashOut = val === '' ? null : parseInt(val);
+            let parsed = parseInput(val);
+            db.game[index].cashOut = parsed;
             document.getElementById('results-panel').classList.add('hidden');
             saveToCloud();
         }
 
         window.endGame = function() {
             if(!isEditMode) return;
-            if (db.game.length === 0) return alert('Стол пуст');
+            if (db.game.length === 0) return alert(i18n[currentLang].alertEmpty);
             
             let totalB = db.game.reduce((sum, p) => sum + (p.buyIn || 0), 0);
             let totalC = db.game.reduce((sum, p) => sum + (p.cashOut || 0), 0);
 
             if (totalB !== totalC) {
-                if(!confirm(`Касса не сходится! Разница: ${Math.abs(totalB - totalC)} руб.
-Всё равно завершить и сохранить?`)) {
+                if(!confirm(`${i18n[currentLang].alertDiff} ${Math.abs(totalB - totalC)}`)) {
                     return;
                 }
-            } else {
-                if(!confirm('Завершить сессию и сохранить результаты?')) return;
             }
 
             const sessionId = "sess_" + Date.now();
-            const dateStr = new Date().toLocaleString('ru-RU', {day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute:'2-digit'});
+            const dateStr = new Date().toLocaleString(currentLang === 'ru' ? 'ru-RU' : 'en-US', {day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute:'2-digit'});
             
             let finalPlayers = JSON.parse(JSON.stringify(db.game)).map(p => {
                 let net = (p.cashOut || 0) - (p.buyIn || 0);
@@ -828,9 +1006,9 @@
         }
 
         function getMonthKey(dateStr) {
-            const parts = dateStr.split(',')[0].split('.');
+            const parts = dateStr.split(',')[0].split(/[./]/);
             if (parts.length >= 3) {
-                return parts[1] + '.' + parts[2]; 
+                return parts[1] + '.' + parts[parts.length-1]; // works for DD.MM.YY and MM/DD/YY mostly
             }
             return null;
         }
@@ -859,7 +1037,7 @@
                 filterSelect.setAttribute('data-initialized', 'true');
             }
 
-            let optionsHtml = '<option value="all">За всё время</option>';
+            let optionsHtml = currentLang === 'ru' ? '<option value="all">За всё время</option>' : '<option value="all">All time</option>';
             monthsArr.forEach(m => {
                 let sel = (currentFilter === m) ? 'selected' : '';
                 let [mm, yy] = m.split('.');
@@ -904,12 +1082,12 @@
             historyArray.sort((a, b) => b.net - a.net);
 
             if (historyArray.length === 0) {
-                list.innerHTML = '<div class="p-6 text-center text-xs text-zinc-500 italic">Нет данных</div>';
+                list.innerHTML = `<div class="p-6 text-center text-xs text-zinc-500 italic">${currentLang === 'ru'?'Нет данных':'No data'}</div>`;
             } else {
                 let html = '';
                 historyArray.forEach((p, index) => {
                     const netClass = isProfitsVisible ? (p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400')) : 'text-zinc-600 font-bold tracking-widest';
-                    const netText = isProfitsVisible ? (p.net > 0 ? `+${p.net}` : p.net) : '***';
+                    const netText = isProfitsVisible ? (p.net > 0 ? `+${formatMoney(p.net)}` : formatMoney(p.net)) : '***';
 
                     let adminButtons = (isEditMode && currentFilter === 'all') ? `
                         <div class="w-[15%] flex justify-end space-x-2">
@@ -953,7 +1131,7 @@
             document.getElementById('profile-games').innerText = stats.games;
             
             const netClass = isProfitsVisible ? (stats.net > 0 ? 'text-emerald-400' : (stats.net < 0 ? 'text-red-400' : 'text-white')) : 'text-zinc-600 tracking-widest';
-            const netText = isProfitsVisible ? (stats.net > 0 ? `+${stats.net} ₽` : `${stats.net} ₽`) : '*** ₽';
+            const netText = isProfitsVisible ? (stats.net > 0 ? `+${formatMoney(stats.net)}` : formatMoney(stats.net)) : '***';
             
             document.getElementById('profile-net').className = `text-2xl font-black relative z-10 ${netClass}`;
             document.getElementById('profile-net').innerText = netText;
@@ -988,15 +1166,15 @@
             const owesEl = document.getElementById('profile-owes');
             const owedEl = document.getElementById('profile-owed');
             if (isProfitsVisible) {
-                owesEl.innerText = totalOwes > 0 ? `${totalOwes} ₽` : '0 ₽';
-                owedEl.innerText = totalOwed > 0 ? `${totalOwed} ₽` : '0 ₽';
+                owesEl.innerText = totalOwes > 0 ? formatMoney(totalOwes) : '0';
+                owedEl.innerText = totalOwed > 0 ? formatMoney(totalOwed) : '0';
             } else {
-                owesEl.innerText = '*** ₽';
-                owedEl.innerText = '*** ₽';
+                owesEl.innerText = '***';
+                owedEl.innerText = '***';
             }
 
             let chartSessions = [...playerSessions].sort((a, b) => a.id.localeCompare(b.id)); 
-            let labels = ['Старт'];
+            let labels = ['#'];
             let dataPts = [0];
             let currentTotal = 0;
 
@@ -1016,7 +1194,7 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Профит',
+                        label: 'Profit',
                         data: dataPts,
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -1031,15 +1209,20 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { 
-                        legend: { display: false } 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) { return formatMoney(context.parsed.y); }
+                            }
+                        }
                     },
                     scales: {
-                        x: { 
-                            ticks: { color: '#71717a', font: {size: 8} }, 
-                            grid: { color: '#27272a' } 
-                        },
+                        x: { ticks: { color: '#71717a', font: {size: 8} }, grid: { color: '#27272a' } },
                         y: { 
-                            ticks: { color: '#71717a', font: {size: 8} }, 
+                            ticks: { 
+                                color: '#71717a', font: {size: 8},
+                                callback: function(value) { return formatShort(value); }
+                            }, 
                             grid: { color: '#27272a' } 
                         }
                     }
@@ -1049,16 +1232,16 @@
             playerSessions.sort((a, b) => b.id.localeCompare(a.id)); 
 
             if(playerSessions.length === 0) {
-                list.innerHTML = '<p class="text-center text-xs text-zinc-500 italic py-4">Нет данных</p>';
+                list.innerHTML = `<p class="text-center text-xs text-zinc-500 italic py-4">${currentLang === 'ru'?'Нет данных':'No data'}</p>`;
             } else {
                 let html = '';
                 playerSessions.forEach(s => {
                     const sNetClass = s.net > 0 ? 'text-emerald-400' : (s.net < 0 ? 'text-red-400' : 'text-zinc-500');
-                    const sNetText = s.net > 0 ? `+${s.net}` : s.net;
+                    const sNetText = s.net > 0 ? `+${formatMoney(s.net)}` : formatMoney(s.net);
                     html += `
                         <div class="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-zinc-800/50">
                             <span class="text-xs font-bold text-zinc-400">${s.date}</span>
-                            <span class="text-sm font-black ${sNetClass}">${sNetText} ₽</span>
+                            <span class="text-sm font-black ${sNetClass}">${sNetText}</span>
                         </div>
                     `;
                 });
@@ -1075,9 +1258,9 @@
         window.editHistoryPlayer = function(name) {
             if(!isEditMode) return;
             const p = db.history[name];
-            let newNet = prompt(`Редактируем ПРОФИТ: ${name}`, p.net);
+            let newNet = prompt(`${name}\nПрофит / Profit:`, p.net);
             if(newNet === null) return;
-            let newGames = prompt(`Редактируем КОЛ-ВО ИГР: ${name}`, p.games);
+            let newGames = prompt(`${name}\nИгры / Games:`, p.games);
             if(newGames === null) return;
 
             db.history[name].net = parseInt(newNet) || 0;
@@ -1088,7 +1271,7 @@
 
         window.deleteHistoryPlayer = function(name) {
             if(!isEditMode) return;
-            if(confirm(`Удалить игрока ${name} из рейтинга?`)) {
+            if(confirm(`Удалить / Delete ${name}?`)) {
                 delete db.history[name];
                 updateTopPlayer();
                 saveToCloud();
@@ -1122,9 +1305,10 @@
         window.renderSessions = function() {
             const list = document.getElementById('sessions-list');
             list.innerHTML = '';
+            const t = i18n[currentLang];
             
             if(!db.sessions || Object.keys(db.sessions).length === 0) {
-                list.innerHTML = '<p class="text-center text-xs text-zinc-500 italic mt-10">Нет записей</p>';
+                list.innerHTML = `<p class="text-center text-xs text-zinc-500 italic mt-10">${currentLang === 'ru'?'Нет записей':'No records'}</p>`;
                 return;
             }
 
@@ -1146,17 +1330,17 @@
                     if(isFullySettled && net > 0) nClass = 'text-emerald-500'; 
                     if(isFullySettled && net < 0) nClass = 'text-red-500';
                     
-                    let netStr = net > 0 ? '+'+net : net;
+                    let netStr = net > 0 ? '+'+formatMoney(net) : formatMoney(net);
                     let rowOpacity = isFullySettled ? 'opacity-70' : 'opacity-100'; 
                     
                     let statusDisplay = '';
                     if (isFullySettled) {
-                        statusDisplay = `<span class="text-[8px] font-bold text-emerald-500 border border-emerald-900/50 bg-emerald-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">Оплачено</span>`;
+                        statusDisplay = `<span class="text-[8px] font-bold text-emerald-500 border border-emerald-900/50 bg-emerald-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">${t.paid}</span>`;
                     } else {
                         if (settledAmount > 0) {
-                            statusDisplay = `<span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase mr-1">${settledAmount}/${absNet}</span><span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">Ожидается</span>`;
+                            statusDisplay = `<span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase mr-1">${formatShort(settledAmount)}/${formatShort(absNet)}</span><span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">${t.wait}</span>`;
                         } else {
-                            statusDisplay = `<span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">Ожидается</span>`;
+                            statusDisplay = `<span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">${t.wait}</span>`;
                         }
                     }
 
@@ -1200,7 +1384,7 @@
                 if(noteText) {
                     displayNote = `<div class="text-[11px] text-zinc-300 mt-1.5 leading-tight whitespace-pre-wrap ${cursorClass}" ${onClickAction}>${noteText}</div>`;
                 } else if(isEditMode) {
-                    displayNote = `<div class="text-[10px] text-zinc-600 mt-1 italic ${cursorClass}" ${onClickAction}>Нажмите сюда, чтобы добавить заметку...</div>`;
+                    displayNote = `<div class="text-[10px] text-zinc-600 mt-1 italic ${cursorClass}" ${onClickAction}>${currentLang === 'ru'?'Нажмите, чтобы добавить заметку...':'Click to add a note...'}</div>`;
                 }
                 
                 let noteUI = '';
@@ -1208,7 +1392,7 @@
                     noteUI = `
                         <div class="mb-3 bg-zinc-950/40 rounded-xl p-2.5 border border-zinc-800/50">
                             <div class="flex items-center justify-between text-[9px] font-bold text-zinc-500 uppercase tracking-widest">
-                                <span>Заметки</span>
+                                <span>${t.notes}</span>
                             </div>
                             ${displayNote}
                         </div>
@@ -1227,7 +1411,7 @@
                         </div>
                         ${noteUI}
                         <div class="flex justify-between text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
-                            <span>Касса стола: ${s.totalB}</span>
+                            <span>${t.tableCash}: ${formatMoney(s.totalB)}</span>
                         </div>
                     </div>
                 `;
@@ -1248,17 +1432,13 @@
             let oldC = p.cashOut || 0;
             let oldNet = oldC - oldB;
 
-            let newBStr = prompt(`Игрок: ${playerName}
-
-Сумма бай-инов:`, oldB);
+            let newBStr = prompt(`Игрок: ${playerName}\n${i18n[currentLang].bIn}:`, oldB);
             if(newBStr === null) return;
-            let newCStr = prompt(`Игрок: ${playerName}
-
-Общий стэк:`, oldC);
+            let newCStr = prompt(`Игрок: ${playerName}\n${i18n[currentLang].stack}:`, oldC);
             if(newCStr === null) return;
 
-            let newB = parseInt(newBStr) || 0;
-            let newC = parseInt(newCStr) || 0;
+            let newB = parseInput(newBStr) || 0;
+            let newC = parseInput(newCStr) || 0;
             let newNet = newC - newB;
 
             session.players[playerIndex].buyIn = newB;
@@ -1285,12 +1465,6 @@
 
             updateTopPlayer();
             saveToCloud();
-            
-            if (tb !== tc) {
-                alert(`ВНИМАНИЕ! Касса не сходится:
-Сумма бай-инов: ${tb}
-Общий стэк: ${tc}`);
-            }
         }
 
         window.toggleSettled = function(id, playerName) {
@@ -1306,22 +1480,17 @@
 
             let absNet = Math.abs(net);
             let currentSettled = p.settledAmount !== undefined ? p.settledAmount : (p.settled ? absNet : 0);
-            let typeStr = net > 0 ? 'получено' : 'отдано';
             
-            let amountStr = prompt(`Игрок: ${playerName}
-Итог: ${net > 0 ? '+'+net : net} ₽
-
-Уже ${typeStr}:
-(От 0 до ${absNet})`, currentSettled);
+            let amountStr = prompt(`Игрок: ${playerName}\nИтог: ${net > 0 ? '+'+formatMoney(net) : formatMoney(net)}\n\nСумма (0 - ${absNet}):`, currentSettled);
 
             if (amountStr !== null) {
-                let parsed = parseInt(amountStr);
-                if (!isNaN(parsed) && parsed >= 0 && parsed <= absNet) {
+                let parsed = parseInput(amountStr);
+                if (parsed !== null && parsed >= 0 && parsed <= absNet) {
                     db.sessions[id].players[playerIndex].settledAmount = parsed;
                     db.sessions[id].players[playerIndex].settled = (parsed === absNet);
                     saveToCloud();
                 } else {
-                    alert("Некорректная сумма.");
+                    alert("Error.");
                 }
             }
         }
@@ -1331,7 +1500,7 @@
             const session = db.sessions[id];
             if(!session) return;
             
-            let newDate = prompt(`Дата сессии:`, session.date);
+            let newDate = prompt(`Date:`, session.date);
             if(newDate !== null && newDate.trim() !== '') {
                 db.sessions[id].date = newDate.trim();
                 saveToCloud();
@@ -1340,7 +1509,7 @@
 
         window.deleteSession = function(id) {
             if(!isEditMode) return;
-            if(!confirm('Удалить сессию? Результаты будут вычтены из рейтинга.')) return;
+            if(!confirm('Delete?')) return;
             
             const session = db.sessions[id];
             if(session) {
@@ -1359,16 +1528,14 @@
         }
 
         window.calculateDebts = function() {
-            if (db.game.length === 0) return alert('Стол пуст');
+            if (db.game.length === 0) return alert(i18n[currentLang].alertEmpty);
             
             let totalB = db.game.reduce((sum, p) => sum + (p.buyIn || 0), 0);
             let totalC = db.game.reduce((sum, p) => sum + (p.cashOut || 0), 0);
 
-            if (totalB === 0) return alert('Нет бай-инов');
+            if (totalB === 0) return;
             if (totalB !== totalC) {
-                alert(`Касса не сходится!
-Сумма бай-инов: ${totalB}
-Общий стэк: ${totalC}`);
+                alert(`${i18n[currentLang].alertDiff} ${Math.abs(totalB - totalC)}`);
                 return;
             }
 
@@ -1407,7 +1574,7 @@
             list.innerHTML = '';
 
             if (transactions.length === 0) {
-                list.innerHTML = '<p class="text-xs text-zinc-400">Взаиморасчеты не требуются</p>';
+                list.innerHTML = `<p class="text-xs text-zinc-400">0</p>`;
             } else {
                 let html = '';
                 transactions.forEach(t => {
@@ -1418,8 +1585,8 @@
                         <div class="flex items-center justify-between bg-zinc-900/80 p-3 rounded-xl border border-zinc-800">
                             <span class="text-xs font-bold w-1/3 truncate ${fromGolden}">${t.from}</span>
                             <div class="flex-1 flex flex-col items-center px-1">
-                                <span class="text-[10px] font-black text-white bg-zinc-800 px-3 py-1 rounded-full border border-zinc-700 shadow-md">${t.amount} ₽</span>
-                                <span class="text-[7px] text-zinc-500 mt-1 uppercase tracking-widest">переводит</span>
+                                <span class="text-[10px] font-black text-white bg-zinc-800 px-3 py-1 rounded-full border border-zinc-700 shadow-md">${formatMoney(t.amount)}</span>
+                                <span class="text-[7px] text-zinc-500 mt-1 uppercase tracking-widest">${i18n[currentLang].transfer}</span>
                             </div>
                             <span class="text-xs font-bold w-1/3 text-right truncate ${toGolden}">${t.to}</span>
                         </div>
