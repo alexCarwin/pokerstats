@@ -32,7 +32,6 @@
 
     <!-- ЛОББИ (ВХОД / СОЗДАНИЕ КОМНАТЫ) -->
     <div id="lobby-modal" class="fixed inset-0 z-[1000] p-4 flex items-center justify-center bg-[#050505] flex-col hidden">
-        <!-- Переключатель языка -->
         <div class="absolute top-4 right-4 flex space-x-2 bg-zinc-900 border border-zinc-800 rounded-lg p-1">
             <button onclick="setLang('ru')" id="lang-ru" class="text-[10px] font-bold px-2 py-1 rounded bg-zinc-700 text-white transition">RU</button>
             <button onclick="setLang('en')" id="lang-en" class="text-[10px] font-bold px-2 py-1 rounded text-zinc-500 hover:text-white transition">EN</button>
@@ -60,7 +59,7 @@
         </div>
     </div>
 
-    <!-- ОКНО НАСТРОЕК КЛУБА (ОНБОРДИНГ / РЕДАКТИРОВАНИЕ) -->
+    <!-- ОКНО НАСТРОЕК КЛУБА -->
     <div id="settings-modal" class="fixed inset-0 hidden z-[2000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-5 rounded-3xl w-full max-w-sm flex flex-col shadow-2xl relative">
             <h3 id="loc-settings-title" class="text-xs font-black text-purple-400 uppercase tracking-widest mb-4 text-center">Настройки клуба</h3>
@@ -73,7 +72,6 @@
             <div class="mb-6">
                 <label id="loc-step-label" class="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5 ml-1">Шаг кнопки добавления стэка</label>
                 <input type="number" id="setting-step" placeholder="1000" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-sm font-bold text-white outline-none focus:border-purple-500 transition placeholder-zinc-600">
-                <p class="text-[9px] text-zinc-500 mt-1 ml-1">Сумма, которая будет прибавляться при нажатии на кнопку "+".</p>
             </div>
 
             <button onclick="saveSettings()" id="loc-settings-save" class="w-full py-3.5 bg-purple-600 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-purple-500 transition shadow-[0_0_15px_rgba(147,51,234,0.3)] active:scale-95">Сохранить и войти</button>
@@ -103,7 +101,6 @@
             </div>
             
             <div class="flex items-center space-x-4">
-                <!-- Тумблер управления -->
                 <div class="flex items-center space-x-2">
                     <span id="mode-text" class="text-[9px] font-bold uppercase tracking-widest text-zinc-500 transition-colors">Чтение</span>
                     <label class="flex items-center cursor-pointer relative">
@@ -114,12 +111,10 @@
                     </label>
                 </div>
 
-                <!-- Бургер меню -->
                 <button onclick="toggleMenu()" class="text-zinc-400 hover:text-white transition p-1">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
 
-                <!-- Выпадающий список -->
                 <div id="dropdown-menu" class="hidden absolute top-full right-3 mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl py-1 overflow-hidden z-50">
                     <div class="px-4 py-2 border-b border-zinc-800/50 mb-1">
                         <span id="loc-menu-club" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Клуб</span>
@@ -135,8 +130,6 @@
 
     <!-- ГЛАВНЫЙ ЭКРАН (СТОЛ) -->
     <div id="main-table-view" class="max-w-md mx-auto w-full flex-1 flex-col flex">
-        
-        <!-- СТАТИСТИКА ИГРЫ -->
         <div class="glass-panel rounded-2xl p-4 mb-5 shadow-2xl relative overflow-hidden mt-1">
             <div class="flex justify-between items-center mb-3 relative z-10">
                 <span id="loc-table-cash" class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Касса стола</span>
@@ -156,7 +149,6 @@
             <div id="status-bg" class="absolute inset-0 opacity-10 transition-colors duration-500"></div>
         </div>
 
-        <!-- ДОБАВЛЕНИЕ ИГРОКА -->
         <div id="add-player-section" class="flex space-x-2 mb-4 hidden relative">
             <div class="flex-1 relative">
                 <input type="text" id="new-player-name" placeholder="Имя игрока" autocomplete="off" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm font-bold text-white outline-none focus:border-emerald-500 transition placeholder-zinc-700" oninput="handlePlayerSearch()" onkeyup="if(event.key === 'Enter') addPlayer()">
@@ -165,17 +157,14 @@
             <button onclick="addPlayer()" id="loc-btn-add" class="bg-emerald-600 text-white font-black text-xs uppercase tracking-wider px-4 rounded-lg hover:bg-emerald-500 active:scale-95 transition shadow-lg shadow-emerald-900/50">Добавить</button>
         </div>
 
-        <!-- СПИСОК ИГРОКОВ -->
         <div class="mb-6">
             <div id="players-list" class="space-y-2">
                 <p id="loc-empty-table" class="text-xs text-zinc-600 font-medium text-center py-4 italic">Загрузка данных...</p>
             </div>
         </div>
 
-        <!-- КНОПКА РАСЧЕТА ДОЛГОВ -->
         <button onclick="calculateDebts()" id="loc-btn-calc" class="w-full py-3 bg-zinc-100 text-zinc-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white transition shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 mb-4 mt-auto">Рассчитать</button>
 
-        <!-- БЛОК РЕЗУЛЬТАТОВ -->
         <div id="results-panel" class="hidden glass-panel rounded-2xl p-4 border-emerald-900/50 relative overflow-hidden mb-6">
             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-blue-500"></div>
             <h2 id="loc-results-title" class="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-3">Взаиморасчеты</h2>
@@ -272,7 +261,7 @@
         </div>
     </div>
 
-    <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ (TAB BAR) -->
+    <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
     <div class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-50 h-[60px]">
         <div class="max-w-md mx-auto flex h-full">
             <button id="tab-table" onclick="showTab('table')" class="flex-1 flex flex-col items-center justify-center text-white transition-colors">
@@ -290,7 +279,7 @@
         </div>
     </div>
 
-    <!-- FIREBASE СКРИПТ И ЛОГИКА -->
+    <!-- FIREBASE СКРИПТ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -324,7 +313,6 @@
         let currentRoom = null;
         let currentPwd = null;
 
-        // --- ЛОГИКА ПЕРЕВОДОВ И ФОРМАТИРОВАНИЯ ---
         const i18n = {
             ru: {
                 lobbyTitle: "Вход в закрытый клуб", lobbyBtn: "Войти / Создать",
@@ -357,6 +345,8 @@
                 alertRoom: "Room doesn't exist.\nCreate new one?", alertEmpty: "Table is empty", alertDiff: "Bank mismatch! Difference:"
             }
         };
+
+        const monthNames = { '01': 'Янв', '02': 'Фев', '03': 'Мар', '04': 'Апр', '05': 'Май', '06': 'Июн', '07': 'Июл', '08': 'Авг', '09': 'Сен', '10': 'Окт', '11': 'Ноя', '12': 'Дек' };
 
         let currentLang = localStorage.getItem('zalubank_lang') || 'ru';
 
@@ -393,12 +383,10 @@
             document.getElementById('loc-col-games').innerText = t.colGames;
             document.getElementById('loc-col-profit').innerText = t.colProfit;
             document.getElementById('loc-saving').innerText = t.sync;
-            
             document.getElementById('loc-settings-title').innerText = t.setTit;
             document.getElementById('loc-currency-label').innerText = t.setCur;
             document.getElementById('loc-step-label').innerText = t.setStep;
             document.getElementById('loc-settings-save').innerText = t.setSave;
-            
             document.getElementById('loc-prof-desc').innerText = t.profDesc;
             document.getElementById('loc-prof-played').innerText = t.profPlayed;
             document.getElementById('loc-prof-net').innerText = t.profNet;
@@ -411,29 +399,24 @@
             document.getElementById('lobby-club').placeholder = currentLang === 'ru' ? "Название комнаты" : "Room name";
             document.getElementById('lobby-pwd').placeholder = currentLang === 'ru' ? "Пароль" : "Password";
             document.getElementById('new-player-name').placeholder = currentLang === 'ru' ? "Имя игрока" : "Player name";
-
-            const modeTxt = document.getElementById('mode-text');
-            modeTxt.innerText = isEditMode ? t.modeEdit : t.modeRead;
+            document.getElementById('mode-text').innerText = isEditMode ? t.modeEdit : t.modeRead;
         }
 
-        // Умное форматирование валюты
+        // Защита от undefined и NaN
         function formatMoney(amount) {
-            if (amount === null || amount === undefined) return '';
+            if (amount === null || amount === undefined || isNaN(amount)) amount = 0;
             let formatted = new Intl.NumberFormat(currentLang === 'ru' ? 'ru-RU' : 'en-US').format(amount);
-            // Если валюта известная, можно использовать стиль 'currency', но так как мы разрешаем кастомные (например USDT), делаем конкатенацию
-            if (currentLang === 'ru') return `${formatted} ${roomSettings.currency}`;
-            return `${roomSettings.currency}${formatted}`; // для EN ставим слева
+            return currentLang === 'ru' ? `${formatted} ${roomSettings.currency}` : `${roomSettings.currency}${formatted}`;
         }
 
-        // Сокращение длинных чисел для кнопок (1K, 1M)
         function formatShort(amount) {
+            if (amount === null || amount === undefined || isNaN(amount)) return '0';
             if (amount >= 1000000000) return (amount / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
             if (amount >= 1000000) return (amount / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
             if (amount >= 1000) return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-            return amount;
+            return amount.toString();
         }
 
-        // Парсер умного ввода (превращает 1.5k в 1500)
         function parseInput(val) {
             if (!val) return null;
             let str = String(val).toLowerCase().replace(/,/g, '.').trim();
@@ -444,7 +427,17 @@
             return isNaN(num) ? null : num;
         }
 
-        setLang(currentLang); // Init lang
+        // Защита от битых дат
+        function getMonthKey(dateStr) {
+            if (!dateStr || typeof dateStr !== 'string') return null;
+            const parts = dateStr.split(',')[0].split(/[./-]/);
+            if (parts.length >= 3) {
+                return parts[1] + '.' + parts[parts.length-1];
+            }
+            return null;
+        }
+
+        setLang(currentLang);
 
         onValue(connectedRef, (snap) => {
             isOnline = snap.val() === true;
@@ -454,14 +447,17 @@
         function updateNetworkUI() {
             const indicator = document.getElementById('network-status');
             if (!indicator) return;
-            if (!isOnline) {
-                indicator.className = "w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] ml-1";
-            } else if (pendingSaves > 0) {
-                indicator.className = "w-2 h-2 rounded-full bg-yellow-400 animate-pulse shadow-[0_0_8px_rgba(250,204,21,0.8)] ml-1";
-            } else {
-                indicator.className = "w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] transition-colors duration-300 ml-1";
-            }
+            if (!isOnline) indicator.className = "w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] ml-1";
+            else if (pendingSaves > 0) indicator.className = "w-2 h-2 rounded-full bg-yellow-400 animate-pulse shadow-[0_0_8px_rgba(250,204,21,0.8)] ml-1";
+            else indicator.className = "w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] transition-colors duration-300 ml-1";
         }
+
+        window.addEventListener('beforeunload', (e) => {
+            if (pendingSaves > 0 || !isOnline) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
 
         document.addEventListener('click', function(e) {
             const dropdown = document.getElementById('dropdown-menu');
@@ -542,7 +538,6 @@
                             await set(ref(database, 'clubs/' + name + '/data'), { game: [], history: {}, sessions: {} });
                             await set(ref(database, 'clubs/' + name + '/settings'), { currency: '₽', step: 1000 });
                             
-                            // Показываем онбординг
                             currentRoom = name;
                             currentPwd = pwd;
                             document.getElementById('lobby-modal').classList.add('hidden');
@@ -662,7 +657,7 @@
             if (!db.history) return;
             let maxNet = 0; 
             Object.keys(db.history).forEach(name => {
-                if (db.history[name].net > maxNet) {
+                if (db.history[name] && db.history[name].net > maxNet) {
                     maxNet = db.history[name].net;
                     topPlayerName = name;
                 }
@@ -716,7 +711,6 @@
 
         window.toggleProfits = function() {
             isProfitsVisible = !isProfitsVisible;
-            
             const bg = document.getElementById('profit-toggle-bg');
             const dot = document.getElementById('profit-toggle-dot');
             if (isProfitsVisible) {
@@ -730,7 +724,6 @@
                 dot.classList.remove('translate-x-4', 'bg-white');
                 dot.classList.add('translate-x-0', 'bg-zinc-400');
             }
-
             if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
             if(!document.getElementById('profile-modal').classList.contains('hidden')) {
                 window.openPlayerProfile(document.getElementById('profile-name').innerText);
@@ -741,14 +734,9 @@
             const inputVal = document.getElementById('new-player-name').value.trim().toLowerCase();
             const dropdown = document.getElementById('autocomplete-dropdown');
             dropdown.innerHTML = '';
+            if (!inputVal || !db.history) { dropdown.classList.add('hidden'); return; }
 
-            if (!inputVal || !db.history) {
-                dropdown.classList.add('hidden');
-                return;
-            }
-
-            const currentPlayers = db.game ? db.game.map(p => p.name.toLowerCase()) : [];
-            
+            const currentPlayers = db.game ? db.game.filter(p=>p).map(p => p.name.toLowerCase()) : [];
             const matches = Object.keys(db.history).filter(name => 
                 name.toLowerCase().includes(inputVal) && !currentPlayers.includes(name.toLowerCase())
             );
@@ -773,7 +761,7 @@
         }
 
         function renderTable() {
-            const hasPlayers = db.game && db.game.length > 0;
+            const hasPlayers = db.game && db.game.filter(p=>p).length > 0;
             const btnEndGame = document.getElementById('btn-end-game');
             if(isEditMode && hasPlayers) btnEndGame.classList.remove('hidden');
             else btnEndGame.classList.add('hidden');
@@ -789,21 +777,18 @@
             const t = i18n[currentLang];
             const list = document.getElementById('players-list');
             let newHTML = '';
-            
-            let totalBuyIns = 0;
-            let totalCashouts = 0;
+            let totalBuyIns = 0; let totalCashouts = 0;
 
-            if (!db.game || db.game.length === 0) {
+            if (!db.game || db.game.filter(p=>p).length === 0) {
                 newHTML = `<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">${isFirstLoad ? t.sync : t.empty}</p>`;
             }
 
             if(db.game) {
                 db.game.forEach((p, index) => {
-                    const bIn = p.buyIn === null || p.buyIn === undefined ? 0 : p.buyIn;
-                    const cOut = p.cashOut === null || p.cashOut === undefined ? 0 : p.cashOut;
-                    
-                    totalBuyIns += bIn;
-                    totalCashouts += cOut;
+                    if (!p) return; // Защита
+                    const bIn = p.buyIn || 0;
+                    const cOut = p.cashOut || 0;
+                    totalBuyIns += bIn; totalCashouts += cOut;
 
                     const net = cOut - bIn;
                     const netClass = net > 0 ? 'text-emerald-500' : (net < 0 ? 'text-red-500' : 'text-zinc-500');
@@ -845,7 +830,6 @@
                                 <span class="font-black text-sm tracking-tight ${nameTitleClass}">${p.name}</span>
                                 <span class="text-[9px] font-bold ${netClass}">${netText}</span>
                             </div>
-                            
                             <div class="flex space-x-2 items-end">
                                 <div class="flex-[1.2]">
                                     <span class="text-[7px] font-bold text-zinc-500 uppercase tracking-widest ml-1 block mb-0.5">${t.bIn}</span>
@@ -866,10 +850,7 @@
 
             if (activeId && isEditMode) {
                 let el = document.getElementById(activeId);
-                if (el) {
-                    el.focus();
-                    if (activeVal !== null) el.value = activeVal;
-                }
+                if (el) { el.focus(); if (activeVal !== null) el.value = activeVal; }
             }
 
             document.getElementById('total-buyins').innerText = formatMoney(totalBuyIns);
@@ -910,7 +891,7 @@
             let name = existingName ? existingName : rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
 
             if (!db.game) db.game = [];
-            if (db.game.some(p => p.name === name)) return;
+            if (db.game.some(p => p && p.name === name)) return;
 
             db.game.push({ name: name, buyIn: null, cashOut: null });
             if (!db.history[name]) db.history[name] = { net: 0, games: 0 };
@@ -955,41 +936,29 @@
 
         window.endGame = function() {
             if(!isEditMode) return;
-            if (db.game.length === 0) return alert(i18n[currentLang].alertEmpty);
+            if (!db.game || db.game.filter(p=>p).length === 0) return alert(i18n[currentLang].alertEmpty);
             
-            let totalB = db.game.reduce((sum, p) => sum + (p.buyIn || 0), 0);
-            let totalC = db.game.reduce((sum, p) => sum + (p.cashOut || 0), 0);
+            let totalB = db.game.reduce((sum, p) => p ? sum + (p.buyIn || 0) : sum, 0);
+            let totalC = db.game.reduce((sum, p) => p ? sum + (p.cashOut || 0) : sum, 0);
 
             if (totalB !== totalC) {
-                if(!confirm(`${i18n[currentLang].alertDiff} ${Math.abs(totalB - totalC)}`)) {
-                    return;
-                }
+                if(!confirm(`${i18n[currentLang].alertDiff} ${Math.abs(totalB - totalC)}`)) return;
             }
 
             const sessionId = "sess_" + Date.now();
             const dateStr = new Date().toLocaleString(currentLang === 'ru' ? 'ru-RU' : 'en-US', {day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute:'2-digit'});
             
-            let finalPlayers = JSON.parse(JSON.stringify(db.game)).map(p => {
+            let finalPlayers = JSON.parse(JSON.stringify(db.game)).filter(p=>p).map(p => {
                 let net = (p.cashOut || 0) - (p.buyIn || 0);
-                if (net === 0) {
-                    p.settled = true;
-                    p.settledAmount = 0; 
-                } else {
-                    p.settled = false;
-                    p.settledAmount = 0; 
-                }
+                if (net === 0) { p.settled = true; p.settledAmount = 0; } 
+                else { p.settled = false; p.settledAmount = 0; }
                 return p;
             });
 
             if(!db.sessions) db.sessions = {};
-            db.sessions[sessionId] = {
-                date: dateStr,
-                players: finalPlayers, 
-                totalB: totalB,
-                totalC: totalC
-            };
+            db.sessions[sessionId] = { date: dateStr, players: finalPlayers, totalB: totalB, totalC: totalC };
 
-            db.game.forEach(p => {
+            db.game.filter(p=>p).forEach(p => {
                 const net = (p.cashOut || 0) - (p.buyIn || 0);
                 if (!db.history[p.name]) db.history[p.name] = { net: 0, games: 0 };
                 db.history[p.name].net += net;
@@ -1001,16 +970,7 @@
             document.getElementById('results-panel').classList.add('hidden');
             document.getElementById('dropdown-menu').classList.add('hidden');
             saveToCloud();
-            
             showTab('history');
-        }
-
-        function getMonthKey(dateStr) {
-            const parts = dateStr.split(',')[0].split(/[./]/);
-            if (parts.length >= 3) {
-                return parts[1] + '.' + parts[parts.length-1]; // works for DD.MM.YY and MM/DD/YY mostly
-            }
-            return null;
         }
 
         window.renderHistory = function() {
@@ -1018,17 +978,20 @@
             
             let monthsSet = new Set();
             if (db.sessions) {
+                // Жесткая защита: пропускаем битые сессии без даты
                 Object.values(db.sessions).forEach(s => {
-                    const k = getMonthKey(s.date);
-                    if (k) monthsSet.add(k);
+                    if (s && s.date) {
+                        const k = getMonthKey(s.date);
+                        if (k) monthsSet.add(k);
+                    }
                 });
             }
             
             let monthsArr = Array.from(monthsSet).sort((a, b) => {
-                let [m1, y1] = a.split('.');
-                let [m2, y2] = b.split('.');
-                if (y1 !== y2) return parseInt(y2) - parseInt(y1);
-                return parseInt(m2) - parseInt(m1);
+                let aParts = a.split('.'); let bParts = b.split('.');
+                if(aParts.length < 2 || bParts.length < 2) return 0;
+                if (aParts[1] !== bParts[1]) return parseInt(bParts[1]) - parseInt(aParts[1]);
+                return parseInt(bParts[0]) - parseInt(aParts[0]);
             });
 
             let currentFilter = filterSelect.value;
@@ -1040,15 +1003,14 @@
             let optionsHtml = currentLang === 'ru' ? '<option value="all">За всё время</option>' : '<option value="all">All time</option>';
             monthsArr.forEach(m => {
                 let sel = (currentFilter === m) ? 'selected' : '';
-                let [mm, yy] = m.split('.');
-                let monthName = monthNames[mm] || mm;
-                optionsHtml += `<option value="${m}" ${sel}>${monthName} '${yy}</option>`;
+                let parts = m.split('.');
+                let monthName = monthNames[parts[0]] || parts[0];
+                optionsHtml += `<option value="${m}" ${sel}>${monthName} '${parts[1]}</option>`;
             });
             filterSelect.innerHTML = optionsHtml;
             currentFilter = filterSelect.value; 
 
             document.getElementById('history-admin-header').classList.toggle('hidden', !isEditMode || currentFilter !== 'all');
-
             const list = document.getElementById('history-list');
             list.innerHTML = '';
             
@@ -1060,8 +1022,10 @@
                 let tempStats = {};
                 if (db.sessions) {
                     Object.values(db.sessions).forEach(s => {
-                        if (getMonthKey(s.date) === currentFilter) {
+                        // Жесткая защита
+                        if (s && s.date && s.players && getMonthKey(s.date) === currentFilter) {
                             s.players.forEach(p => {
+                                if (!p) return;
                                 let net = (p.cashOut || 0) - (p.buyIn || 0);
                                 if (!tempStats[p.name]) tempStats[p.name] = { net: 0, games: 0 };
                                 tempStats[p.name].net += net;
@@ -1079,13 +1043,14 @@
                 });
             }
 
-            historyArray.sort((a, b) => b.net - a.net);
+            historyArray.sort((a, b) => (b.net || 0) - (a.net || 0));
 
             if (historyArray.length === 0) {
                 list.innerHTML = `<div class="p-6 text-center text-xs text-zinc-500 italic">${currentLang === 'ru'?'Нет данных':'No data'}</div>`;
             } else {
                 let html = '';
                 historyArray.forEach((p, index) => {
+                    if (!p || !p.name) return;
                     const netClass = isProfitsVisible ? (p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400')) : 'text-zinc-600 font-bold tracking-widest';
                     const netText = isProfitsVisible ? (p.net > 0 ? `+${formatMoney(p.net)}` : formatMoney(p.net)) : '***';
 
@@ -1110,7 +1075,7 @@
                                 <span class="w-4 inline-block text-[10px] text-zinc-600 font-bold text-right flex-shrink-0">${index + 1}</span>
                                 <button onclick="openPlayerProfile('${p.name}')" class="ml-2 font-bold text-xs text-left truncate hover:opacity-80 transition underline decoration-blue-900/50 underline-offset-4 ${rowNameClass}">${p.name}</button>
                             </div>
-                            <div class="w-[15%] text-center text-[10px] text-zinc-500 font-medium">${p.games}</div>
+                            <div class="w-[15%] text-center text-[10px] text-zinc-500 font-medium">${p.games || 0}</div>
                             <div class="w-[25%] text-right text-xs font-black ${netClass}">${netText}</div>
                             ${adminButtons}
                         </div>
@@ -1127,8 +1092,7 @@
             let isGolden = (name === topPlayerName);
             document.getElementById('profile-name').className = `text-3xl font-black uppercase tracking-tighter drop-shadow-md transition-colors ${isGolden ? 'golden-text' : 'text-white'}`;
             document.getElementById('profile-name').innerText = name;
-            
-            document.getElementById('profile-games').innerText = stats.games;
+            document.getElementById('profile-games').innerText = stats.games || 0;
             
             const netClass = isProfitsVisible ? (stats.net > 0 ? 'text-emerald-400' : (stats.net < 0 ? 'text-red-400' : 'text-white')) : 'text-zinc-600 tracking-widest';
             const netText = isProfitsVisible ? (stats.net > 0 ? `+${formatMoney(stats.net)}` : formatMoney(stats.net)) : '***';
@@ -1140,24 +1104,25 @@
             list.innerHTML = '';
             
             let playerSessions = [];
-            let totalOwes = 0; 
-            let totalOwed = 0; 
+            let totalOwes = 0; let totalOwed = 0; 
 
             if(db.sessions) {
                 Object.keys(db.sessions).forEach(id => {
                     const sess = db.sessions[id];
-                    const pData = sess.players.find(pl => pl.name === name);
-                    if(pData) {
-                        const net = (pData.cashOut || 0) - (pData.buyIn || 0);
-                        playerSessions.push({ date: sess.date, net: net, id: id });
+                    if(sess && sess.players) {
+                        const pData = sess.players.find(pl => pl && pl.name === name);
+                        if(pData) {
+                            const net = (pData.cashOut || 0) - (pData.buyIn || 0);
+                            playerSessions.push({ date: sess.date || '?', net: net, id: id });
 
-                        let absNet = Math.abs(net);
-                        let settledAmt = pData.settledAmount !== undefined ? pData.settledAmount : (pData.settled ? absNet : 0);
-                        let remaining = absNet - settledAmt;
+                            let absNet = Math.abs(net);
+                            let settledAmt = pData.settledAmount !== undefined ? pData.settledAmount : (pData.settled ? absNet : 0);
+                            let remaining = absNet - settledAmt;
 
-                        if (remaining > 0) {
-                            if (net < 0) totalOwes += remaining;
-                            else if (net > 0) totalOwed += remaining;
+                            if (remaining > 0) {
+                                if (net < 0) totalOwes += remaining;
+                                else if (net > 0) totalOwed += remaining;
+                            }
                         }
                     }
                 });
@@ -1174,9 +1139,7 @@
             }
 
             let chartSessions = [...playerSessions].sort((a, b) => a.id.localeCompare(b.id)); 
-            let labels = ['#'];
-            let dataPts = [0];
-            let currentTotal = 0;
+            let labels = ['#']; let dataPts = [0]; let currentTotal = 0;
 
             chartSessions.forEach(s => {
                 currentTotal += s.net;
@@ -1185,46 +1148,22 @@
             });
 
             const ctx = document.getElementById('profileChart').getContext('2d');
-            if (window.profileChartInstance) {
-                window.profileChartInstance.destroy();
-            }
+            if (window.profileChartInstance) window.profileChartInstance.destroy();
 
             window.profileChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Profit',
-                        data: dataPts,
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        borderWidth: 2,
-                        pointBackgroundColor: dataPts.map(v => v >= 0 ? '#10b981' : '#ef4444'),
-                        pointRadius: 3,
-                        fill: true,
-                        tension: 0.3
+                        label: 'Profit', data: dataPts, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2, pointBackgroundColor: dataPts.map(v => v >= 0 ? '#10b981' : '#ef4444'), pointRadius: 3, fill: true, tension: 0.3
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) { return formatMoney(context.parsed.y); }
-                            }
-                        }
-                    },
+                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return formatMoney(context.parsed.y); } } } },
                     scales: {
                         x: { ticks: { color: '#71717a', font: {size: 8} }, grid: { color: '#27272a' } },
-                        y: { 
-                            ticks: { 
-                                color: '#71717a', font: {size: 8},
-                                callback: function(value) { return formatShort(value); }
-                            }, 
-                            grid: { color: '#27272a' } 
-                        }
+                        y: { ticks: { color: '#71717a', font: {size: 8}, callback: function(value) { return formatShort(value); } }, grid: { color: '#27272a' } }
                     }
                 }
             });
@@ -1247,7 +1186,6 @@
                 });
                 list.innerHTML = html;
             }
-
             document.getElementById('profile-modal').classList.remove('hidden');
         }
 
@@ -1263,7 +1201,7 @@
             let newGames = prompt(`${name}\nИгры / Games:`, p.games);
             if(newGames === null) return;
 
-            db.history[name].net = parseInt(newNet) || 0;
+            db.history[name].net = parseInput(newNet) || 0;
             db.history[name].games = parseInt(newGames) || 0;
             updateTopPlayer();
             saveToCloud();
@@ -1312,14 +1250,16 @@
                 return;
             }
 
-            let sessArray = Object.keys(db.sessions).map(id => {
-                return { id: id, ...db.sessions[id] };
-            });
+            // Жесткая защита
+            let sessArray = Object.keys(db.sessions)
+                .filter(id => db.sessions[id] && db.sessions[id].players)
+                .map(id => { return { id: id, ...db.sessions[id] }; });
+                
             sessArray.sort((a, b) => b.id.localeCompare(a.id));
 
             let html = '';
             sessArray.forEach(s => {
-                let playersHTML = s.players.map(p => {
+                let playersHTML = s.players.filter(p=>p).map(p => {
                     let net = (p.cashOut || 0) - (p.buyIn || 0);
                     let absNet = Math.abs(net);
                     
@@ -1403,7 +1343,7 @@
                     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 relative shadow-lg">
                         ${deleteBtn}
                         <div class="flex items-center text-xs font-bold text-purple-500 mb-3">
-                            <span>${s.date}</span>
+                            <span>${s.date || '?'}</span>
                             ${editBtn}
                         </div>
                         <div class="space-y-1.5 mb-3 border-b border-zinc-800 pb-3">
@@ -1424,7 +1364,7 @@
             const session = db.sessions[id];
             if(!session) return;
 
-            const playerIndex = session.players.findIndex(p => p.name === playerName);
+            const playerIndex = session.players.findIndex(p => p && p.name === playerName);
             if(playerIndex === -1) return;
 
             const p = session.players[playerIndex];
@@ -1453,6 +1393,7 @@
 
             let tb = 0; let tc = 0;
             session.players.forEach(pl => {
+                if(!pl) return;
                 tb += (pl.buyIn || 0);
                 tc += (pl.cashOut || 0);
             });
@@ -1465,13 +1406,17 @@
 
             updateTopPlayer();
             saveToCloud();
+            
+            if (tb !== tc) {
+                alert(`${i18n[currentLang].alertDiff} ${Math.abs(tb - tc)}`);
+            }
         }
 
         window.toggleSettled = function(id, playerName) {
             if(!isEditMode) return;
             const session = db.sessions[id];
             if(!session) return;
-            const playerIndex = session.players.findIndex(p => p.name === playerName);
+            const playerIndex = session.players.findIndex(p => p && p.name === playerName);
             if(playerIndex === -1) return;
 
             let p = session.players[playerIndex];
@@ -1480,6 +1425,7 @@
 
             let absNet = Math.abs(net);
             let currentSettled = p.settledAmount !== undefined ? p.settledAmount : (p.settled ? absNet : 0);
+            let typeStr = net > 0 ? 'получено' : 'отдано';
             
             let amountStr = prompt(`Игрок: ${playerName}\nИтог: ${net > 0 ? '+'+formatMoney(net) : formatMoney(net)}\n\nСумма (0 - ${absNet}):`, currentSettled);
 
@@ -1500,7 +1446,7 @@
             const session = db.sessions[id];
             if(!session) return;
             
-            let newDate = prompt(`Date:`, session.date);
+            let newDate = prompt(`Date:`, session.date || '');
             if(newDate !== null && newDate.trim() !== '') {
                 db.sessions[id].date = newDate.trim();
                 saveToCloud();
@@ -1512,8 +1458,9 @@
             if(!confirm('Delete?')) return;
             
             const session = db.sessions[id];
-            if(session) {
+            if(session && session.players) {
                 session.players.forEach(p => {
+                    if(!p) return;
                     const net = (p.cashOut || 0) - (p.buyIn || 0);
                     if(db.history[p.name]) {
                         db.history[p.name].net -= net;
@@ -1528,10 +1475,10 @@
         }
 
         window.calculateDebts = function() {
-            if (db.game.length === 0) return alert(i18n[currentLang].alertEmpty);
+            if (!db.game || db.game.filter(p=>p).length === 0) return alert(i18n[currentLang].alertEmpty);
             
-            let totalB = db.game.reduce((sum, p) => sum + (p.buyIn || 0), 0);
-            let totalC = db.game.reduce((sum, p) => sum + (p.cashOut || 0), 0);
+            let totalB = db.game.reduce((sum, p) => p ? sum + (p.buyIn || 0) : sum, 0);
+            let totalC = db.game.reduce((sum, p) => p ? sum + (p.cashOut || 0) : sum, 0);
 
             if (totalB === 0) return;
             if (totalB !== totalC) {
@@ -1542,7 +1489,7 @@
             let debtors = []; 
             let creditors = []; 
 
-            db.game.forEach(p => {
+            db.game.filter(p=>p).forEach(p => {
                 let net = (p.cashOut || 0) - (p.buyIn || 0);
                 if (net < 0) debtors.push({ name: p.name, amount: Math.abs(net) });
                 else if (net > 0) creditors.push({ name: p.name, amount: net });
