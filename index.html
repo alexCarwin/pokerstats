@@ -21,9 +21,14 @@
             text-shadow: 0 0 12px rgba(234, 179, 8, 0.4);
             font-weight: 900 !important;
         }
+        
+        /* Стили для свитчера */
+        .toggle-checkbox:checked { right: 0; border-color: #a855f7; }
+        .toggle-checkbox:checked + .toggle-label { background-color: rgba(147, 51, 234, 0.2); }
+        .toggle-checkbox:checked + .toggle-label .toggle-dot { transform: translateX(100%); background-color: #a855f7; }
     </style>
 </head>
-<body class="p-3 min-h-screen flex flex-col pb-24 relative">
+<body class="p-3 min-h-screen flex flex-col pb-20 relative">
 
     <!-- ЛОББИ (ВХОД / СОЗДАНИЕ КОМНАТЫ) -->
     <div id="lobby-modal" class="fixed inset-0 z-[1000] p-4 flex items-center justify-center bg-[#050505] flex-col hidden">
@@ -52,8 +57,8 @@
     <!-- ОКНО РЕДАКТИРОВАНИЯ ЗАМЕТКИ -->
     <div id="note-modal" class="fixed inset-0 hidden z-[100] p-4 flex items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-4 rounded-2xl w-full max-w-sm flex flex-col shadow-2xl">
-            <h3 class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-3">📝 Редактировать заметку</h3>
-            <textarea id="note-textarea" rows="4" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-sm text-white outline-none focus:border-purple-500 resize-none mb-4 placeholder-zinc-600 shadow-inner" placeholder="Например: Вася перевел Пете 500р..."></textarea>
+            <h3 class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-3">Редактировать заметку</h3>
+            <textarea id="note-textarea" rows="4" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-sm text-white outline-none focus:border-purple-500 resize-none mb-4 placeholder-zinc-600 shadow-inner" placeholder="Детали взаиморасчетов..."></textarea>
             <div class="flex space-x-3">
                 <button onclick="closeNoteModal()" class="flex-1 py-2.5 bg-zinc-800 text-zinc-400 text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-zinc-700 transition">Отмена</button>
                 <button onclick="saveNoteModal()" class="flex-1 py-2.5 bg-purple-600 text-white text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-purple-500 transition shadow-[0_0_15px_rgba(147,51,234,0.3)]">Сохранить</button>
@@ -61,52 +66,65 @@
         </div>
     </div>
 
-    <!-- ШАПКА -->
-    <div class="max-w-md mx-auto w-full flex justify-between items-center mb-4 pt-1">
+    <!-- ЧИСТАЯ ШАПКА -->
+    <div class="max-w-md mx-auto w-full flex justify-between items-center mb-5 pt-1 relative z-50">
         <div class="flex items-center space-x-2">
             <h1 class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg">
                 <span class="text-white">ZALU</span><span class="text-emerald-500">BANK</span>
             </h1>
-            <span id="room-badge" class="text-[9px] font-bold text-zinc-500 border border-zinc-700 bg-zinc-800/50 px-2 py-0.5 rounded uppercase tracking-widest hidden mt-0.5"></span>
-            <div id="network-status" class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] transition-colors duration-300" title="Подключение..."></div>
+            <div id="network-status" class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] transition-colors duration-300 ml-1"></div>
         </div>
-        <div class="flex space-x-1.5">
-            <button id="edit-mode-toggle" onclick="toggleEditMode()" class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest bg-zinc-900 px-2.5 py-2 rounded-lg border border-zinc-800 transition">🔒 Чтение</button>
-            <button id="btn-end-game" onclick="endGame()" class="hidden text-[9px] font-bold text-red-400 uppercase tracking-widest bg-red-900/20 px-2.5 py-2 rounded-lg border border-red-900/50 hover:bg-red-900/40 active:scale-95 transition">Завершить</button>
-            <button onclick="logoutClub()" class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest bg-zinc-900 px-2.5 py-2 rounded-lg border border-zinc-800 hover:text-white transition">🚪</button>
+        
+        <div class="flex items-center space-x-4 relative">
+            <!-- Тумблер управления -->
+            <div class="flex items-center space-x-2">
+                <span id="mode-text" class="text-[9px] font-bold uppercase tracking-widest text-zinc-500 transition-colors">Чтение</span>
+                <label class="flex items-center cursor-pointer relative">
+                    <input type="checkbox" id="edit-toggle" class="sr-only toggle-checkbox" onchange="toggleEditMode()">
+                    <div class="toggle-label block bg-zinc-800 border border-zinc-700 w-10 h-6 rounded-full transition-colors">
+                        <div class="toggle-dot absolute left-1 top-1 bg-zinc-500 w-4 h-4 rounded-full transition-transform duration-300"></div>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Бургер меню -->
+            <button onclick="toggleMenu()" class="text-zinc-400 hover:text-white transition p-1">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+
+            <!-- Выпадающий список -->
+            <div id="dropdown-menu" class="hidden absolute top-8 right-0 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl py-1 overflow-hidden z-50">
+                <div class="px-4 py-2 border-b border-zinc-800/50 mb-1">
+                    <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Клуб</span>
+                    <p id="menu-room-badge" class="text-xs font-bold text-white uppercase truncate">---</p>
+                </div>
+                <button id="btn-end-game" onclick="endGame()" class="hidden w-full text-left px-4 py-3 text-red-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition">Завершить сессию</button>
+                <button onclick="logoutClub()" class="w-full text-left px-4 py-3 text-zinc-300 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition">Выйти из комнаты</button>
+            </div>
         </div>
     </div>
 
-    <div class="max-w-md mx-auto w-full flex-1 flex flex-col">
+    <!-- ГЛАВНЫЙ ЭКРАН (СТОЛ) -->
+    <div id="main-table-view" class="max-w-md mx-auto w-full flex-1 flex flex-col block">
         
         <!-- СТАТИСТИКА ИГРЫ -->
-        <div class="glass-panel rounded-2xl p-4 mb-4 shadow-2xl relative overflow-hidden">
+        <div class="glass-panel rounded-2xl p-4 mb-5 shadow-2xl relative overflow-hidden">
             <div class="flex justify-between items-center mb-3 relative z-10">
-                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Касса</span>
+                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Касса стола</span>
                 <span id="status-badge" class="text-[9px] font-bold px-2 py-1 rounded-md bg-zinc-800 text-zinc-400 uppercase tracking-wider transition-colors">Синхронизация...</span>
             </div>
             
             <div class="flex space-x-4 relative z-10">
                 <div class="flex-1">
-                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Всего бай-инов</p>
+                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Сумма бай-инов</p>
                     <p id="total-buyins" class="text-xl font-black text-white">0 ₽</p>
                 </div>
                 <div class="flex-1">
-                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Фишек на руках</p>
+                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Общий стэк</p>
                     <p id="total-cashouts" class="text-xl font-black text-zinc-400">0 ₽</p>
                 </div>
             </div>
             <div id="status-bg" class="absolute inset-0 opacity-10 transition-colors duration-500"></div>
-        </div>
-
-        <!-- КНОПКИ МЕНЮ -->
-        <div class="flex space-x-2 mb-5">
-            <button onclick="openHistory()" class="flex-1 py-2.5 bg-blue-900/20 text-blue-400 text-[9px] font-black uppercase tracking-widest rounded-xl border border-blue-900/50 hover:bg-blue-900/40 transition shadow-lg active:scale-95 flex items-center justify-center">
-                🏆 Статистика
-            </button>
-            <button onclick="openSessions()" class="flex-1 py-2.5 bg-purple-900/20 text-purple-400 text-[9px] font-black uppercase tracking-widest rounded-xl border border-purple-900/50 hover:bg-purple-900/40 transition shadow-lg active:scale-95 flex items-center justify-center">
-                📖 История
-            </button>
         </div>
 
         <!-- ДОБАВЛЕНИЕ ИГРОКА -->
@@ -115,7 +133,7 @@
                 <input type="text" id="new-player-name" placeholder="Имя игрока" autocomplete="off" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm font-bold text-white outline-none focus:border-emerald-500 transition placeholder-zinc-700" oninput="handlePlayerSearch()" onkeyup="if(event.key === 'Enter') addPlayer()">
                 <div id="autocomplete-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto scrollbar-hide"></div>
             </div>
-            <button onclick="addPlayer()" class="bg-emerald-600 text-white font-black text-xs uppercase tracking-wider px-4 rounded-lg hover:bg-emerald-500 active:scale-95 transition shadow-lg shadow-emerald-900/50">В игру</button>
+            <button onclick="addPlayer()" class="bg-emerald-600 text-white font-black text-xs uppercase tracking-wider px-4 rounded-lg hover:bg-emerald-500 active:scale-95 transition shadow-lg shadow-emerald-900/50">Добавить</button>
         </div>
 
         <!-- СПИСОК ИГРОКОВ -->
@@ -129,23 +147,22 @@
         <button onclick="calculateDebts()" class="w-full py-3 bg-zinc-100 text-zinc-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white transition shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 mb-4">Рассчитать</button>
 
         <!-- БЛОК РЕЗУЛЬТАТОВ -->
-        <div id="results-panel" class="hidden glass-panel rounded-2xl p-4 border-emerald-900/50 relative overflow-hidden">
+        <div id="results-panel" class="hidden glass-panel rounded-2xl p-4 border-emerald-900/50 relative overflow-hidden mb-6">
             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-blue-500"></div>
-            <h2 class="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-3">Кому куда переводить</h2>
+            <h2 class="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-3">Взаиморасчеты</h2>
             <div id="transactions-list" class="space-y-2">
             </div>
         </div>
-
     </div>
 
-    <!-- ОКНО ИСТОРИИ (РЕЙТИНГА) -->
-    <div id="history-modal" class="fixed inset-0 hidden z-50 p-3 flex flex-col bg-black/95 backdrop-blur-md overflow-y-auto">
+    <!-- ОКНО РЕЙТИНГА -->
+    <div id="history-modal" class="fixed top-0 left-0 right-0 bottom-[60px] hidden z-40 p-3 flex flex-col bg-[#050505] overflow-y-auto pt-16">
         <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
             <div class="flex justify-between items-center mb-4 mt-2">
                 
                 <div class="flex items-center space-x-2">
-                    <h2 class="text-sm font-black text-blue-500 uppercase tracking-widest">Зал Славы</h2>
-                    <select id="history-filter" onchange="openHistory()" class="bg-zinc-800 text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded border border-blue-900/50 outline-none px-1.5 py-1">
+                    <h2 class="text-sm font-black text-blue-500 uppercase tracking-widest">Рейтинг</h2>
+                    <select id="history-filter" onchange="renderHistory()" class="bg-zinc-800 text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded border border-blue-900/50 outline-none px-1.5 py-1">
                         <option value="all">За всё время</option>
                     </select>
                 </div>
@@ -156,15 +173,13 @@
                         <div id="profit-toggle-dot" class="w-3 h-3 rounded-full bg-zinc-400 absolute top-0.5 left-0.5 transition-transform duration-300"></div>
                     </div>
                 </div>
-
-                <button onclick="closeHistory()" class="text-zinc-400 text-xs font-bold uppercase hover:text-white transition ml-2">✕</button>
             </div>
             
             <div class="glass-panel rounded-xl p-1 shadow-2xl border-blue-900/30">
                 <div class="flex px-3 py-2 text-[8px] font-bold text-zinc-500 uppercase tracking-widest border-b border-zinc-800/50">
                     <div class="w-[45%] flex items-center pr-1">
                         <span class="w-4 inline-block text-right">#</span>
-                        <span class="ml-2">Игрок (Профиль)</span>
+                        <span class="ml-2">Профиль</span>
                     </div>
                     <div class="w-[15%] text-center">Игр</div>
                     <div class="w-[25%] text-right">Профит</div>
@@ -176,15 +191,15 @@
         </div>
     </div>
 
-    <!-- ПРОФИЛЬ ИГРОКА -->
-    <div id="profile-modal" class="fixed inset-0 hidden z-50 p-3 flex flex-col bg-black/95 backdrop-blur-md overflow-y-auto">
+    <!-- ПРОФИЛЬ ИГРОКА (Всплывает поверх всего) -->
+    <div id="profile-modal" class="fixed inset-0 hidden z-[60] p-3 flex flex-col bg-black/95 backdrop-blur-md overflow-y-auto">
         <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
             <div class="flex justify-between items-start mb-6 mt-4">
                 <div>
                     <h2 id="profile-name" class="text-3xl font-black text-white uppercase tracking-tighter drop-shadow-md transition-colors">Имя</h2>
-                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">Досье игрока</p>
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">Статистика игрока</p>
                 </div>
-                <button onclick="closePlayerProfile()" class="text-zinc-400 text-xs font-bold uppercase hover:text-white transition bg-zinc-900 p-2 rounded-lg border border-zinc-800">Назад ✕</button>
+                <button onclick="closePlayerProfile()" class="text-zinc-400 text-xs font-bold uppercase hover:text-white transition bg-zinc-900 px-3 py-2 rounded-lg border border-zinc-800">✕ Закрыть</button>
             </div>
             
             <div class="flex space-x-3 mb-4">
@@ -216,21 +231,38 @@
                 </div>
             </div>
 
-            <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 px-1">История сессий</h3>
+            <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 px-1">История игр</h3>
             <div id="profile-sessions-list" class="space-y-2">
             </div>
         </div>
     </div>
 
-    <!-- ОКНО ПРОШЛЫХ СЕССИЙ -->
-    <div id="sessions-modal" class="fixed inset-0 hidden z-50 p-3 flex flex-col bg-black/95 backdrop-blur-md overflow-y-auto">
+    <!-- ОКНО ИСТОРИИ СЕССИЙ -->
+    <div id="sessions-modal" class="fixed top-0 left-0 right-0 bottom-[60px] hidden z-40 p-3 flex flex-col bg-[#050505] overflow-y-auto pt-16">
         <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
             <div class="flex justify-between items-center mb-4 mt-2">
                 <h2 class="text-sm font-black text-purple-500 uppercase tracking-widest">История игр</h2>
-                <button onclick="closeSessions()" class="text-zinc-400 text-xs font-bold uppercase hover:text-white transition">Закрыть ✕</button>
             </div>
             <div id="sessions-list" class="flex flex-col space-y-3">
             </div>
+        </div>
+    </div>
+
+    <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ (TAB BAR) -->
+    <div class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-50 h-[60px]">
+        <div class="max-w-md mx-auto flex h-full">
+            <button id="tab-table" onclick="showTab('table')" class="flex-1 flex flex-col items-center justify-center text-white transition-colors">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <span class="text-[9px] font-bold uppercase tracking-widest">Стол</span>
+            </button>
+            <button id="tab-rating" onclick="showTab('rating')" class="flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <span class="text-[9px] font-bold uppercase tracking-widest">Рейтинг</span>
+            </button>
+            <button id="tab-history" onclick="showTab('history')" class="flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="text-[9px] font-bold uppercase tracking-widest">История</span>
+            </button>
         </div>
     </div>
 
@@ -257,7 +289,7 @@
         let db = { game: [], history: {}, sessions: {} };
         let isFirstLoad = true;
         
-        let isEditMode = false; // Режим защиты от дурака
+        let isEditMode = false; 
         let isProfitsVisible = false; 
         let isOnline = false;
         let pendingSaves = 0;
@@ -280,14 +312,11 @@
             if (!indicator) return;
             
             if (!isOnline) {
-                indicator.className = "w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]";
-                indicator.title = "Нет сети (Оффлайн)";
+                indicator.className = "w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] ml-1";
             } else if (pendingSaves > 0) {
-                indicator.className = "w-2 h-2 rounded-full bg-yellow-400 animate-pulse shadow-[0_0_8px_rgba(250,204,21,0.8)]";
-                indicator.title = "Сохранение...";
+                indicator.className = "w-2 h-2 rounded-full bg-yellow-400 animate-pulse shadow-[0_0_8px_rgba(250,204,21,0.8)] ml-1";
             } else {
-                indicator.className = "w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] transition-colors duration-300";
-                indicator.title = "Синхронизировано";
+                indicator.className = "w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] transition-colors duration-300 ml-1";
             }
         }
 
@@ -298,19 +327,52 @@
             }
         });
 
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden' && document.activeElement && document.activeElement.tagName === 'INPUT') {
-                document.activeElement.blur(); 
+        // Скрытие меню при клике снаружи
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('dropdown-menu');
+            const hamburger = document.querySelector('button[onclick="toggleMenu()"]');
+            
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                if (!dropdown.contains(e.target) && !hamburger.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            }
+            
+            const autocomplete = document.getElementById('autocomplete-dropdown');
+            const nameInput = document.getElementById('new-player-name');
+            if (autocomplete && nameInput && e.target !== nameInput && e.target !== autocomplete) {
+                autocomplete.classList.add('hidden');
             }
         });
 
-        document.addEventListener('click', function(e) {
-            const input = document.getElementById('new-player-name');
-            const dropdown = document.getElementById('autocomplete-dropdown');
-            if (input && dropdown && e.target !== input && e.target !== dropdown) {
-                dropdown.classList.add('hidden');
+        window.toggleMenu = function() {
+            document.getElementById('dropdown-menu').classList.toggle('hidden');
+        };
+
+        // НАВИГАЦИЯ ПО TAB-BAR
+        window.showTab = function(tabName) {
+            document.getElementById('main-table-view').classList.add('hidden');
+            document.getElementById('history-modal').classList.add('hidden');
+            document.getElementById('sessions-modal').classList.add('hidden');
+            
+            document.getElementById('tab-table').className = "flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors";
+            document.getElementById('tab-rating').className = "flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors";
+            document.getElementById('tab-history').className = "flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors";
+
+            if (tabName === 'table') {
+                document.getElementById('main-table-view').classList.remove('hidden');
+                document.getElementById('main-table-view').classList.add('block');
+                document.getElementById('tab-table').className = "flex-1 flex flex-col items-center justify-center text-white transition-colors";
+            } else if (tabName === 'rating') {
+                document.getElementById('history-modal').classList.remove('hidden');
+                document.getElementById('tab-rating').className = "flex-1 flex flex-col items-center justify-center text-white transition-colors";
+                renderHistory();
+            } else if (tabName === 'history') {
+                document.getElementById('sessions-modal').classList.remove('hidden');
+                document.getElementById('tab-history').className = "flex-1 flex flex-col items-center justify-center text-white transition-colors";
+                renderSessions();
             }
-        });
+        };
 
         window.loginToClub = async function() {
             let name = document.getElementById('lobby-club').value.trim().toLowerCase();
@@ -363,8 +425,7 @@
             window.history.pushState({path:newUrl}, '', newUrl);
 
             document.getElementById('lobby-modal').classList.add('hidden');
-            document.getElementById('room-badge').innerText = name;
-            document.getElementById('room-badge').classList.remove('hidden');
+            document.getElementById('menu-room-badge').innerText = name;
 
             dbRef = ref(database, path);
             
@@ -380,10 +441,10 @@
                 }
                 
                 updateTopPlayer();
-                render();
+                renderTable();
                 
-                if(!document.getElementById('history-modal').classList.contains('hidden')) window.openHistory();
-                if(!document.getElementById('sessions-modal').classList.contains('hidden')) window.openSessions();
+                if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
+                if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
                 if(!document.getElementById('profile-modal').classList.contains('hidden')) {
                     const currentPlayer = document.getElementById('profile-name').innerText;
                     window.openPlayerProfile(currentPlayer);
@@ -451,24 +512,24 @@
 
         // --- ЛОГИКА РЕЖИМА УПРАВЛЕНИЯ ---
         window.toggleEditMode = function() {
-            isEditMode = !isEditMode;
-            const btn = document.getElementById('edit-mode-toggle');
+            const checkbox = document.getElementById('edit-toggle');
+            isEditMode = checkbox.checked;
+            const textLabel = document.getElementById('mode-text');
+            const btnEndGame = document.getElementById('btn-end-game');
             
             if(isEditMode) {
-                btn.innerHTML = '🔓 Управление';
-                btn.classList.replace('text-zinc-400', 'text-purple-400');
-                btn.classList.replace('border-zinc-800', 'border-purple-900/50');
-                btn.classList.add('bg-purple-900/20');
+                textLabel.innerHTML = 'Управление';
+                textLabel.classList.replace('text-zinc-500', 'text-purple-400');
+                if (db.game && db.game.length > 0) btnEndGame.classList.remove('hidden');
             } else {
-                btn.innerHTML = '🔒 Чтение';
-                btn.classList.replace('text-purple-400', 'text-zinc-400');
-                btn.classList.replace('border-purple-900/50', 'border-zinc-800');
-                btn.classList.remove('bg-purple-900/20');
+                textLabel.innerHTML = 'Чтение';
+                textLabel.classList.replace('text-purple-400', 'text-zinc-500');
+                btnEndGame.classList.add('hidden');
             }
             
-            render();
-            if(!document.getElementById('history-modal').classList.contains('hidden')) window.openHistory();
-            if(!document.getElementById('sessions-modal').classList.contains('hidden')) window.openSessions();
+            renderTable();
+            if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
+            if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
         }
 
         window.toggleProfits = function() {
@@ -488,7 +549,7 @@
                 dot.classList.add('translate-x-0', 'bg-zinc-400');
             }
 
-            if(!document.getElementById('history-modal').classList.contains('hidden')) window.openHistory();
+            if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
             if(!document.getElementById('profile-modal').classList.contains('hidden')) {
                 window.openPlayerProfile(document.getElementById('profile-name').innerText);
             }
@@ -529,9 +590,12 @@
             }
         }
 
-        function render() {
+        function renderTable() {
             const hasPlayers = db.game && db.game.length > 0;
-            document.getElementById('btn-end-game').classList.toggle('hidden', !isEditMode || !hasPlayers);
+            const btnEndGame = document.getElementById('btn-end-game');
+            if(isEditMode && hasPlayers) btnEndGame.classList.remove('hidden');
+            else btnEndGame.classList.add('hidden');
+            
             document.getElementById('add-player-section').classList.toggle('hidden', !isEditMode);
 
             let activeId = document.activeElement ? document.activeElement.id : null;
@@ -547,11 +611,7 @@
             let totalCashouts = 0;
 
             if (!db.game || db.game.length === 0) {
-                if(isFirstLoad) {
-                    newHTML = '<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Стол пуст</p>';
-                } else {
-                    newHTML = '<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Стол пуст</p>';
-                }
+                newHTML = '<p class="text-xs text-zinc-600 font-medium text-center py-4 italic">Стол пуст</p>';
             }
 
             if(db.game) {
@@ -572,7 +632,10 @@
                     let isGolden = (p.name === topPlayerName);
                     let nameTitleClass = isGolden ? 'golden-text' : 'text-white';
 
-                    let deleteBtnHTML = isEditMode ? `<button onclick="removePlayer(${index})" class="absolute top-2 right-2 w-5 h-5 bg-red-900/50 text-red-400 rounded-full text-[10px] font-bold flex items-center justify-center hover:bg-red-600 hover:text-white transition">✕</button>` : '';
+                    let deleteBtnHTML = isEditMode ? `
+                        <button onclick="removePlayer(${index})" class="absolute top-2 right-2 w-5 h-5 bg-red-900/30 text-red-400 rounded-full flex items-center justify-center hover:bg-red-600 hover:text-white transition">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>` : '';
 
                     let buyInHtml = isEditMode ? `
                         <div class="flex">
@@ -635,7 +698,7 @@
             if (!isFirstLoad) {
                 if (totalBuyIns > 0 && totalBuyIns === totalCashouts) {
                     badge.className = "text-[9px] font-bold px-2 py-1 rounded-md bg-emerald-900/50 text-emerald-400 border border-emerald-800 uppercase tracking-wider";
-                    badge.innerText = "Касса сошлась ✓";
+                    badge.innerText = "Сходится ✓";
                     bg.className = "absolute inset-0 bg-emerald-500/10 transition-colors duration-500";
                 } else if (totalBuyIns > 0 && totalCashouts > 0) {
                     let diff = totalBuyIns - totalCashouts;
@@ -678,7 +741,7 @@
 
         window.removePlayer = function(index) {
             if(!isEditMode) return;
-            if(confirm(`Точно удалить игрока ${db.game[index].name} со стола?`)) {
+            if(confirm(`Удалить игрока ${db.game[index].name}?`)) {
                 db.game.splice(index, 1);
                 document.getElementById('results-panel').classList.add('hidden');
                 saveToCloud();
@@ -709,17 +772,17 @@
 
         window.endGame = function() {
             if(!isEditMode) return;
-            if (db.game.length === 0) return alert('Стол пуст!');
+            if (db.game.length === 0) return alert('Стол пуст');
             
             let totalB = db.game.reduce((sum, p) => sum + (p.buyIn || 0), 0);
             let totalC = db.game.reduce((sum, p) => sum + (p.cashOut || 0), 0);
 
             if (totalB !== totalC) {
-                if(!confirm(`ВНИМАНИЕ: Касса не сходится! Разница: ${Math.abs(totalB - totalC)} руб.\n\nВсё равно завершить игру и записать эти результаты?`)) {
+                if(!confirm(`Касса не сходится! Разница: ${Math.abs(totalB - totalC)} руб.\nВсё равно завершить и сохранить?`)) {
                     return;
                 }
             } else {
-                if(!confirm('Завершить игру? Результаты будут записаны в историю.')) return;
+                if(!confirm('Завершить сессию и сохранить результаты?')) return;
             }
 
             const sessionId = "sess_" + Date.now();
@@ -755,8 +818,10 @@
             db.game = [];
             updateTopPlayer();
             document.getElementById('results-panel').classList.add('hidden');
+            document.getElementById('dropdown-menu').classList.add('hidden');
             saveToCloud();
-            alert("Игра завершена и записана в историю!");
+            
+            showTab('history');
         }
 
         function getMonthKey(dateStr) {
@@ -767,7 +832,7 @@
             return null;
         }
 
-        window.openHistory = function() {
+        window.renderHistory = function() {
             const filterSelect = document.getElementById('history-filter');
             
             let monthsSet = new Set();
@@ -836,7 +901,7 @@
             historyArray.sort((a, b) => b.net - a.net);
 
             if (historyArray.length === 0) {
-                list.innerHTML = '<div class="p-6 text-center text-xs text-zinc-500 italic">В этом месяце игр не было</div>';
+                list.innerHTML = '<div class="p-6 text-center text-xs text-zinc-500 italic">Нет данных</div>';
             } else {
                 let html = '';
                 historyArray.forEach((p, index) => {
@@ -845,8 +910,12 @@
 
                     let adminButtons = (isEditMode && currentFilter === 'all') ? `
                         <div class="w-[15%] flex justify-end space-x-2">
-                            <button onclick="editHistoryPlayer('${p.name}')" class="text-zinc-500 hover:text-blue-400 transition text-xs">✏️</button>
-                            <button onclick="deleteHistoryPlayer('${p.name}')" class="text-zinc-500 hover:text-red-400 transition text-xs">🗑️</button>
+                            <button onclick="editHistoryPlayer('${p.name}')" class="text-zinc-500 hover:text-blue-400 transition">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            </button>
+                            <button onclick="deleteHistoryPlayer('${p.name}')" class="text-zinc-500 hover:text-red-400 transition">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
                         </div>
                     ` : '';
 
@@ -868,12 +937,6 @@
                 });
                 list.innerHTML = html;
             }
-
-            document.getElementById('history-modal').classList.remove('hidden');
-        }
-
-        window.closeHistory = function() {
-            document.getElementById('history-modal').classList.add('hidden');
         }
 
         window.openPlayerProfile = function(name) {
@@ -983,7 +1046,7 @@
             playerSessions.sort((a, b) => b.id.localeCompare(a.id)); 
 
             if(playerSessions.length === 0) {
-                list.innerHTML = '<p class="text-center text-xs text-zinc-500 italic py-4">Нет записей об играх.</p>';
+                list.innerHTML = '<p class="text-center text-xs text-zinc-500 italic py-4">Нет данных</p>';
             } else {
                 let html = '';
                 playerSessions.forEach(s => {
@@ -1009,9 +1072,9 @@
         window.editHistoryPlayer = function(name) {
             if(!isEditMode) return;
             const p = db.history[name];
-            let newNet = prompt(`Редактируем ПРОФИТ для игрока ${name}:`, p.net);
+            let newNet = prompt(`Редактируем ПРОФИТ: ${name}`, p.net);
             if(newNet === null) return;
-            let newGames = prompt(`Редактируем КОЛ-ВО ИГР для игрока ${name}:`, p.games);
+            let newGames = prompt(`Редактируем КОЛ-ВО ИГР: ${name}`, p.games);
             if(newGames === null) return;
 
             db.history[name].net = parseInt(newNet) || 0;
@@ -1022,7 +1085,7 @@
 
         window.deleteHistoryPlayer = function(name) {
             if(!isEditMode) return;
-            if(confirm(`Точно удалить игрока ${name} из Зала Славы навсегда?`)) {
+            if(confirm(`Удалить игрока ${name} из рейтинга?`)) {
                 delete db.history[name];
                 updateTopPlayer();
                 saveToCloud();
@@ -1048,18 +1111,17 @@
             if (currentNoteSessionId && db.sessions[currentNoteSessionId]) {
                 db.sessions[currentNoteSessionId].note = document.getElementById('note-textarea').value.trim();
                 saveToCloud();
-                window.openSessions();
+                renderSessions();
             }
             closeNoteModal();
         }
 
-        window.openSessions = function() {
+        window.renderSessions = function() {
             const list = document.getElementById('sessions-list');
             list.innerHTML = '';
             
             if(!db.sessions || Object.keys(db.sessions).length === 0) {
-                list.innerHTML = '<p class="text-center text-xs text-zinc-500 italic mt-10">Пока нет завершенных игр.</p>';
-                document.getElementById('sessions-modal').classList.remove('hidden');
+                list.innerHTML = '<p class="text-center text-xs text-zinc-500 italic mt-10">Нет записей</p>';
                 return;
             }
 
@@ -1086,20 +1148,24 @@
                     
                     let statusDisplay = '';
                     if (isFullySettled) {
-                        statusDisplay = '✅';
+                        statusDisplay = `<span class="text-[8px] font-bold text-emerald-500 border border-emerald-900/50 bg-emerald-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">Оплачено</span>`;
                     } else {
                         if (settledAmount > 0) {
-                            statusDisplay = `<span class="text-[9px] font-bold text-yellow-500 bg-yellow-500/10 border border-yellow-500/20 px-1 rounded mr-1 whitespace-nowrap">${settledAmount} / ${absNet}</span>⏳`;
+                            statusDisplay = `<span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase mr-1">${settledAmount}/${absNet}</span><span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">Ожидается</span>`;
                         } else {
-                            statusDisplay = '⏳';
+                            statusDisplay = `<span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">Ожидается</span>`;
                         }
                     }
 
                     let isGolden = (p.name === topPlayerName);
                     let rowNameClass = isGolden ? 'golden-text' : 'text-zinc-200';
 
-                    let editPlayerAction = isEditMode ? `<button onclick="editSessionPlayer('${s.id}', '${p.name}')" class="ml-2 text-zinc-500 hover:text-blue-400 transition text-xs">✏️</button>` : '';
-                    let toggleAction = isEditMode ? `onclick="toggleSettled('${s.id}', '${p.name}')" class="cursor-pointer hover:scale-105 transition ml-2.5 text-sm flex items-center"` : `class="ml-2.5 text-sm flex items-center"`;
+                    let editPlayerAction = isEditMode ? `
+                        <button onclick="editSessionPlayer('${s.id}', '${p.name}')" class="ml-2 text-zinc-500 hover:text-blue-400 transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        </button>` : '';
+                        
+                    let toggleAction = isEditMode ? `onclick="toggleSettled('${s.id}', '${p.name}')" class="cursor-pointer hover:opacity-80 transition ml-2.5 flex items-center"` : `class="ml-2.5 flex items-center"`;
 
                     return `
                         <div class="flex justify-between items-center text-[13px] py-1 ${rowOpacity} transition-opacity duration-300">
@@ -1113,8 +1179,15 @@
                     `;
                 }).join('');
 
-                let deleteBtn = isEditMode ? `<button onclick="deleteSession('${s.id}')" class="absolute top-3 right-3 text-red-900 hover:text-red-500 transition text-xs font-bold">🗑️ Удалить</button>` : '';
-                let editBtn = isEditMode ? `<button onclick="editSessionDate('${s.id}')" class="ml-2 text-zinc-500 hover:text-purple-400 transition text-xs">✏️</button>` : '';
+                let deleteBtn = isEditMode ? `
+                    <button onclick="deleteSession('${s.id}')" class="absolute top-3 right-3 text-red-900 hover:text-red-500 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>` : '';
+                    
+                let editBtn = isEditMode ? `
+                    <button onclick="editSessionDate('${s.id}')" class="ml-2 text-zinc-500 hover:text-purple-400 transition">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    </button>` : '';
 
                 let noteText = s.note || '';
                 let cursorClass = isEditMode ? 'cursor-pointer hover:text-zinc-200 transition' : '';
@@ -1132,7 +1205,7 @@
                     noteUI = `
                         <div class="mb-3 bg-zinc-950/40 rounded-xl p-2.5 border border-zinc-800/50">
                             <div class="flex items-center justify-between text-[9px] font-bold text-zinc-500 uppercase tracking-widest">
-                                <span>📝 Заметки</span>
+                                <span>Заметки</span>
                             </div>
                             ${displayNote}
                         </div>
@@ -1151,18 +1224,12 @@
                         </div>
                         ${noteUI}
                         <div class="flex justify-between text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
-                            <span>Банк: ${s.totalB}</span>
+                            <span>Касса стола: ${s.totalB}</span>
                         </div>
                     </div>
                 `;
             });
             list.innerHTML = html;
-
-            document.getElementById('sessions-modal').classList.remove('hidden');
-        }
-
-        window.closeSessions = function() {
-            document.getElementById('sessions-modal').classList.add('hidden');
         }
 
         window.editSessionPlayer = function(id, playerName) {
@@ -1178,9 +1245,9 @@
             let oldC = p.cashOut || 0;
             let oldNet = oldC - oldB;
 
-            let newBStr = prompt(`Игрок: ${playerName}\n\nВведите правильный БАЙ-ИН (докупки) в этой игре:`, oldB);
+            let newBStr = prompt(`Игрок: ${playerName}\n\nСумма бай-инов:`, oldB);
             if(newBStr === null) return;
-            let newCStr = prompt(`Игрок: ${playerName}\n\nВведите правильный СТЭК (на руках) в этой игре:`, oldC);
+            let newCStr = prompt(`Игрок: ${playerName}\n\nОбщий стэк:`, oldC);
             if(newCStr === null) return;
 
             let newB = parseInt(newBStr) || 0;
@@ -1213,7 +1280,7 @@
             saveToCloud();
             
             if (tb !== tc) {
-                alert(`ВНИМАНИЕ! После вашего исправления банк в этой игре перестал сходиться:\nСумма бай-инов: ${tb}\nФишек на руках: ${tc}\n\nНе забудьте нажать ✏️ у второго игрока и тоже исправить его цифры, чтобы касса сошлась!`);
+                alert(`ВНИМАНИЕ! Касса не сходится:\nСумма бай-инов: ${tb}\nОбщий стэк: ${tc}`);
             }
         }
 
@@ -1230,9 +1297,9 @@
 
             let absNet = Math.abs(net);
             let currentSettled = p.settledAmount !== undefined ? p.settledAmount : (p.settled ? absNet : 0);
-            let typeStr = net > 0 ? 'получил(а)' : 'отдал(а)';
+            let typeStr = net > 0 ? 'получено' : 'отдано';
             
-            let amountStr = prompt(`Игрок: ${playerName}\nИтог в игре: ${net > 0 ? '+'+net : net} ₽\n\nСколько он(а) уже ${typeStr}?\n(Введите сумму от 0 до ${absNet})`, currentSettled);
+            let amountStr = prompt(`Игрок: ${playerName}\nИтог: ${net > 0 ? '+'+net : net} ₽\n\nУже ${typeStr}:\n(От 0 до ${absNet})`, currentSettled);
 
             if (amountStr !== null) {
                 let parsed = parseInt(amountStr);
@@ -1241,7 +1308,7 @@
                     db.sessions[id].players[playerIndex].settled = (parsed === absNet);
                     saveToCloud();
                 } else {
-                    alert("❌ Некорректная сумма! Нужно ввести число от 0 до " + absNet);
+                    alert("Некорректная сумма.");
                 }
             }
         }
@@ -1251,7 +1318,7 @@
             const session = db.sessions[id];
             if(!session) return;
             
-            let newDate = prompt(`Редактируем дату игры:`, session.date);
+            let newDate = prompt(`Дата сессии:`, session.date);
             if(newDate !== null && newDate.trim() !== '') {
                 db.sessions[id].date = newDate.trim();
                 saveToCloud();
@@ -1260,7 +1327,7 @@
 
         window.deleteSession = function(id) {
             if(!isEditMode) return;
-            if(!confirm('Точно удалить эту сессию? ВНИМАНИЕ: Её результаты будут автоматически вычтены из Зала Славы у всех игроков!')) return;
+            if(!confirm('Удалить сессию? Результаты будут вычтены из рейтинга.')) return;
             
             const session = db.sessions[id];
             if(session) {
@@ -1279,14 +1346,14 @@
         }
 
         window.calculateDebts = function() {
-            if (db.game.length === 0) return alert('Добавьте игроков!');
+            if (db.game.length === 0) return alert('Стол пуст');
             
             let totalB = db.game.reduce((sum, p) => sum + (p.buyIn || 0), 0);
             let totalC = db.game.reduce((sum, p) => sum + (p.cashOut || 0), 0);
 
-            if (totalB === 0) return alert('Никто не делал бай-ины!');
+            if (totalB === 0) return alert('Нет бай-инов');
             if (totalB !== totalC) {
-                alert(`ВНИМАНИЕ: Дебет с кредитом не сходится!\nСумма бай-инов: ${totalB}\nФишек на руках: ${totalC}\n\nНайдите ошибку перед расчетом.`);
+                alert(`Касса не сходится!\nСумма бай-инов: ${totalB}\nОбщий стэк: ${totalC}`);
                 return;
             }
 
@@ -1325,7 +1392,7 @@
             list.innerHTML = '';
 
             if (transactions.length === 0) {
-                list.innerHTML = '<p class="text-xs text-zinc-400">Все остались при своих!</p>';
+                list.innerHTML = '<p class="text-xs text-zinc-400">Взаиморасчеты не требуются</p>';
             } else {
                 let html = '';
                 transactions.forEach(t => {
@@ -1337,7 +1404,7 @@
                             <span class="text-xs font-bold w-1/3 truncate ${fromGolden}">${t.from}</span>
                             <div class="flex-1 flex flex-col items-center px-1">
                                 <span class="text-[10px] font-black text-white bg-zinc-800 px-3 py-1 rounded-full border border-zinc-700 shadow-md">${t.amount} ₽</span>
-                                <span class="text-[7px] text-zinc-500 mt-1 uppercase tracking-widest">переводит ➔</span>
+                                <span class="text-[7px] text-zinc-500 mt-1 uppercase tracking-widest">переводит</span>
                             </div>
                             <span class="text-xs font-bold w-1/3 text-right truncate ${toGolden}">${t.to}</span>
                         </div>
