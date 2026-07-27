@@ -89,7 +89,10 @@
     <!-- ОКНО "О ПРИЛОЖЕНИИ" -->
     <div id="about-modal" onclick="if(event.target===this) closeAbout()" class="fixed inset-0 hidden z-[3000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-6 rounded-3xl w-full max-w-md flex flex-col shadow-2xl relative">
-            <h3 id="loc-about-title" class="text-sm font-black text-blue-500 uppercase tracking-widest mb-1 text-center">О приложении</h3>
+            <button onclick="closeAbout()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 id="loc-about-title" class="text-sm font-black text-blue-500 uppercase tracking-widest mb-1 text-center mt-1">О приложении</h3>
             <p id="loc-about-desc" class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest text-center mb-6">Профессиональный трекер для покерных клубов</p>
             
             <div class="space-y-4 mb-8">
@@ -131,11 +134,26 @@
     <!-- ОКНО РЕДАКТИРОВАНИЯ ЗАМЕТКИ -->
     <div id="note-modal" onclick="if(event.target===this) closeNoteModal()" class="fixed inset-0 hidden z-[100] p-4 flex items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-4 rounded-2xl w-full max-w-sm flex flex-col shadow-2xl relative">
-            <h3 id="loc-note-title" class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-3">Редактировать заметку</h3>
+            <button onclick="closeNoteModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 id="loc-note-title" class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-3 mt-1">Редактировать заметку</h3>
             <textarea id="note-textarea" rows="4" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-sm text-white outline-none focus:border-purple-500 resize-none mb-4 placeholder-zinc-600 shadow-inner" placeholder="Детали взаиморасчетов..."></textarea>
             <div class="flex space-x-3">
                 <button onclick="closeNoteModal(true)" id="loc-btn-cancel" class="flex-1 py-2.5 bg-zinc-800 text-zinc-400 text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-zinc-700 transition">Отмена</button>
                 <button onclick="saveNoteModal()" id="loc-btn-save" class="flex-1 py-2.5 bg-purple-600 text-white text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-purple-500 transition shadow-[0_0_15px_rgba(147,51,234,0.3)]">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ОКНО ДЕТАЛЕЙ ИГРЫ (GAME DETAILS) -->
+    <div id="game-details-modal" onclick="if(event.target===this) closeGameDetails()" class="fixed inset-0 hidden z-[4000] p-3 flex flex-col items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
+        <div class="w-full max-w-md relative flex flex-col items-center">
+            <button onclick="closeGameDetails()" class="absolute -top-14 right-0 text-zinc-500 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div id="game-details-content" class="w-full">
+                <!-- Сюда инжектится карточка игры -->
             </div>
         </div>
     </div>
@@ -185,7 +203,7 @@
                         <span id="loc-menu-settings" class="text-xs font-bold uppercase tracking-widest">Настройки</span>
                     </button>
 
-                    <!-- О приложении (Перенесено ВНИЗ) -->
+                    <!-- О приложении перемещено под Настройки -->
                     <button onclick="openAbout()" class="w-full text-left px-4 py-3 text-blue-400 hover:text-blue-300 hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
                         <svg class="w-4 h-4 mr-3 text-blue-500/70 group-hover:text-blue-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         <span id="loc-menu-about" class="text-xs font-bold uppercase tracking-widest">О приложении</span>
@@ -291,7 +309,9 @@
                     <h2 id="profile-name" class="text-3xl font-black text-white uppercase tracking-tighter drop-shadow-md transition-colors">Имя</h2>
                     <p id="loc-prof-desc" class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">Статистика игрока</p>
                 </div>
-                <button onclick="closePlayerProfile()" class="text-zinc-400 text-xs font-bold uppercase hover:text-white transition bg-zinc-900 px-3 py-2 rounded-lg border border-zinc-800">✕</button>
+                <button onclick="closePlayerProfile()" class="text-zinc-400 hover:text-white transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
             
             <div class="flex space-x-3 mb-4">
@@ -317,7 +337,16 @@
             </div>
 
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 shadow-lg mb-5 relative">
-                <h3 id="loc-prof-chart" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-2 px-1">График профита</h3>
+                <div class="flex justify-between items-center mb-3 px-1">
+                    <h3 id="loc-prof-chart" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">График профита</h3>
+                    
+                    <!-- Переключатель графиков -->
+                    <div class="flex space-x-1 bg-zinc-950 border border-zinc-800 rounded p-0.5">
+                        <button onclick="updateChartFilter('10')" id="chart-filter-10" class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-zinc-700 text-white transition">10 ИГР</button>
+                        <button onclick="updateChartFilter('month')" id="chart-filter-month" class="text-[8px] font-bold px-1.5 py-0.5 rounded text-zinc-500 hover:text-white transition">МЕСЯЦ</button>
+                        <button onclick="updateChartFilter('all')" id="chart-filter-all" class="text-[8px] font-bold px-1.5 py-0.5 rounded text-zinc-500 hover:text-white transition">ВСЁ ВРЕМЯ</button>
+                    </div>
+                </div>
                 <div class="w-full h-40">
                     <canvas id="profileChart"></canvas>
                 </div>
@@ -329,7 +358,7 @@
         </div>
     </div>
 
-    <!-- ОКНО ИСТОРИИ СЕССИЙ -->
+    <!-- ОКНО ИСТОРИИ СЕССИЙ (ДЛЯ ТАБА) -->
     <div id="sessions-modal" class="hidden max-w-md mx-auto w-full flex-1 flex-col">
         <div class="flex justify-between items-center mb-4 mt-2">
             <h2 id="loc-hist-title" class="text-sm font-black text-purple-500 uppercase tracking-widest">История игр</h2>
@@ -390,10 +419,13 @@
         let currentRoom = null;
         let currentPwd = null;
 
-        // Глобальные переменные для трекинга несохраненных изменений
+        // Трекинг состояний для модалок
         let initialSettings = { currency: '', step: '' };
         let currentNoteSessionId = null;
         let initialNote = '';
+        let currentGameDetailsId = null;
+        let currentPlayerSessionsData = [];
+        let currentChartFilter = 'all';
 
         const i18n = {
             ru: {
@@ -415,8 +447,8 @@
                 feat1Title: "Умный расчет долгов", feat1Desc: "Автоматическое сведение дебета и кредита. Алгоритм сам рассчитает, кто, кому и сколько должен перевести.",
                 feat2Title: "Детальная статистика", feat2Desc: "Ведение глобального рейтинга игроков, графики профита и история всех прошедших сессий с заметками.",
                 feat3Title: "Умный ввод сумм", feat3Desc: "Используйте сокращения для быстрого ввода: <b>1k</b> = 1 000, <b>1.5m</b> = 1 500 000. Система всё поймет.",
-                aboutClose: "Закрыть",
-                unsavedAlert: "Есть несохраненные изменения. Закрыть без сохранения?"
+                aboutClose: "Закрыть", unsavedAlert: "Есть несохраненные изменения. Закрыть без сохранения?",
+                chart10: "10 ИГР", chartMonth: "МЕСЯЦ", chartAll: "ВСЁ ВРЕМЯ", gameDetails: "Детали игры"
             },
             en: {
                 lobbyTitle: "Private Club Login", lobbyBtn: "Login / Create",
@@ -437,8 +469,8 @@
                 feat1Title: "Smart Debt Calculation", feat1Desc: "Automatic debit and credit reconciliation. The algorithm calculates exactly who owes whom.",
                 feat2Title: "Detailed Statistics", feat2Desc: "Global player leaderboard, individual profit charts, and complete session history with notes.",
                 feat3Title: "Smart Input", feat3Desc: "Use shortcuts for quick data entry: <b>1k</b> = 1,000, <b>1.5m</b> = 1,500,000. The system handles the rest.",
-                aboutClose: "Close",
-                unsavedAlert: "You have unsaved changes. Close without saving?"
+                aboutClose: "Close", unsavedAlert: "You have unsaved changes. Close without saving?",
+                chart10: "10 GMS", chartMonth: "MONTH", chartAll: "ALL TIME", gameDetails: "Game Details"
             }
         };
 
@@ -453,20 +485,22 @@
             currentLang = l;
             localStorage.setItem('zalubank_lang', l);
             
-            // Лобби переключатели
             let lRu = document.getElementById('lang-ru');
             let lEn = document.getElementById('lang-en');
             if(lRu) lRu.className = l === 'ru' ? "text-[10px] font-bold px-2 py-1 rounded bg-zinc-700 text-white transition" : "text-[10px] font-bold px-2 py-1 rounded text-zinc-500 hover:text-white transition";
             if(lEn) lEn.className = l === 'en' ? "text-[10px] font-bold px-2 py-1 rounded bg-zinc-700 text-white transition" : "text-[10px] font-bold px-2 py-1 rounded text-zinc-500 hover:text-white transition";
             
-            // Меню переключатели
             let mRu = document.getElementById('menu-lang-ru');
             let mEn = document.getElementById('menu-lang-en');
             if(mRu) mRu.className = l === 'ru' ? "flex-1 text-[10px] font-bold py-2 rounded-md bg-zinc-700 text-white transition z-10 relative shadow-sm" : "flex-1 text-[10px] font-bold py-2 rounded-md text-zinc-500 hover:text-white transition z-10 relative";
             if(mEn) mEn.className = l === 'en' ? "flex-1 text-[10px] font-bold py-2 rounded-md bg-zinc-700 text-white transition z-10 relative shadow-sm" : "flex-1 text-[10px] font-bold py-2 rounded-md text-zinc-500 hover:text-white transition z-10 relative";
 
             applyLang();
-            if(dbRef) { renderTable(); if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory(); if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions(); }
+            if(dbRef) { 
+                renderTable(); 
+                if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory(); 
+                if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions(); 
+            }
         }
 
         function applyLang() {
@@ -519,6 +553,11 @@
             document.getElementById('loc-feat-3-title').innerText = t.feat3Title;
             document.getElementById('loc-feat-3-desc').innerHTML = t.feat3Desc;
             document.getElementById('loc-about-close').innerText = t.aboutClose;
+            
+            document.getElementById('chart-filter-10').innerText = t.chart10;
+            document.getElementById('chart-filter-month').innerText = t.chartMonth;
+            document.getElementById('chart-filter-all').innerText = t.chartAll;
+            if(document.getElementById('loc-game-details-title')) document.getElementById('loc-game-details-title').innerText = t.gameDetails;
 
             document.getElementById('lobby-club').placeholder = currentLang === 'ru' ? "Название комнаты" : "Room name";
             document.getElementById('lobby-pwd').placeholder = currentLang === 'ru' ? "Пароль" : "Password";
@@ -673,7 +712,6 @@
                             currentPwd = pwd;
                             document.getElementById('lobby-modal').classList.add('hidden');
                             
-                            // Запуск окна Настроек в режиме онбординга
                             document.getElementById('settings-modal').dataset.onboarding = "true";
                             document.getElementById('settings-close-btn').classList.add('hidden');
                             document.getElementById('setting-currency').value = '₽';
@@ -714,20 +752,19 @@
                 renderTable();
                 if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
                 if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
+                if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) openGameDetails(currentGameDetailsId);
             }
         }
 
         window.openSettings = function() {
             document.getElementById('dropdown-menu').classList.add('hidden');
             
-            // Режим редактирования (не онбординг)
             document.getElementById('settings-modal').dataset.onboarding = "false";
             document.getElementById('settings-close-btn').classList.remove('hidden');
             
             document.getElementById('setting-currency').value = roomSettings.currency;
             document.getElementById('setting-step').value = roomSettings.step;
             
-            // Фиксируем исходные данные для проверки изменений
             initialSettings.currency = roomSettings.currency;
             initialSettings.step = roomSettings.step.toString();
             
@@ -735,7 +772,6 @@
         }
 
         window.closeSettings = function(force = false) {
-            // Запрещаем закрывать без сохранения при первом создании комнаты
             if (document.getElementById('settings-modal').dataset.onboarding === 'true') return; 
             
             const currentCurrency = document.getElementById('setting-currency').value.trim();
@@ -770,6 +806,7 @@
                         renderTable();
                         if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
                         if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
+                        if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) openGameDetails(currentGameDetailsId);
                     }
                 });
             } else {
@@ -794,6 +831,9 @@
                 if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
                 if(!document.getElementById('profile-modal').classList.contains('hidden')) {
                     window.openPlayerProfile(document.getElementById('profile-name').innerText);
+                }
+                if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) {
+                    window.openGameDetails(currentGameDetailsId);
                 }
                 isFirstLoad = false;
             });
@@ -878,27 +918,59 @@
             renderTable();
             if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
             if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
+            if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) openGameDetails(currentGameDetailsId);
         }
 
-        window.toggleProfits = function() {
-            isProfitsVisible = !isProfitsVisible;
-            const bg = document.getElementById('profit-toggle-bg');
-            const dot = document.getElementById('profit-toggle-dot');
-            if (isProfitsVisible) {
-                bg.classList.remove('bg-zinc-800');
-                bg.classList.add('bg-blue-600');
-                dot.classList.remove('translate-x-0', 'bg-zinc-400');
-                dot.classList.add('translate-x-4', 'bg-white');
-            } else {
-                bg.classList.remove('bg-blue-600');
-                bg.classList.add('bg-zinc-800');
-                dot.classList.remove('translate-x-4', 'bg-white');
-                dot.classList.add('translate-x-0', 'bg-zinc-400');
+        window.updateChartFilter = function(filter) {
+            currentChartFilter = filter;
+            
+            ['10', 'month', 'all'].forEach(f => {
+                const btn = document.getElementById('chart-filter-' + f);
+                if (btn) {
+                    btn.className = (f === filter) 
+                        ? "text-[8px] font-bold px-1.5 py-0.5 rounded bg-zinc-700 text-white transition"
+                        : "text-[8px] font-bold px-1.5 py-0.5 rounded text-zinc-500 hover:text-white transition";
+                }
+            });
+
+            let filtered = [...currentPlayerSessionsData];
+            if (filter === '10') {
+                filtered = filtered.slice(-10);
+            } else if (filter === 'month') {
+                // Берем текущий месяц из системной даты в RU локали (чтобы всегда был формат DD.MM.YY)
+                const nowStr = new Date().toLocaleString('ru-RU', {day: '2-digit', month: '2-digit', year: '2-digit'});
+                const currentMonthKey = getMonthKey(nowStr);
+                filtered = filtered.filter(s => getMonthKey(s.date) === currentMonthKey);
             }
-            if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
-            if(!document.getElementById('profile-modal').classList.contains('hidden')) {
-                window.openPlayerProfile(document.getElementById('profile-name').innerText);
-            }
+            
+            let labels = ['#']; let dataPts = [0]; let currentTotal = 0;
+
+            filtered.forEach(s => {
+                currentTotal += s.net;
+                labels.push(s.date.split(',')[0]); 
+                dataPts.push(currentTotal);
+            });
+
+            const ctx = document.getElementById('profileChart').getContext('2d');
+            if (window.profileChartInstance) window.profileChartInstance.destroy();
+
+            window.profileChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Profit', data: dataPts, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2, pointBackgroundColor: dataPts.map(v => v >= 0 ? '#10b981' : '#ef4444'), pointRadius: 3, fill: true, tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return formatMoney(context.parsed.y); } } } },
+                    scales: {
+                        x: { ticks: { color: '#71717a', font: {size: 8} }, grid: { color: '#27272a' } },
+                        y: { ticks: { color: '#71717a', font: {size: 8}, callback: function(value) { return formatShort(value); } }, grid: { color: '#27272a' } }
+                    }
+                }
+            });
         }
 
         window.handlePlayerSearch = function() {
@@ -1116,8 +1188,8 @@
                 if(!confirm(`${i18n[currentLang].alertDiff} ${Math.abs(totalB - totalC)}`)) return;
             }
 
-            const sessionId = "sess_" + Date.now();
-            const dateStr = new Date().toLocaleString(currentLang === 'ru' ? 'ru-RU' : 'en-US', {day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute:'2-digit'});
+            // Жестко фиксируем русскую локаль для даты, чтобы всегда был формат DD.MM.YY для сортировки
+            const dateStr = new Date().toLocaleString('ru-RU', {day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute:'2-digit'});
             
             let finalPlayers = JSON.parse(JSON.stringify(db.game)).filter(p=>p).map(p => {
                 let net = (p.cashOut || 0) - (p.buyIn || 0);
@@ -1127,6 +1199,7 @@
             });
 
             if(!db.sessions) db.sessions = {};
+            const sessionId = "sess_" + Date.now();
             db.sessions[sessionId] = { date: dateStr, players: finalPlayers, totalB: totalB, totalC: totalC };
 
             db.game.filter(p=>p).forEach(p => {
@@ -1255,6 +1328,8 @@
         }
 
         window.openPlayerProfile = function(name) {
+            closeGameDetails(); // Закрываем детали, если профиль открыт оттуда
+            
             const stats = db.history[name];
             if(!stats) return;
 
@@ -1307,35 +1382,8 @@
                 owedEl.innerText = '***';
             }
 
-            let chartSessions = [...playerSessions].sort((a, b) => a.id.localeCompare(b.id)); 
-            let labels = ['#']; let dataPts = [0]; let currentTotal = 0;
-
-            chartSessions.forEach(s => {
-                currentTotal += s.net;
-                labels.push(s.date.split(',')[0]); 
-                dataPts.push(currentTotal);
-            });
-
-            const ctx = document.getElementById('profileChart').getContext('2d');
-            if (window.profileChartInstance) window.profileChartInstance.destroy();
-
-            window.profileChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Profit', data: dataPts, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        borderWidth: 2, pointBackgroundColor: dataPts.map(v => v >= 0 ? '#10b981' : '#ef4444'), pointRadius: 3, fill: true, tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return formatMoney(context.parsed.y); } } } },
-                    scales: {
-                        x: { ticks: { color: '#71717a', font: {size: 8} }, grid: { color: '#27272a' } },
-                        y: { ticks: { color: '#71717a', font: {size: 8}, callback: function(value) { return formatShort(value); } }, grid: { color: '#27272a' } }
-                    }
-                }
-            });
+            currentPlayerSessionsData = [...playerSessions].sort((a, b) => a.id.localeCompare(b.id)); 
+            updateChartFilter('all'); // Рисуем график
 
             playerSessions.sort((a, b) => b.id.localeCompare(a.id)); 
 
@@ -1347,7 +1395,7 @@
                     const sNetClass = s.net > 0 ? 'text-emerald-400' : (s.net < 0 ? 'text-red-400' : 'text-zinc-500');
                     const sNetText = s.net > 0 ? `+${formatMoney(s.net)}` : formatMoney(s.net);
                     html += `
-                        <div class="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-zinc-800/50">
+                        <div onclick="openGameDetails('${s.id}')" class="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-zinc-800/50 cursor-pointer hover:bg-zinc-800 transition">
                             <span class="text-xs font-bold text-zinc-400">${s.date}</span>
                             <span class="text-sm font-black ${sNetClass}">${sNetText}</span>
                         </div>
@@ -1360,6 +1408,146 @@
 
         window.closePlayerProfile = function() {
             document.getElementById('profile-modal').classList.add('hidden');
+        }
+
+        // --- УТИЛИТА СБОРКИ КАРТОЧКИ ИГРЫ (ИСПОЛЬЗУЕТСЯ В ИСТОРИИ И В ДЕТАЛЯХ) ---
+        function buildSessionCardHTML(s, id, isEditMode) {
+            const t = i18n[currentLang];
+            let playersHTML = s.players.filter(p=>p).map(p => {
+                let net = (p.cashOut || 0) - (p.buyIn || 0);
+                let absNet = Math.abs(net);
+                
+                let settledAmount = p.settledAmount !== undefined ? p.settledAmount : (p.settled ? absNet : 0);
+                let isFullySettled = (settledAmount === absNet) || (net === 0);
+                
+                let nClass = net > 0 ? 'text-emerald-400' : (net < 0 ? 'text-red-400' : 'text-zinc-400');
+                if(isFullySettled && net > 0) nClass = 'text-emerald-500'; 
+                if(isFullySettled && net < 0) nClass = 'text-red-500';
+                
+                let netStr = net > 0 ? '+'+formatMoney(net) : formatMoney(net);
+                let rowOpacity = isFullySettled ? 'opacity-70' : 'opacity-100'; 
+                
+                let statusDisplay = '';
+                if (isFullySettled) {
+                    statusDisplay = `<span class="text-[8px] font-bold text-emerald-500 border border-emerald-900/50 bg-emerald-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">${t.paid}</span>`;
+                } else {
+                    if (settledAmount > 0) {
+                        statusDisplay = `<span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase mr-1">${formatShort(settledAmount)}/${formatShort(absNet)}</span><span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">${t.wait}</span>`;
+                    } else {
+                        statusDisplay = `<span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">${t.wait}</span>`;
+                    }
+                }
+
+                let isGolden = (p.name === topPlayerName);
+                let rowNameClass = isGolden ? 'golden-text' : 'text-zinc-200';
+
+                let editPlayerAction = isEditMode ? `
+                    <button onclick="editSessionPlayer('${id}', '${p.name}')" class="ml-2 text-zinc-500 hover:text-blue-400 transition">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    </button>` : '';
+                    
+                let toggleAction = isEditMode ? `onclick="toggleSettled('${id}', '${p.name}')" class="cursor-pointer hover:opacity-80 transition ml-2.5 flex items-center"` : `class="ml-2.5 flex items-center"`;
+
+                let nameClick = `onclick="openPlayerProfile('${p.name}')" class="font-medium ${rowNameClass} cursor-pointer hover:underline decoration-zinc-500 underline-offset-4 transition"`;
+
+                return `
+                    <div class="flex justify-between items-center text-[13px] py-1 ${rowOpacity} transition-opacity duration-300">
+                        <span ${nameClick}>${p.name}</span>
+                        <div class="flex items-center">
+                            <span class="${nClass} font-bold">${netStr}</span>
+                            ${editPlayerAction}
+                            <div ${toggleAction}>${statusDisplay}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            let deleteBtn = isEditMode ? `
+                <button onclick="deleteSession('${id}')" class="absolute top-3 right-3 text-red-900 hover:text-red-500 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>` : '';
+                
+            let editBtn = isEditMode ? `
+                <button onclick="editSessionDate('${id}')" class="ml-2 text-zinc-500 hover:text-purple-400 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                </button>` : '';
+
+            let noteText = s.note || '';
+            let cursorClass = isEditMode ? 'cursor-pointer hover:text-zinc-200 transition' : '';
+            let onClickAction = isEditMode ? `onclick="openNoteModal('${id}')"` : '';
+            
+            let displayNote = '';
+            if(noteText) {
+                displayNote = `<div class="text-[11px] text-zinc-300 mt-1.5 leading-tight whitespace-pre-wrap ${cursorClass}" ${onClickAction}>${noteText}</div>`;
+            } else if(isEditMode) {
+                displayNote = `<div class="text-[10px] text-zinc-600 mt-1 italic ${cursorClass}" ${onClickAction}>${currentLang === 'ru'?'Нажмите, чтобы добавить заметку...':'Click to add a note...'}</div>`;
+            }
+            
+            let noteUI = '';
+            if(noteText || isEditMode) {
+                noteUI = `
+                    <div class="mb-3 bg-zinc-950/40 rounded-xl p-2.5 border border-zinc-800/50">
+                        <div class="flex items-center justify-between text-[9px] font-bold text-zinc-500 uppercase tracking-widest">
+                            <span>${t.notes}</span>
+                        </div>
+                        ${displayNote}
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 relative shadow-lg">
+                    ${deleteBtn}
+                    <div class="flex items-center text-xs font-bold text-purple-500 mb-3">
+                        <span>${s.date || '?'}</span>
+                        ${editBtn}
+                    </div>
+                    <div class="space-y-1.5 mb-3 border-b border-zinc-800 pb-3">
+                        ${playersHTML}
+                    </div>
+                    ${noteUI}
+                    <div class="flex justify-between text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
+                        <span>${t.tableCash}: ${formatMoney(s.totalB)}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.openGameDetails = function(id) {
+            const s = db.sessions[id];
+            if(!s) return;
+            currentGameDetailsId = id;
+            document.getElementById('game-details-content').innerHTML = buildSessionCardHTML(s, id, isEditMode);
+            
+            if(document.getElementById('loc-game-details-title')) {
+                document.getElementById('loc-game-details-title').innerText = i18n[currentLang].gameDetails;
+            }
+
+            document.getElementById('game-details-modal').classList.remove('hidden');
+        }
+
+        window.closeGameDetails = function() {
+            document.getElementById('game-details-modal').classList.add('hidden');
+            currentGameDetailsId = null;
+        }
+
+        window.renderSessions = function() {
+            const list = document.getElementById('sessions-list');
+            list.innerHTML = '';
+            const t = i18n[currentLang];
+            
+            if(!db.sessions || Object.keys(db.sessions).length === 0) {
+                list.innerHTML = `<p class="text-center text-xs text-zinc-500 italic mt-10">${currentLang === 'ru'?'Нет записей':'No records'}</p>`;
+                return;
+            }
+
+            let sessArray = Object.keys(db.sessions)
+                .filter(id => db.sessions[id] && db.sessions[id].players)
+                .map(id => { return { id: id, ...db.sessions[id] }; });
+                
+            sessArray.sort((a, b) => b.id.localeCompare(a.id));
+            
+            list.innerHTML = sessArray.map(s => buildSessionCardHTML(s, s.id, isEditMode)).join('');
         }
 
         window.editHistoryPlayer = function(name) {
@@ -1415,124 +1603,6 @@
                 renderSessions();
             }
             closeNoteModal(true);
-        }
-
-        window.renderSessions = function() {
-            const list = document.getElementById('sessions-list');
-            list.innerHTML = '';
-            const t = i18n[currentLang];
-            
-            if(!db.sessions || Object.keys(db.sessions).length === 0) {
-                list.innerHTML = `<p class="text-center text-xs text-zinc-500 italic mt-10">${currentLang === 'ru'?'Нет записей':'No records'}</p>`;
-                return;
-            }
-
-            let sessArray = Object.keys(db.sessions)
-                .filter(id => db.sessions[id] && db.sessions[id].players)
-                .map(id => { return { id: id, ...db.sessions[id] }; });
-                
-            sessArray.sort((a, b) => b.id.localeCompare(a.id));
-
-            let html = '';
-            sessArray.forEach(s => {
-                let playersHTML = s.players.filter(p=>p).map(p => {
-                    let net = (p.cashOut || 0) - (p.buyIn || 0);
-                    let absNet = Math.abs(net);
-                    
-                    let settledAmount = p.settledAmount !== undefined ? p.settledAmount : (p.settled ? absNet : 0);
-                    let isFullySettled = (settledAmount === absNet) || (net === 0);
-                    
-                    let nClass = net > 0 ? 'text-emerald-400' : (net < 0 ? 'text-red-400' : 'text-zinc-400');
-                    if(isFullySettled && net > 0) nClass = 'text-emerald-500'; 
-                    if(isFullySettled && net < 0) nClass = 'text-red-500';
-                    
-                    let netStr = net > 0 ? '+'+formatMoney(net) : formatMoney(net);
-                    let rowOpacity = isFullySettled ? 'opacity-70' : 'opacity-100'; 
-                    
-                    let statusDisplay = '';
-                    if (isFullySettled) {
-                        statusDisplay = `<span class="text-[8px] font-bold text-emerald-500 border border-emerald-900/50 bg-emerald-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">${t.paid}</span>`;
-                    } else {
-                        if (settledAmount > 0) {
-                            statusDisplay = `<span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase mr-1">${formatShort(settledAmount)}/${formatShort(absNet)}</span><span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">${t.wait}</span>`;
-                        } else {
-                            statusDisplay = `<span class="text-[8px] font-bold text-yellow-500 border border-yellow-900/50 bg-yellow-900/20 px-1.5 py-0.5 rounded tracking-widest uppercase">${t.wait}</span>`;
-                        }
-                    }
-
-                    let isGolden = (p.name === topPlayerName);
-                    let rowNameClass = isGolden ? 'golden-text' : 'text-zinc-200';
-
-                    let editPlayerAction = isEditMode ? `
-                        <button onclick="editSessionPlayer('${s.id}', '${p.name}')" class="ml-2 text-zinc-500 hover:text-blue-400 transition">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        </button>` : '';
-                        
-                    let toggleAction = isEditMode ? `onclick="toggleSettled('${s.id}', '${p.name}')" class="cursor-pointer hover:opacity-80 transition ml-2.5 flex items-center"` : `class="ml-2.5 flex items-center"`;
-
-                    return `
-                        <div class="flex justify-between items-center text-[13px] py-1 ${rowOpacity} transition-opacity duration-300">
-                            <span class="font-medium ${rowNameClass}">${p.name}</span>
-                            <div class="flex items-center">
-                                <span class="${nClass} font-bold">${netStr}</span>
-                                ${editPlayerAction}
-                                <div ${toggleAction}>${statusDisplay}</div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                let deleteBtn = isEditMode ? `
-                    <button onclick="deleteSession('${s.id}')" class="absolute top-3 right-3 text-red-900 hover:text-red-500 transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    </button>` : '';
-                    
-                let editBtn = isEditMode ? `
-                    <button onclick="editSessionDate('${s.id}')" class="ml-2 text-zinc-500 hover:text-purple-400 transition">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                    </button>` : '';
-
-                let noteText = s.note || '';
-                let cursorClass = isEditMode ? 'cursor-pointer hover:text-zinc-200 transition' : '';
-                let onClickAction = isEditMode ? `onclick="openNoteModal('${s.id}')"` : '';
-                
-                let displayNote = '';
-                if(noteText) {
-                    displayNote = `<div class="text-[11px] text-zinc-300 mt-1.5 leading-tight whitespace-pre-wrap ${cursorClass}" ${onClickAction}>${noteText}</div>`;
-                } else if(isEditMode) {
-                    displayNote = `<div class="text-[10px] text-zinc-600 mt-1 italic ${cursorClass}" ${onClickAction}>${currentLang === 'ru'?'Нажмите, чтобы добавить заметку...':'Click to add a note...'}</div>`;
-                }
-                
-                let noteUI = '';
-                if(noteText || isEditMode) {
-                    noteUI = `
-                        <div class="mb-3 bg-zinc-950/40 rounded-xl p-2.5 border border-zinc-800/50">
-                            <div class="flex items-center justify-between text-[9px] font-bold text-zinc-500 uppercase tracking-widest">
-                                <span>${t.notes}</span>
-                            </div>
-                            ${displayNote}
-                        </div>
-                    `;
-                }
-
-                html += `
-                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 relative shadow-lg">
-                        ${deleteBtn}
-                        <div class="flex items-center text-xs font-bold text-purple-500 mb-3">
-                            <span>${s.date || '?'}</span>
-                            ${editBtn}
-                        </div>
-                        <div class="space-y-1.5 mb-3 border-b border-zinc-800 pb-3">
-                            ${playersHTML}
-                        </div>
-                        ${noteUI}
-                        <div class="flex justify-between text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
-                            <span>${t.tableCash}: ${formatMoney(s.totalB)}</span>
-                        </div>
-                    </div>
-                `;
-            });
-            list.innerHTML = html;
         }
 
         window.editSessionPlayer = function(id, playerName) {
