@@ -51,7 +51,6 @@
             Доступ имеют только те, кто знает пароль. Внутри комнаты все игроки имеют права на редактирование.
         </p>
         
-        <!-- Ссылка "О приложении" в лобби -->
         <button onclick="openAbout()" id="loc-lobby-about" class="text-[10px] text-blue-500 font-bold uppercase tracking-widest mt-4 hover:text-blue-400 transition underline decoration-blue-900/50 underline-offset-4">
             Как это работает?
         </button>
@@ -66,9 +65,12 @@
     </div>
 
     <!-- ОКНО НАСТРОЕК КЛУБА -->
-    <div id="settings-modal" class="fixed inset-0 hidden z-[2000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
+    <div id="settings-modal" onclick="if(event.target===this) closeSettings()" class="fixed inset-0 hidden z-[2000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-5 rounded-3xl w-full max-w-sm flex flex-col shadow-2xl relative">
-            <h3 id="loc-settings-title" class="text-xs font-black text-purple-400 uppercase tracking-widest mb-4 text-center">Настройки клуба</h3>
+            <button id="settings-close-btn" onclick="closeSettings()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 id="loc-settings-title" class="text-xs font-black text-purple-400 uppercase tracking-widest mb-4 text-center mt-1">Настройки клуба</h3>
             
             <div class="mb-4">
                 <label id="loc-currency-label" class="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5 ml-1">Символ валюты</label>
@@ -85,7 +87,7 @@
     </div>
 
     <!-- ОКНО "О ПРИЛОЖЕНИИ" -->
-    <div id="about-modal" class="fixed inset-0 hidden z-[3000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
+    <div id="about-modal" onclick="if(event.target===this) closeAbout()" class="fixed inset-0 hidden z-[3000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-6 rounded-3xl w-full max-w-md flex flex-col shadow-2xl relative">
             <h3 id="loc-about-title" class="text-sm font-black text-blue-500 uppercase tracking-widest mb-1 text-center">О приложении</h3>
             <p id="loc-about-desc" class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest text-center mb-6">Профессиональный трекер для покерных клубов</p>
@@ -127,12 +129,12 @@
     </div>
 
     <!-- ОКНО РЕДАКТИРОВАНИЯ ЗАМЕТКИ -->
-    <div id="note-modal" class="fixed inset-0 hidden z-[100] p-4 flex items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity">
-        <div class="bg-zinc-900 border border-zinc-700 p-4 rounded-2xl w-full max-w-sm flex flex-col shadow-2xl">
+    <div id="note-modal" onclick="if(event.target===this) closeNoteModal()" class="fixed inset-0 hidden z-[100] p-4 flex items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity">
+        <div class="bg-zinc-900 border border-zinc-700 p-4 rounded-2xl w-full max-w-sm flex flex-col shadow-2xl relative">
             <h3 id="loc-note-title" class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-3">Редактировать заметку</h3>
             <textarea id="note-textarea" rows="4" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-sm text-white outline-none focus:border-purple-500 resize-none mb-4 placeholder-zinc-600 shadow-inner" placeholder="Детали взаиморасчетов..."></textarea>
             <div class="flex space-x-3">
-                <button onclick="closeNoteModal()" id="loc-btn-cancel" class="flex-1 py-2.5 bg-zinc-800 text-zinc-400 text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-zinc-700 transition">Отмена</button>
+                <button onclick="closeNoteModal(true)" id="loc-btn-cancel" class="flex-1 py-2.5 bg-zinc-800 text-zinc-400 text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-zinc-700 transition">Отмена</button>
                 <button onclick="saveNoteModal()" id="loc-btn-save" class="flex-1 py-2.5 bg-purple-600 text-white text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-purple-500 transition shadow-[0_0_15px_rgba(147,51,234,0.3)]">Сохранить</button>
             </div>
         </div>
@@ -178,15 +180,15 @@
                         </div>
                     </div>
 
-                    <!-- О приложении (Новая кнопка) -->
-                    <button onclick="openAbout()" class="w-full text-left px-4 py-3 text-blue-400 hover:text-blue-300 hover:bg-zinc-800 transition flex items-center group">
-                        <svg class="w-4 h-4 mr-3 text-blue-500/70 group-hover:text-blue-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span id="loc-menu-about" class="text-xs font-bold uppercase tracking-widest">О приложении</span>
-                    </button>
-
-                    <button id="btn-settings" onclick="openSettings()" class="hidden w-full text-left px-4 py-3 text-purple-400 hover:text-purple-300 hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
+                    <button id="btn-settings" onclick="openSettings()" class="hidden w-full text-left px-4 py-3 text-purple-400 hover:text-purple-300 hover:bg-zinc-800 transition flex items-center group">
                         <svg class="w-4 h-4 mr-3 text-zinc-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         <span id="loc-menu-settings" class="text-xs font-bold uppercase tracking-widest">Настройки</span>
+                    </button>
+
+                    <!-- О приложении (Перенесено ВНИЗ) -->
+                    <button onclick="openAbout()" class="w-full text-left px-4 py-3 text-blue-400 hover:text-blue-300 hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
+                        <svg class="w-4 h-4 mr-3 text-blue-500/70 group-hover:text-blue-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span id="loc-menu-about" class="text-xs font-bold uppercase tracking-widest">О приложении</span>
                     </button>
 
                     <button id="btn-end-game" onclick="endGame()" class="hidden w-full text-left px-4 py-3 text-red-400 hover:text-red-300 hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
@@ -282,7 +284,7 @@
     </div>
 
     <!-- ПРОФИЛЬ ИГРОКА -->
-    <div id="profile-modal" class="fixed inset-0 hidden z-[60] p-3 flex flex-col bg-black/95 backdrop-blur-md overflow-y-auto">
+    <div id="profile-modal" onclick="if(event.target===this) closePlayerProfile()" class="fixed inset-0 hidden z-[60] p-3 flex flex-col bg-black/95 backdrop-blur-md overflow-y-auto">
         <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
             <div class="flex justify-between items-start mb-6 mt-4">
                 <div>
@@ -383,10 +385,15 @@
         let isProfitsVisible = false; 
         let isOnline = false;
         let pendingSaves = 0;
-        let currentNoteSessionId = null;
+        
         let topPlayerName = null; 
         let currentRoom = null;
         let currentPwd = null;
+
+        // Глобальные переменные для трекинга несохраненных изменений
+        let initialSettings = { currency: '', step: '' };
+        let currentNoteSessionId = null;
+        let initialNote = '';
 
         const i18n = {
             ru: {
@@ -408,7 +415,8 @@
                 feat1Title: "Умный расчет долгов", feat1Desc: "Автоматическое сведение дебета и кредита. Алгоритм сам рассчитает, кто, кому и сколько должен перевести.",
                 feat2Title: "Детальная статистика", feat2Desc: "Ведение глобального рейтинга игроков, графики профита и история всех прошедших сессий с заметками.",
                 feat3Title: "Умный ввод сумм", feat3Desc: "Используйте сокращения для быстрого ввода: <b>1k</b> = 1 000, <b>1.5m</b> = 1 500 000. Система всё поймет.",
-                aboutClose: "Закрыть"
+                aboutClose: "Закрыть",
+                unsavedAlert: "Есть несохраненные изменения. Закрыть без сохранения?"
             },
             en: {
                 lobbyTitle: "Private Club Login", lobbyBtn: "Login / Create",
@@ -429,7 +437,8 @@
                 feat1Title: "Smart Debt Calculation", feat1Desc: "Automatic debit and credit reconciliation. The algorithm calculates exactly who owes whom.",
                 feat2Title: "Detailed Statistics", feat2Desc: "Global player leaderboard, individual profit charts, and complete session history with notes.",
                 feat3Title: "Smart Input", feat3Desc: "Use shortcuts for quick data entry: <b>1k</b> = 1,000, <b>1.5m</b> = 1,500,000. The system handles the rest.",
-                aboutClose: "Close"
+                aboutClose: "Close",
+                unsavedAlert: "You have unsaved changes. Close without saving?"
             }
         };
 
@@ -590,9 +599,7 @@
         };
 
         window.openAbout = function() {
-            if (document.getElementById('dropdown-menu')) {
-                document.getElementById('dropdown-menu').classList.add('hidden');
-            }
+            if (document.getElementById('dropdown-menu')) document.getElementById('dropdown-menu').classList.add('hidden');
             document.getElementById('about-modal').classList.remove('hidden');
         };
 
@@ -665,6 +672,10 @@
                             currentRoom = name;
                             currentPwd = pwd;
                             document.getElementById('lobby-modal').classList.add('hidden');
+                            
+                            // Запуск окна Настроек в режиме онбординга
+                            document.getElementById('settings-modal').dataset.onboarding = "true";
+                            document.getElementById('settings-close-btn').classList.add('hidden');
                             document.getElementById('setting-currency').value = '₽';
                             document.getElementById('setting-step').value = '1000';
                             document.getElementById('settings-modal').classList.remove('hidden');
@@ -708,9 +719,33 @@
 
         window.openSettings = function() {
             document.getElementById('dropdown-menu').classList.add('hidden');
+            
+            // Режим редактирования (не онбординг)
+            document.getElementById('settings-modal').dataset.onboarding = "false";
+            document.getElementById('settings-close-btn').classList.remove('hidden');
+            
             document.getElementById('setting-currency').value = roomSettings.currency;
             document.getElementById('setting-step').value = roomSettings.step;
+            
+            // Фиксируем исходные данные для проверки изменений
+            initialSettings.currency = roomSettings.currency;
+            initialSettings.step = roomSettings.step.toString();
+            
             document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        window.closeSettings = function(force = false) {
+            // Запрещаем закрывать без сохранения при первом создании комнаты
+            if (document.getElementById('settings-modal').dataset.onboarding === 'true') return; 
+            
+            const currentCurrency = document.getElementById('setting-currency').value.trim();
+            const currentStep = document.getElementById('setting-step').value.trim();
+            
+            if (!force && (currentCurrency !== initialSettings.currency || currentStep !== initialSettings.step)) {
+                if (!confirm(i18n[currentLang].unsavedAlert)) return;
+            }
+            
+            document.getElementById('settings-modal').classList.add('hidden');
         }
 
         function startSession(name, pwd, dataPath, sPath) {
@@ -1354,12 +1389,20 @@
             if(!isEditMode) return;
             currentNoteSessionId = id;
             const session = db.sessions[id];
-            document.getElementById('note-textarea').value = session.note || '';
+            
+            initialNote = session.note || '';
+            document.getElementById('note-textarea').value = initialNote;
+            
             document.getElementById('note-modal').classList.remove('hidden');
             setTimeout(() => document.getElementById('note-textarea').focus(), 50);
         }
 
-        window.closeNoteModal = function() {
+        window.closeNoteModal = function(force = false) {
+            const currentVal = document.getElementById('note-textarea').value.trim();
+            if (!force && currentVal !== initialNote.trim()) {
+                if (!confirm(i18n[currentLang].unsavedAlert)) return;
+            }
+            
             document.getElementById('note-modal').classList.add('hidden');
             currentNoteSessionId = null;
         }
@@ -1371,7 +1414,7 @@
                 saveToCloud();
                 renderSessions();
             }
-            closeNoteModal();
+            closeNoteModal(true);
         }
 
         window.renderSessions = function() {
