@@ -120,6 +120,15 @@
                         <span id="loc-menu-club" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Клуб</span>
                         <p id="menu-room-badge" class="text-xs font-bold text-white uppercase truncate">---</p>
                     </div>
+                    
+                    <div class="px-4 py-2 border-b border-zinc-800/50 flex justify-between items-center">
+                        <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Язык / Lang</span>
+                        <div class="flex space-x-1 bg-zinc-800 rounded p-0.5">
+                            <button onclick="setLang('ru')" id="menu-lang-ru" class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-zinc-600 text-white transition">RU</button>
+                            <button onclick="setLang('en')" id="menu-lang-en" class="text-[9px] font-bold px-1.5 py-0.5 rounded text-zinc-400 hover:text-white transition">EN</button>
+                        </div>
+                    </div>
+
                     <button id="btn-settings" onclick="openSettings()" class="hidden w-full text-left px-4 py-3 text-purple-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition">⚙ Настройки</button>
                     <button id="btn-end-game" onclick="endGame()" class="hidden w-full text-left px-4 py-3 text-red-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition border-t border-zinc-800/50">Завершить сессию</button>
                     <button onclick="logoutClub()" id="loc-menu-exit" class="w-full text-left px-4 py-3 text-zinc-300 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition border-t border-zinc-800/50">Выйти из комнаты</button>
@@ -265,7 +274,7 @@
     <div class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-50 h-[60px]">
         <div class="max-w-md mx-auto flex h-full">
             <button id="tab-table" onclick="showTab('table')" class="flex-1 flex flex-col items-center justify-center text-white transition-colors">
-                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 <span id="loc-tab-table" class="text-[9px] font-bold uppercase tracking-widest">Стол</span>
             </button>
             <button id="tab-rating" onclick="showTab('rating')" class="flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors">
@@ -353,8 +362,19 @@
         window.setLang = function(l) {
             currentLang = l;
             localStorage.setItem('zalubank_lang', l);
-            document.getElementById('lang-ru').className = l === 'ru' ? "text-[10px] font-bold px-2 py-1 rounded bg-zinc-700 text-white transition" : "text-[10px] font-bold px-2 py-1 rounded text-zinc-500 hover:text-white transition";
-            document.getElementById('lang-en').className = l === 'en' ? "text-[10px] font-bold px-2 py-1 rounded bg-zinc-700 text-white transition" : "text-[10px] font-bold px-2 py-1 rounded text-zinc-500 hover:text-white transition";
+            
+            // Лобби переключатели
+            let lRu = document.getElementById('lang-ru');
+            let lEn = document.getElementById('lang-en');
+            if(lRu) lRu.className = l === 'ru' ? "text-[10px] font-bold px-2 py-1 rounded bg-zinc-700 text-white transition" : "text-[10px] font-bold px-2 py-1 rounded text-zinc-500 hover:text-white transition";
+            if(lEn) lEn.className = l === 'en' ? "text-[10px] font-bold px-2 py-1 rounded bg-zinc-700 text-white transition" : "text-[10px] font-bold px-2 py-1 rounded text-zinc-500 hover:text-white transition";
+            
+            // Меню переключатели
+            let mRu = document.getElementById('menu-lang-ru');
+            let mEn = document.getElementById('menu-lang-en');
+            if(mRu) mRu.className = l === 'ru' ? "text-[9px] font-bold px-1.5 py-0.5 rounded bg-zinc-600 text-white transition" : "text-[9px] font-bold px-1.5 py-0.5 rounded text-zinc-400 hover:text-white transition";
+            if(mEn) mEn.className = l === 'en' ? "text-[9px] font-bold px-1.5 py-0.5 rounded bg-zinc-600 text-white transition" : "text-[9px] font-bold px-1.5 py-0.5 rounded text-zinc-400 hover:text-white transition";
+
             applyLang();
             if(dbRef) { renderTable(); if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory(); if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions(); }
         }
@@ -402,7 +422,6 @@
             document.getElementById('mode-text').innerText = isEditMode ? t.modeEdit : t.modeRead;
         }
 
-        // Защита от undefined и NaN
         function formatMoney(amount) {
             if (amount === null || amount === undefined || isNaN(amount)) amount = 0;
             let formatted = new Intl.NumberFormat(currentLang === 'ru' ? 'ru-RU' : 'en-US').format(amount);
@@ -427,7 +446,6 @@
             return isNaN(num) ? null : num;
         }
 
-        // Защита от битых дат
         function getMonthKey(dateStr) {
             if (!dateStr || typeof dateStr !== 'string') return null;
             const parts = dateStr.split(',')[0].split(/[./-]/);
@@ -561,11 +579,19 @@
             if(!s || s < 1) s = 1000;
             
             roomSettings = { currency: c, step: s };
-            if (currentRoom !== 'osnova' && settingsRef) {
-                await set(settingsRef, roomSettings);
+            
+            // Если мы сохраняем во время первого запуска (онбординга), принудительно задаем путь к настройкам
+            let targetRef = settingsRef;
+            if (!targetRef && currentRoom && currentRoom !== 'osnova') {
+                targetRef = ref(database, 'clubs/' + currentRoom + '/settings');
+            }
+
+            if (targetRef) {
+                await set(targetRef, roomSettings);
             }
             
             document.getElementById('settings-modal').classList.add('hidden');
+            
             if (!dbRef && currentRoom) {
                 startSession(currentRoom, currentPwd, 'clubs/' + currentRoom + '/data', 'clubs/' + currentRoom + '/settings');
             } else {
@@ -599,7 +625,12 @@
             
             if (settingsRef) {
                 onValue(settingsRef, (snap) => {
-                    if(snap.exists()) roomSettings = snap.val();
+                    if(snap.exists()) {
+                        roomSettings = snap.val();
+                        renderTable();
+                        if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
+                        if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
+                    }
                 });
             } else {
                 roomSettings = { currency: '₽', step: 1000 };
@@ -785,7 +816,7 @@
 
             if(db.game) {
                 db.game.forEach((p, index) => {
-                    if (!p) return; // Защита
+                    if (!p) return; 
                     const bIn = p.buyIn || 0;
                     const cOut = p.cashOut || 0;
                     totalBuyIns += bIn; totalCashouts += cOut;
@@ -978,7 +1009,6 @@
             
             let monthsSet = new Set();
             if (db.sessions) {
-                // Жесткая защита: пропускаем битые сессии без даты
                 Object.values(db.sessions).forEach(s => {
                     if (s && s.date) {
                         const k = getMonthKey(s.date);
@@ -1022,7 +1052,6 @@
                 let tempStats = {};
                 if (db.sessions) {
                     Object.values(db.sessions).forEach(s => {
-                        // Жесткая защита
                         if (s && s.date && s.players && getMonthKey(s.date) === currentFilter) {
                             s.players.forEach(p => {
                                 if (!p) return;
@@ -1250,7 +1279,6 @@
                 return;
             }
 
-            // Жесткая защита
             let sessArray = Object.keys(db.sessions)
                 .filter(id => db.sessions[id] && db.sessions[id].players)
                 .map(id => { return { id: id, ...db.sessions[id] }; });
@@ -1425,7 +1453,6 @@
 
             let absNet = Math.abs(net);
             let currentSettled = p.settledAmount !== undefined ? p.settledAmount : (p.settled ? absNet : 0);
-            let typeStr = net > 0 ? 'получено' : 'отдано';
             
             let amountStr = prompt(`Игрок: ${playerName}\nИтог: ${net > 0 ? '+'+formatMoney(net) : formatMoney(net)}\n\nСумма (0 - ${absNet}):`, currentSettled);
 
