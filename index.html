@@ -30,8 +30,8 @@
 </head>
 <body class="pt-[72px] px-3 pb-[80px] min-h-screen flex flex-col relative">
 
-    <!-- ЛОББИ -->
-    <div id="lobby-modal" class="fixed inset-0 z-[200] p-4 flex items-center justify-center bg-[#050505] flex-col hidden">
+    <!-- === СЛОЙ Z-100: ПОЛНОЭКРАННЫЕ ПОПАПЫ (ВХОД, НАСТРОЙКИ, ИНФО, ЗАМЕТКИ) === -->
+    <div id="lobby-modal" class="fixed inset-0 z-[100] p-4 flex items-center justify-center bg-[#050505] flex-col hidden">
         <div class="absolute top-4 right-4 flex space-x-2 bg-zinc-900 border border-zinc-800 rounded-lg p-1">
             <button onclick="setLang('ru')" id="lang-ru" class="text-[10px] font-bold px-2 py-1 rounded bg-zinc-700 text-white transition">RU</button>
             <button onclick="setLang('en')" id="lang-en" class="text-[10px] font-bold px-2 py-1 rounded text-zinc-500 hover:text-white transition">EN</button>
@@ -46,32 +46,21 @@
             <input type="password" id="lobby-pwd" placeholder="Пароль" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-white text-center font-bold outline-none focus:border-emerald-500 transition placeholder-zinc-600">
             <button onclick="loginToClub()" id="loc-lobby-btn" class="w-full py-3.5 bg-emerald-600 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-emerald-500 transition shadow-[0_0_20px_rgba(16,185,129,0.3)] mt-2 active:scale-95">Войти / Создать</button>
         </div>
-        
         <p id="loc-lobby-desc" class="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mt-8 text-center max-w-xs leading-relaxed">
             Доступ имеют только те, кто знает пароль. Внутри комнаты все игроки имеют права на редактирование.
         </p>
-        
         <button onclick="openAbout()" id="loc-lobby-about" class="text-[10px] text-blue-500 font-bold uppercase tracking-widest mt-4 hover:text-blue-400 transition underline decoration-blue-900/50 underline-offset-4">
             Как это работает?
         </button>
     </div>
 
-    <!-- ГЛОБАЛЬНЫЙ ЛОАДЕР -->
-    <div id="saving-overlay" class="fixed top-[70px] left-0 right-0 z-[999] hidden flex justify-center pointer-events-none transition-opacity duration-300">
-        <div class="bg-zinc-900/95 border border-zinc-700 px-4 py-2 rounded-full flex items-center shadow-[0_0_20px_rgba(0,0,0,0.6)] backdrop-blur-md">
-            <div class="w-4 h-4 border-2 border-zinc-600 border-t-emerald-500 rounded-full animate-spin mr-2"></div>
-            <span id="loc-saving" class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Синхронизация...</span>
-        </div>
-    </div>
-
-    <!-- НАСТРОЙКИ -->
-    <div id="settings-modal" onclick="if(event.target===this) closeSettings()" class="fixed inset-0 hidden z-[110] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
+    <!-- НАСТРОЙКИ (закрываются по клику вне окна) -->
+    <div id="settings-modal" onclick="if(event.target===this) closeSettings()" class="fixed inset-0 hidden z-[100] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-5 rounded-3xl w-full max-w-sm flex flex-col shadow-2xl relative">
             <button id="settings-close-btn" onclick="closeSettings()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             <h3 id="loc-settings-title" class="text-xs font-black text-purple-400 uppercase tracking-widest mb-4 text-center mt-1">Настройки клуба</h3>
-            
             <div class="mb-4">
                 <label id="loc-currency-label" class="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5 ml-1">Символ валюты</label>
                 <input type="text" id="setting-currency" placeholder="₽, $, €, USDT..." class="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-sm font-bold text-white outline-none focus:border-purple-500 transition placeholder-zinc-600">
@@ -84,8 +73,8 @@
         </div>
     </div>
 
-    <!-- О ПРИЛОЖЕНИИ -->
-    <div id="about-modal" onclick="if(event.target===this) closeAbout()" class="fixed inset-0 hidden z-[110] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
+    <!-- О ПРИЛОЖЕНИИ (закрывается по клику вне окна) -->
+    <div id="about-modal" onclick="if(event.target===this) closeAbout()" class="fixed inset-0 hidden z-[100] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-6 rounded-3xl w-full max-w-md flex flex-col shadow-2xl relative">
             <button onclick="closeAbout()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -126,7 +115,7 @@
         </div>
     </div>
 
-    <!-- ЗАМЕТКИ -->
+    <!-- ЗАМЕТКИ (закрываются по клику вне окна) -->
     <div id="note-modal" onclick="if(event.target===this) closeNoteModal()" class="fixed inset-0 hidden z-[100] p-4 flex items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-4 rounded-2xl w-full max-w-sm flex flex-col shadow-2xl relative">
             <button onclick="closeNoteModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
@@ -141,8 +130,9 @@
         </div>
     </div>
 
-    <!-- ЧИСТАЯ ШАПКА -->
-    <div class="fixed top-0 left-0 right-0 bg-[#050505]/95 backdrop-blur-md z-50 border-b border-zinc-800/80">
+
+    <!-- === СЛОЙ Z-50: ШАПКА === -->
+    <div class="fixed top-0 left-0 right-0 bg-[#050505]/95 backdrop-blur-md z-[50] border-b border-zinc-800/80">
         <div class="max-w-md mx-auto w-full flex justify-between items-center p-3 relative">
             <div class="flex items-center space-x-2">
                 <h1 class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg">
@@ -162,8 +152,8 @@
                     </label>
                 </div>
 
-                <!-- ГЛОБАЛЬНЫЙ ГЛАЗИК -->
-                <button onclick="toggleProfits()" class="text-zinc-400 hover:text-white transition p-1">
+                <!-- ГЛАЗИК -->
+                <button onclick="toggleProfits()" class="text-zinc-400 hover:text-white transition p-1 ml-2">
                     <svg id="eye-closed-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
                     <svg id="eye-open-icon" class="w-5 h-5 hidden text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                 </button>
@@ -171,41 +161,44 @@
                 <button onclick="toggleMenu()" class="text-zinc-400 hover:text-white transition p-1">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
-
-                <div id="dropdown-menu" class="hidden absolute top-full right-3 mt-2 w-56 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl py-2 overflow-hidden z-[51]">
-                    <div class="px-4 py-2 border-b border-zinc-800/50 mb-2">
-                        <span id="loc-menu-club" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest block mb-1">Клуб</span>
-                        <p id="menu-room-badge" class="text-sm font-black text-white uppercase truncate">---</p>
-                    </div>
-                    <div class="px-4 py-2 border-b border-zinc-800/50 mb-2 flex justify-center">
-                        <div class="flex w-full bg-zinc-950 border border-zinc-800 rounded-lg p-1 relative">
-                            <button onclick="setLang('ru')" id="menu-lang-ru" class="flex-1 text-[10px] font-bold py-2 rounded-md bg-zinc-700 text-white transition z-10 relative shadow-sm">RU</button>
-                            <button onclick="setLang('en')" id="menu-lang-en" class="flex-1 text-[10px] font-bold py-2 rounded-md text-zinc-500 hover:text-white transition z-10 relative">EN</button>
-                        </div>
-                    </div>
-                    <button id="btn-settings" onclick="openSettings()" class="hidden w-full text-left px-4 py-3 text-purple-400 hover:text-purple-300 hover:bg-zinc-800 transition flex items-center group">
-                        <svg class="w-4 h-4 mr-3 text-zinc-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <span id="loc-menu-settings" class="text-xs font-bold uppercase tracking-widest">Настройки</span>
-                    </button>
-                    <button onclick="openAbout()" class="w-full text-left px-4 py-3 text-blue-400 hover:text-blue-300 hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
-                        <svg class="w-4 h-4 mr-3 text-blue-500/70 group-hover:text-blue-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span id="loc-menu-about" class="text-xs font-bold uppercase tracking-widest">О приложении</span>
-                    </button>
-                    <button id="btn-end-game" onclick="endGame()" class="hidden w-full text-left px-4 py-3 text-red-400 hover:text-red-300 hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
-                        <svg class="w-4 h-4 mr-3 text-red-500/70 group-hover:text-red-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg>
-                        <span id="loc-menu-end" class="text-xs font-bold uppercase tracking-widest">Завершить сессию</span>
-                    </button>
-                    <button onclick="logoutClub()" class="w-full text-left px-4 py-3 text-zinc-300 hover:text-white hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
-                        <svg class="w-4 h-4 mr-3 text-zinc-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                        <span id="loc-menu-exit" class="text-xs font-bold uppercase tracking-widest">Выйти из комнаты</span>
-                    </button>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- ПРОФИЛЬ ИГРОКА (Z: 60) -->
-    <div id="profile-modal" onclick="if(event.target===this) closePlayerProfile()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[60] p-3 flex flex-col bg-[#050505] overflow-y-auto">
+    <!-- === СЛОЙ Z-60: ВЫПАДАЮЩЕЕ МЕНЮ === -->
+    <div id="dropdown-menu" class="hidden fixed top-[60px] right-3 w-56 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl py-2 overflow-hidden z-[60]">
+        <div class="px-4 py-2 border-b border-zinc-800/50 mb-2">
+            <span id="loc-menu-club" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest block mb-1">Клуб</span>
+            <p id="menu-room-badge" class="text-sm font-black text-white uppercase truncate">---</p>
+        </div>
+        <div class="px-4 py-2 border-b border-zinc-800/50 mb-2 flex justify-center">
+            <div class="flex w-full bg-zinc-950 border border-zinc-800 rounded-lg p-1 relative">
+                <button onclick="setLang('ru')" id="menu-lang-ru" class="flex-1 text-[10px] font-bold py-2 rounded-md bg-zinc-700 text-white transition z-10 relative shadow-sm">RU</button>
+                <button onclick="setLang('en')" id="menu-lang-en" class="flex-1 text-[10px] font-bold py-2 rounded-md text-zinc-500 hover:text-white transition z-10 relative">EN</button>
+            </div>
+        </div>
+        <button id="btn-settings" onclick="openSettings()" class="hidden w-full text-left px-4 py-3 text-purple-400 hover:text-purple-300 hover:bg-zinc-800 transition flex items-center group">
+            <svg class="w-4 h-4 mr-3 text-zinc-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            <span id="loc-menu-settings" class="text-xs font-bold uppercase tracking-widest">Настройки</span>
+        </button>
+        <button onclick="openAbout()" class="w-full text-left px-4 py-3 text-blue-400 hover:text-blue-300 hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
+            <svg class="w-4 h-4 mr-3 text-blue-500/70 group-hover:text-blue-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span id="loc-menu-about" class="text-xs font-bold uppercase tracking-widest">О приложении</span>
+        </button>
+        <button id="btn-end-game" onclick="endGame()" class="hidden w-full text-left px-4 py-3 text-red-400 hover:text-red-300 hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
+            <svg class="w-4 h-4 mr-3 text-red-500/70 group-hover:text-red-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg>
+            <span id="loc-menu-end" class="text-xs font-bold uppercase tracking-widest">Завершить сессию</span>
+        </button>
+        <button onclick="logoutClub()" class="w-full text-left px-4 py-3 text-zinc-300 hover:text-white hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
+            <svg class="w-4 h-4 mr-3 text-zinc-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            <span id="loc-menu-exit" class="text-xs font-bold uppercase tracking-widest">Выйти из комнаты</span>
+        </button>
+    </div>
+
+    <!-- === ПОД-ЭКРАНЫ (ПОД ШАПКОЙ, ПОВЕРХ ВКЛАДОК) === -->
+    
+    <!-- ПРОФИЛЬ (Z-45) -->
+    <div id="profile-modal" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[45] p-3 flex flex-col bg-[#050505] overflow-y-auto">
         <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6 relative">
             <div class="flex justify-between items-start mb-6 mt-2">
                 <div>
@@ -228,6 +221,7 @@
                 </div>
             </div>
 
+            <!-- ИНТЕРАКТИВНЫЕ ДОЛГИ -->
             <div class="flex space-x-3 mb-5">
                 <div onclick="openDebtList('owes')" class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg cursor-pointer hover:bg-zinc-800 transition">
                     <span id="loc-prof-owes" class="text-[8px] font-bold text-red-500/70 uppercase tracking-widest mb-1">Игрок должен</span>
@@ -258,8 +252,8 @@
         </div>
     </div>
 
-    <!-- СПИСОК ДОЛГОВ (Z: 65) -->
-    <div id="debt-list-modal" onclick="if(event.target===this) closeDebtList()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[65] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
+    <!-- СПИСОК ДОЛГОВ (Z-46) -->
+    <div id="debt-list-modal" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[46] p-3 flex flex-col items-center bg-[#050505] overflow-y-auto">
         <div class="w-full max-w-md relative flex flex-col items-center pb-6">
             <div class="w-full flex justify-between items-center mb-4 mt-2">
                 <h3 id="debt-list-title" class="text-sm font-black uppercase tracking-widest text-white">Долги</h3>
@@ -271,10 +265,11 @@
         </div>
     </div>
 
-    <!-- ДЕТАЛИ ИГРЫ (Z: 70) -->
-    <div id="game-details-modal" onclick="if(event.target===this) closeGameDetails()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[70] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
+    <!-- ДЕТАЛИ ИГРЫ (Z-47) -->
+    <div id="game-details-modal" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[47] p-3 flex flex-col items-center bg-[#050505] overflow-y-auto">
         <div class="w-full max-w-md relative flex flex-col items-center pb-6">
-            <div class="w-full flex justify-end mb-2 mt-2">
+            <div class="w-full flex justify-between items-center mb-4 mt-2">
+                <h3 id="loc-game-details-title" class="text-sm font-black uppercase tracking-widest text-zinc-400">Детали игры</h3>
                 <button onclick="closeGameDetails()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
@@ -283,8 +278,30 @@
         </div>
     </div>
 
-    <!-- ГЛАВНЫЙ ЭКРАН (СТОЛ) -->
-    <div id="main-table-view" class="max-w-md mx-auto w-full flex-1 flex-col flex">
+
+    <!-- === НИЖНЕЕ МЕНЮ (Z-40) === -->
+    <div class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-[40] h-[60px]">
+        <div class="max-w-md mx-auto flex h-full">
+            <button id="tab-table" onclick="showTab('table')" class="flex-1 flex flex-col items-center justify-center text-white transition-colors">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <span id="loc-tab-table" class="text-[9px] font-bold uppercase tracking-widest">Стол</span>
+            </button>
+            <button id="tab-rating" onclick="showTab('rating')" class="flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <span id="loc-tab-rating" class="text-[9px] font-bold uppercase tracking-widest">Рейтинг</span>
+            </button>
+            <button id="tab-history" onclick="showTab('history')" class="flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span id="loc-tab-hist" class="text-[9px] font-bold uppercase tracking-widest">История</span>
+            </button>
+        </div>
+    </div>
+
+
+    <!-- === ОСНОВНЫЕ ВКЛАДКИ (Z-0) === -->
+    
+    <!-- СТОЛ -->
+    <div id="main-table-view" class="max-w-md mx-auto w-full flex-1 flex-col flex z-0">
         <div class="glass-panel rounded-2xl p-4 mb-5 shadow-2xl relative overflow-hidden mt-1">
             <div class="flex justify-between items-center mb-3 relative z-10">
                 <span id="loc-table-cash" class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Касса стола</span>
@@ -327,7 +344,7 @@
     </div>
 
     <!-- РЕЙТИНГ -->
-    <div id="history-modal" class="hidden max-w-md mx-auto w-full flex-1 flex-col">
+    <div id="history-modal" class="hidden max-w-md mx-auto w-full flex-1 flex-col z-0">
         <div class="flex justify-between items-center mb-4 mt-2">
             <h2 id="loc-rating-title" class="text-sm font-black text-blue-500 uppercase tracking-widest">Рейтинг</h2>
             <select id="history-filter" onchange="renderHistory()" class="bg-zinc-800 text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded border border-blue-900/50 outline-none px-1.5 py-1">
@@ -350,32 +367,15 @@
     </div>
 
     <!-- ИСТОРИЯ ИГР -->
-    <div id="sessions-modal" class="hidden max-w-md mx-auto w-full flex-1 flex-col">
+    <div id="sessions-modal" class="hidden max-w-md mx-auto w-full flex-1 flex-col z-0">
         <div class="flex justify-between items-center mb-4 mt-2">
             <h2 id="loc-hist-title" class="text-sm font-black text-purple-500 uppercase tracking-widest">История игр</h2>
         </div>
         <div id="sessions-list" class="flex flex-col space-y-3"></div>
     </div>
 
-    <!-- НИЖНЕЕ МЕНЮ -->
-    <div class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-50 h-[60px]">
-        <div class="max-w-md mx-auto flex h-full">
-            <button id="tab-table" onclick="showTab('table')" class="flex-1 flex flex-col items-center justify-center text-white transition-colors">
-                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                <span id="loc-tab-table" class="text-[9px] font-bold uppercase tracking-widest">Стол</span>
-            </button>
-            <button id="tab-rating" onclick="showTab('rating')" class="flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors">
-                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                <span id="loc-tab-rating" class="text-[9px] font-bold uppercase tracking-widest">Рейтинг</span>
-            </button>
-            <button id="tab-history" onclick="showTab('history')" class="flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors">
-                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <span id="loc-tab-hist" class="text-[9px] font-bold uppercase tracking-widest">История</span>
-            </button>
-        </div>
-    </div>
 
-    <!-- Скрипты -->
+    <!-- === СКРИПТЫ === -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -524,6 +524,7 @@
             
             document.getElementById('loc-results-title').innerText = t.results;
             document.getElementById('loc-rating-title').innerText = t.ratingTitle;
+            document.getElementById('loc-show-profits').innerText = t.showProfits;
             document.getElementById('loc-col-profile').innerText = t.colProf;
             document.getElementById('loc-col-games').innerText = t.colGames;
             document.getElementById('loc-col-profit').innerText = t.colProfit;
@@ -554,6 +555,7 @@
             document.getElementById('chart-filter-10').innerText = t.chart10;
             document.getElementById('chart-filter-month').innerText = t.chartMonth;
             document.getElementById('chart-filter-all').innerText = t.chartAll;
+            if(document.getElementById('loc-game-details-title')) document.getElementById('loc-game-details-title').innerText = t.gameDetails;
 
             document.getElementById('lobby-club').placeholder = currentLang === 'ru' ? "Название комнаты" : "Room name";
             document.getElementById('lobby-pwd').placeholder = currentLang === 'ru' ? "Пароль" : "Password";
@@ -1680,6 +1682,7 @@
                 db.sessions[currentNoteSessionId].note = document.getElementById('note-textarea').value.trim();
                 saveToCloud();
                 renderSessions();
+                if(currentGameDetailsId) openGameDetails(currentGameDetailsId);
             }
             closeNoteModal(true);
         }
@@ -1795,6 +1798,7 @@
                 delete db.sessions[id];
                 updateTopPlayer();
                 saveToCloud();
+                closeGameDetails();
             }
         }
 
