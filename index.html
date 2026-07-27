@@ -169,7 +169,7 @@
                     </label>
                 </div>
 
-                <!-- ГЛОБАЛЬНЫЙ ГЛАЗИК (Показать/Скрыть суммы) -->
+                <!-- ГЛОБАЛЬНЫЙ ГЛАЗИК -->
                 <button onclick="toggleProfits()" class="text-zinc-400 hover:text-white transition p-1 ml-2">
                     <svg id="eye-closed-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
                     <svg id="eye-open-icon" class="w-5 h-5 hidden text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
@@ -243,7 +243,6 @@
                 </div>
             </div>
 
-            <!-- ИНТЕРАКТИВНЫЕ ДОЛГИ -->
             <div class="flex space-x-3 mb-5">
                 <div onclick="openDebtList('owes')" class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg cursor-pointer hover:bg-zinc-800 transition">
                     <span id="loc-prof-owes" class="text-[8px] font-bold text-red-500/70 uppercase tracking-widest mb-1">Игрок должен</span>
@@ -277,7 +276,7 @@
     </div>
 
     <!-- ОКНО СПИСКА ДОЛГОВ -->
-    <div id="debt-list-modal" onclick="if(event.target===this) closeDebtList()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4100] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
+    <div id="debt-list-modal" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4100] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
         <div class="w-full max-w-md relative flex flex-col items-center pb-6">
             <div class="w-full flex justify-between items-center mb-4 mt-2">
                 <h3 id="debt-list-title" class="text-sm font-black uppercase tracking-widest text-white">Долги</h3>
@@ -291,7 +290,7 @@
     </div>
 
     <!-- ОКНО ДЕТАЛЕЙ ИГРЫ (СТАРТУЕТ ПОД ШАПКОЙ) -->
-    <div id="game-details-modal" onclick="if(event.target===this) closeGameDetails()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4500] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
+    <div id="game-details-modal" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4500] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
         <div class="w-full max-w-md relative flex flex-col items-center pb-6">
             <div class="w-full flex justify-end mb-2 mt-2">
                 <button onclick="closeGameDetails()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
@@ -387,7 +386,7 @@
     <div class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-[4900] h-[60px]">
         <div class="max-w-md mx-auto flex h-full">
             <button id="tab-table" onclick="showTab('table')" class="flex-1 flex flex-col items-center justify-center text-white transition-colors">
-                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 <span id="loc-tab-table" class="text-[9px] font-bold uppercase tracking-widest">Стол</span>
             </button>
             <button id="tab-rating" onclick="showTab('rating')" class="flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors">
@@ -436,7 +435,7 @@
         let currentPwd = null;
 
         // Трекинг состояний
-        let currentPlayerProfileName = null; 
+        let gActiveProfileName = null; 
         let initialSettings = { currency: '', step: '' };
         let currentNoteSessionId = null;
         let initialNote = '';
@@ -444,8 +443,8 @@
         let currentPlayerSessionsData = [];
         let currentChartFilter = 'all';
 
-        window.currentOwesSessions = [];
-        window.currentOwedSessions = [];
+        window.gOwesSessions = [];
+        window.gOwedSessions = [];
 
         const i18n = {
             ru: {
@@ -519,9 +518,9 @@
                 if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory(); 
                 if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions(); 
                 if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) openGameDetails(currentGameDetailsId);
-                if(!document.getElementById('debt-list-modal').classList.contains('hidden')) {
+                if(document.getElementById('debt-list-modal') && !document.getElementById('debt-list-modal').classList.contains('hidden')) {
                     const isOwes = document.getElementById('debt-list-title').classList.contains('text-red-500');
-                    openDebtList(isOwes ? 'owes' : 'owed');
+                    window.openDebtList(isOwes ? 'owes' : 'owed');
                 }
             }
         }
@@ -865,9 +864,8 @@
                 
                 if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
                 if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
-                
-                if(!document.getElementById('profile-modal').classList.contains('hidden') && currentPlayerProfileName) {
-                    window.openPlayerProfile(currentPlayerProfileName);
+                if(!document.getElementById('profile-modal').classList.contains('hidden') && gActiveProfileName) {
+                    window.openPlayerProfile(gActiveProfileName);
                 }
                 if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) {
                     window.openGameDetails(currentGameDetailsId);
@@ -965,18 +963,17 @@
             updateEyeIcon();
             
             renderTable();
-            if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
             if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
-            
-            if(!document.getElementById('profile-modal').classList.contains('hidden') && currentPlayerProfileName) {
-                window.openPlayerProfile(currentPlayerProfileName);
+            if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
+            if(!document.getElementById('profile-modal').classList.contains('hidden') && gActiveProfileName) {
+                window.openPlayerProfile(gActiveProfileName);
             }
             if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) {
                 window.openGameDetails(currentGameDetailsId);
             }
             if(document.getElementById('debt-list-modal') && !document.getElementById('debt-list-modal').classList.contains('hidden')) {
                 const isOwes = document.getElementById('debt-list-title').classList.contains('text-red-500');
-                openDebtList(isOwes ? 'owes' : 'owed');
+                window.openDebtList(isOwes ? 'owes' : 'owed');
             }
         }
 
@@ -1385,7 +1382,7 @@
         }
 
         window.openPlayerProfile = function(name) {
-            currentPlayerProfileName = name; 
+            gActiveProfileName = name;
             closeGameDetails(); 
             
             const stats = db.history[name];
@@ -1406,10 +1403,8 @@
             list.innerHTML = '';
             
             let playerSessions = [];
-            
-            window.currentOwesSessions = []; 
-            window.currentOwedSessions = []; 
-            
+            window.gOwesSessions = [];
+            window.gOwedSessions = [];
             let totalOwes = 0; let totalOwed = 0; 
 
             if(db.sessions) {
@@ -1428,10 +1423,10 @@
                             if (remaining > 0) {
                                 if (net < 0) {
                                     totalOwes += remaining;
-                                    window.currentOwesSessions.push({ ...sess, id: id, remaining: remaining, net: net }); 
+                                    window.gOwesSessions.push({ ...sess, id: id, remaining: remaining, net: net });
                                 } else if (net > 0) {
                                     totalOwed += remaining;
-                                    window.currentOwedSessions.push({ ...sess, id: id, remaining: remaining, net: net }); 
+                                    window.gOwedSessions.push({ ...sess, id: id, remaining: remaining, net: net });
                                 }
                             }
                         }
@@ -1475,12 +1470,11 @@
 
         window.closePlayerProfile = function() {
             document.getElementById('profile-modal').classList.add('hidden');
-            currentPlayerProfileName = null; 
         }
 
         window.openDebtList = function(type) {
-            if (!currentPlayerProfileName) return;
-            const list = type === 'owes' ? window.currentOwesSessions : window.currentOwedSessions;
+            if (!gActiveProfileName) return;
+            const list = type === 'owes' ? window.gOwesSessions : window.gOwedSessions;
             const container = document.getElementById('debt-list-content');
             const title = document.getElementById('debt-list-title');
 
@@ -1493,7 +1487,7 @@
             }
 
             if (list.length === 0) {
-                container.innerHTML = `<p class="text-center text-xs text-zinc-500 italic py-4">${currentLang === 'ru' ? 'Нет активных долгов' : 'No pending debts'}</p>`;
+                container.innerHTML = `<p class="text-center text-xs text-zinc-500 italic py-4">${currentLang === 'ru' ? 'Нет долгов' : 'No debts'}</p>`;
             } else {
                 let html = '';
                 list.sort((a,b) => b.id.localeCompare(a.id)).forEach(s => {
@@ -1709,6 +1703,7 @@
                 db.sessions[currentNoteSessionId].note = document.getElementById('note-textarea').value.trim();
                 saveToCloud();
                 renderSessions();
+                if(currentGameDetailsId) openGameDetails(currentGameDetailsId);
             }
             closeNoteModal(true);
         }
