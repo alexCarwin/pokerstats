@@ -28,7 +28,7 @@
         .toggle-checkbox:checked + .toggle-label .toggle-dot { transform: translateX(100%); background-color: #a855f7; }
     </style>
 </head>
-<body class="p-3 min-h-screen flex flex-col pb-20 relative">
+<body class="pt-[72px] px-3 pb-[80px] min-h-screen flex flex-col relative">
 
     <!-- ЛОББИ (ВХОД / СОЗДАНИЕ КОМНАТЫ) -->
     <div id="lobby-modal" class="fixed inset-0 z-[1000] p-4 flex items-center justify-center bg-[#050505] flex-col hidden">
@@ -47,7 +47,7 @@
     </div>
 
     <!-- ГЛОБАЛЬНЫЙ ЛОАДЕР -->
-    <div id="saving-overlay" class="fixed top-14 left-0 right-0 z-[999] hidden flex justify-center pointer-events-none transition-opacity duration-300">
+    <div id="saving-overlay" class="fixed top-[70px] left-0 right-0 z-[999] hidden flex justify-center pointer-events-none transition-opacity duration-300">
         <div class="bg-zinc-900/95 border border-zinc-700 px-4 py-2 rounded-full flex items-center shadow-[0_0_20px_rgba(0,0,0,0.6)] backdrop-blur-md">
             <div class="w-4 h-4 border-2 border-zinc-600 border-t-emerald-500 rounded-full animate-spin mr-2"></div>
             <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Синхронизация...</span>
@@ -66,49 +66,51 @@
         </div>
     </div>
 
-    <!-- ЧИСТАЯ ШАПКА -->
-    <div class="max-w-md mx-auto w-full flex justify-between items-center mb-5 pt-1 relative z-50">
-        <div class="flex items-center space-x-2">
-            <h1 class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg">
-                <span class="text-white">ZALU</span><span class="text-emerald-500">BANK</span>
-            </h1>
-            <div id="network-status" class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] transition-colors duration-300 ml-1"></div>
-        </div>
-        
-        <div class="flex items-center space-x-4 relative">
-            <!-- Тумблер управления -->
+    <!-- ЧИСТАЯ ШАПКА ФИКСИРОВАННАЯ СВЕРХУ -->
+    <div class="fixed top-0 left-0 right-0 bg-[#050505]/95 backdrop-blur-md z-50 border-b border-zinc-800/80">
+        <div class="max-w-md mx-auto w-full flex justify-between items-center p-3 relative">
             <div class="flex items-center space-x-2">
-                <span id="mode-text" class="text-[9px] font-bold uppercase tracking-widest text-zinc-500 transition-colors">Чтение</span>
-                <label class="flex items-center cursor-pointer relative">
-                    <input type="checkbox" id="edit-toggle" class="sr-only toggle-checkbox" onchange="toggleEditMode()">
-                    <div class="toggle-label block bg-zinc-800 border border-zinc-700 w-10 h-6 rounded-full transition-colors">
-                        <div class="toggle-dot absolute left-1 top-1 bg-zinc-500 w-4 h-4 rounded-full transition-transform duration-300"></div>
-                    </div>
-                </label>
+                <h1 class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg">
+                    <span class="text-white">ZALU</span><span class="text-emerald-500">BANK</span>
+                </h1>
+                <div id="network-status" class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] transition-colors duration-300 ml-1"></div>
             </div>
-
-            <!-- Бургер меню -->
-            <button onclick="toggleMenu()" class="text-zinc-400 hover:text-white transition p-1">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            </button>
-
-            <!-- Выпадающий список -->
-            <div id="dropdown-menu" class="hidden absolute top-8 right-0 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl py-1 overflow-hidden z-50">
-                <div class="px-4 py-2 border-b border-zinc-800/50 mb-1">
-                    <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Клуб</span>
-                    <p id="menu-room-badge" class="text-xs font-bold text-white uppercase truncate">---</p>
+            
+            <div class="flex items-center space-x-4">
+                <!-- Тумблер управления -->
+                <div class="flex items-center space-x-2">
+                    <span id="mode-text" class="text-[9px] font-bold uppercase tracking-widest text-zinc-500 transition-colors">Чтение</span>
+                    <label class="flex items-center cursor-pointer relative">
+                        <input type="checkbox" id="edit-toggle" class="sr-only toggle-checkbox" onchange="toggleEditMode()">
+                        <div class="toggle-label block bg-zinc-800 border border-zinc-700 w-10 h-6 rounded-full transition-colors">
+                            <div class="toggle-dot absolute left-1 top-1 bg-zinc-500 w-4 h-4 rounded-full transition-transform duration-300"></div>
+                        </div>
+                    </label>
                 </div>
-                <button id="btn-end-game" onclick="endGame()" class="hidden w-full text-left px-4 py-3 text-red-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition">Завершить сессию</button>
-                <button onclick="logoutClub()" class="w-full text-left px-4 py-3 text-zinc-300 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition">Выйти из комнаты</button>
+
+                <!-- Бургер меню -->
+                <button onclick="toggleMenu()" class="text-zinc-400 hover:text-white transition p-1">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+
+                <!-- Выпадающий список -->
+                <div id="dropdown-menu" class="hidden absolute top-full right-3 mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl py-1 overflow-hidden z-50">
+                    <div class="px-4 py-2 border-b border-zinc-800/50 mb-1">
+                        <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Клуб</span>
+                        <p id="menu-room-badge" class="text-xs font-bold text-white uppercase truncate">---</p>
+                    </div>
+                    <button id="btn-end-game" onclick="endGame()" class="hidden w-full text-left px-4 py-3 text-red-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition">Завершить сессию</button>
+                    <button onclick="logoutClub()" class="w-full text-left px-4 py-3 text-zinc-300 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition">Выйти из комнаты</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- ГЛАВНЫЙ ЭКРАН (СТОЛ) -->
-    <div id="main-table-view" class="max-w-md mx-auto w-full flex-1 flex flex-col block">
+    <div id="main-table-view" class="max-w-md mx-auto w-full flex-1 flex-col flex">
         
         <!-- СТАТИСТИКА ИГРЫ -->
-        <div class="glass-panel rounded-2xl p-4 mb-5 shadow-2xl relative overflow-hidden">
+        <div class="glass-panel rounded-2xl p-4 mb-5 shadow-2xl relative overflow-hidden mt-1">
             <div class="flex justify-between items-center mb-3 relative z-10">
                 <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Касса стола</span>
                 <span id="status-badge" class="text-[9px] font-bold px-2 py-1 rounded-md bg-zinc-800 text-zinc-400 uppercase tracking-wider transition-colors">Синхронизация...</span>
@@ -144,7 +146,7 @@
         </div>
 
         <!-- КНОПКА РАСЧЕТА ДОЛГОВ -->
-        <button onclick="calculateDebts()" class="w-full py-3 bg-zinc-100 text-zinc-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white transition shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 mb-4">Рассчитать</button>
+        <button onclick="calculateDebts()" class="w-full py-3 bg-zinc-100 text-zinc-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white transition shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 mb-4 mt-auto">Рассчитать</button>
 
         <!-- БЛОК РЕЗУЛЬТАТОВ -->
         <div id="results-panel" class="hidden glass-panel rounded-2xl p-4 border-emerald-900/50 relative overflow-hidden mb-6">
@@ -156,37 +158,34 @@
     </div>
 
     <!-- ОКНО РЕЙТИНГА -->
-    <div id="history-modal" class="fixed top-0 left-0 right-0 bottom-[60px] hidden z-40 p-3 flex flex-col bg-[#050505] overflow-y-auto pt-16">
-        <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
-            <div class="flex justify-between items-center mb-4 mt-2">
-                
-                <div class="flex items-center space-x-2">
-                    <h2 class="text-sm font-black text-blue-500 uppercase tracking-widest">Рейтинг</h2>
-                    <select id="history-filter" onchange="renderHistory()" class="bg-zinc-800 text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded border border-blue-900/50 outline-none px-1.5 py-1">
-                        <option value="all">За всё время</option>
-                    </select>
-                </div>
-                
-                <div class="flex items-center space-x-2 cursor-pointer" onclick="toggleProfits()">
-                    <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Показать</span>
-                    <div id="profit-toggle-bg" class="w-8 h-4 rounded-full bg-zinc-800 relative transition-colors duration-300">
-                        <div id="profit-toggle-dot" class="w-3 h-3 rounded-full bg-zinc-400 absolute top-0.5 left-0.5 transition-transform duration-300"></div>
-                    </div>
-                </div>
+    <div id="history-modal" class="hidden max-w-md mx-auto w-full flex-1 flex-col">
+        <div class="flex justify-between items-center mb-4 mt-2">
+            <div class="flex items-center space-x-2">
+                <h2 class="text-sm font-black text-blue-500 uppercase tracking-widest">Рейтинг</h2>
+                <select id="history-filter" onchange="renderHistory()" class="bg-zinc-800 text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded border border-blue-900/50 outline-none px-1.5 py-1">
+                    <option value="all">За всё время</option>
+                </select>
             </div>
             
-            <div class="glass-panel rounded-xl p-1 shadow-2xl border-blue-900/30">
-                <div class="flex px-3 py-2 text-[8px] font-bold text-zinc-500 uppercase tracking-widest border-b border-zinc-800/50">
-                    <div class="w-[45%] flex items-center pr-1">
-                        <span class="w-4 inline-block text-right">#</span>
-                        <span class="ml-2">Профиль</span>
-                    </div>
-                    <div class="w-[15%] text-center">Игр</div>
-                    <div class="w-[25%] text-right">Профит</div>
-                    <div id="history-admin-header" class="w-[15%] text-right hidden"></div>
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="toggleProfits()">
+                <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Показать</span>
+                <div id="profit-toggle-bg" class="w-8 h-4 rounded-full bg-zinc-800 relative transition-colors duration-300">
+                    <div id="profit-toggle-dot" class="w-3 h-3 rounded-full bg-zinc-400 absolute top-0.5 left-0.5 transition-transform duration-300"></div>
                 </div>
-                <div id="history-list" class="flex flex-col">
+            </div>
+        </div>
+        
+        <div class="glass-panel rounded-xl p-1 shadow-2xl border-blue-900/30">
+            <div class="flex px-3 py-2 text-[8px] font-bold text-zinc-500 uppercase tracking-widest border-b border-zinc-800/50">
+                <div class="w-[45%] flex items-center pr-1">
+                    <span class="w-4 inline-block text-right">#</span>
+                    <span class="ml-2">Профиль</span>
                 </div>
+                <div class="w-[15%] text-center">Игр</div>
+                <div class="w-[25%] text-right">Профит</div>
+                <div id="history-admin-header" class="w-[15%] text-right hidden"></div>
+            </div>
+            <div id="history-list" class="flex flex-col">
             </div>
         </div>
     </div>
@@ -238,13 +237,11 @@
     </div>
 
     <!-- ОКНО ИСТОРИИ СЕССИЙ -->
-    <div id="sessions-modal" class="fixed top-0 left-0 right-0 bottom-[60px] hidden z-40 p-3 flex flex-col bg-[#050505] overflow-y-auto pt-16">
-        <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6">
-            <div class="flex justify-between items-center mb-4 mt-2">
-                <h2 class="text-sm font-black text-purple-500 uppercase tracking-widest">История игр</h2>
-            </div>
-            <div id="sessions-list" class="flex flex-col space-y-3">
-            </div>
+    <div id="sessions-modal" class="hidden max-w-md mx-auto w-full flex-1 flex-col">
+        <div class="flex justify-between items-center mb-4 mt-2">
+            <h2 class="text-sm font-black text-purple-500 uppercase tracking-widest">История игр</h2>
+        </div>
+        <div id="sessions-list" class="flex flex-col space-y-3">
         </div>
     </div>
 
@@ -327,7 +324,6 @@
             }
         });
 
-        // Скрытие меню при клике снаружи
         document.addEventListener('click', function(e) {
             const dropdown = document.getElementById('dropdown-menu');
             const hamburger = document.querySelector('button[onclick="toggleMenu()"]');
@@ -349,11 +345,15 @@
             document.getElementById('dropdown-menu').classList.toggle('hidden');
         };
 
-        // НАВИГАЦИЯ ПО TAB-BAR
         window.showTab = function(tabName) {
             document.getElementById('main-table-view').classList.add('hidden');
+            document.getElementById('main-table-view').classList.remove('flex');
+            
             document.getElementById('history-modal').classList.add('hidden');
+            document.getElementById('history-modal').classList.remove('flex');
+            
             document.getElementById('sessions-modal').classList.add('hidden');
+            document.getElementById('sessions-modal').classList.remove('flex');
             
             document.getElementById('tab-table').className = "flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors";
             document.getElementById('tab-rating').className = "flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors";
@@ -361,14 +361,16 @@
 
             if (tabName === 'table') {
                 document.getElementById('main-table-view').classList.remove('hidden');
-                document.getElementById('main-table-view').classList.add('block');
+                document.getElementById('main-table-view').classList.add('flex');
                 document.getElementById('tab-table').className = "flex-1 flex flex-col items-center justify-center text-white transition-colors";
             } else if (tabName === 'rating') {
                 document.getElementById('history-modal').classList.remove('hidden');
+                document.getElementById('history-modal').classList.add('flex');
                 document.getElementById('tab-rating').className = "flex-1 flex flex-col items-center justify-center text-white transition-colors";
                 renderHistory();
             } else if (tabName === 'history') {
                 document.getElementById('sessions-modal').classList.remove('hidden');
+                document.getElementById('sessions-modal').classList.add('flex');
                 document.getElementById('tab-history').className = "flex-1 flex flex-col items-center justify-center text-white transition-colors";
                 renderSessions();
             }
@@ -401,7 +403,8 @@
                             alert("❌ Неверный пароль от комнаты!");
                         }
                     } else {
-                        if(confirm(`Комната "${name.toUpperCase()}" еще не существует.\nСоздать новую комнату с этим паролем?`)) {
+                        if(confirm(`Комната "${name.toUpperCase()}" еще не существует.
+Создать новую комнату с этим паролем?`)) {
                             await set(ref(database, 'clubs/' + name + '/password'), pwd);
                             await set(ref(database, 'clubs/' + name + '/data'), { game: [], history: {}, sessions: {} });
                             startSession(name, pwd, 'clubs/' + name + '/data');
@@ -510,7 +513,6 @@
             });
         }
 
-        // --- ЛОГИКА РЕЖИМА УПРАВЛЕНИЯ ---
         window.toggleEditMode = function() {
             const checkbox = document.getElementById('edit-toggle');
             isEditMode = checkbox.checked;
@@ -778,7 +780,8 @@
             let totalC = db.game.reduce((sum, p) => sum + (p.cashOut || 0), 0);
 
             if (totalB !== totalC) {
-                if(!confirm(`Касса не сходится! Разница: ${Math.abs(totalB - totalC)} руб.\nВсё равно завершить и сохранить?`)) {
+                if(!confirm(`Касса не сходится! Разница: ${Math.abs(totalB - totalC)} руб.
+Всё равно завершить и сохранить?`)) {
                     return;
                 }
             } else {
@@ -1245,9 +1248,13 @@
             let oldC = p.cashOut || 0;
             let oldNet = oldC - oldB;
 
-            let newBStr = prompt(`Игрок: ${playerName}\n\nСумма бай-инов:`, oldB);
+            let newBStr = prompt(`Игрок: ${playerName}
+
+Сумма бай-инов:`, oldB);
             if(newBStr === null) return;
-            let newCStr = prompt(`Игрок: ${playerName}\n\nОбщий стэк:`, oldC);
+            let newCStr = prompt(`Игрок: ${playerName}
+
+Общий стэк:`, oldC);
             if(newCStr === null) return;
 
             let newB = parseInt(newBStr) || 0;
@@ -1280,7 +1287,9 @@
             saveToCloud();
             
             if (tb !== tc) {
-                alert(`ВНИМАНИЕ! Касса не сходится:\nСумма бай-инов: ${tb}\nОбщий стэк: ${tc}`);
+                alert(`ВНИМАНИЕ! Касса не сходится:
+Сумма бай-инов: ${tb}
+Общий стэк: ${tc}`);
             }
         }
 
@@ -1299,7 +1308,11 @@
             let currentSettled = p.settledAmount !== undefined ? p.settledAmount : (p.settled ? absNet : 0);
             let typeStr = net > 0 ? 'получено' : 'отдано';
             
-            let amountStr = prompt(`Игрок: ${playerName}\nИтог: ${net > 0 ? '+'+net : net} ₽\n\nУже ${typeStr}:\n(От 0 до ${absNet})`, currentSettled);
+            let amountStr = prompt(`Игрок: ${playerName}
+Итог: ${net > 0 ? '+'+net : net} ₽
+
+Уже ${typeStr}:
+(От 0 до ${absNet})`, currentSettled);
 
             if (amountStr !== null) {
                 let parsed = parseInt(amountStr);
@@ -1353,7 +1366,9 @@
 
             if (totalB === 0) return alert('Нет бай-инов');
             if (totalB !== totalC) {
-                alert(`Касса не сходится!\nСумма бай-инов: ${totalB}\nОбщий стэк: ${totalC}`);
+                alert(`Касса не сходится!
+Сумма бай-инов: ${totalB}
+Общий стэк: ${totalC}`);
                 return;
             }
 
