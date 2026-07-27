@@ -115,23 +115,40 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
 
-                <div id="dropdown-menu" class="hidden absolute top-full right-3 mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl py-1 overflow-hidden z-50">
-                    <div class="px-4 py-2 border-b border-zinc-800/50 mb-1">
-                        <span id="loc-menu-club" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Клуб</span>
-                        <p id="menu-room-badge" class="text-xs font-bold text-white uppercase truncate">---</p>
+                <!-- ОБНОВЛЕННОЕ ВЫПАДАЮЩЕЕ МЕНЮ -->
+                <div id="dropdown-menu" class="hidden absolute top-full right-3 mt-2 w-56 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl py-2 overflow-hidden z-50">
+                    
+                    <!-- Клуб -->
+                    <div class="px-4 py-2 border-b border-zinc-800/50 mb-2">
+                        <span id="loc-menu-club" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest block mb-1">Клуб</span>
+                        <p id="menu-room-badge" class="text-sm font-black text-white uppercase truncate">---</p>
                     </div>
                     
-                    <div class="px-4 py-2 border-b border-zinc-800/50 flex justify-between items-center">
-                        <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Язык / Lang</span>
-                        <div class="flex space-x-1 bg-zinc-800 rounded p-0.5">
-                            <button onclick="setLang('ru')" id="menu-lang-ru" class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-zinc-600 text-white transition">RU</button>
-                            <button onclick="setLang('en')" id="menu-lang-en" class="text-[9px] font-bold px-1.5 py-0.5 rounded text-zinc-400 hover:text-white transition">EN</button>
+                    <!-- Выбор языка (Стильный свитчер) -->
+                    <div class="px-4 py-2 border-b border-zinc-800/50 mb-2 flex justify-center">
+                        <div class="flex w-full bg-zinc-950 border border-zinc-800 rounded-lg p-1 relative">
+                            <button onclick="setLang('ru')" id="menu-lang-ru" class="flex-1 text-[10px] font-bold py-2 rounded-md bg-zinc-700 text-white transition z-10 relative shadow-sm">RU</button>
+                            <button onclick="setLang('en')" id="menu-lang-en" class="flex-1 text-[10px] font-bold py-2 rounded-md text-zinc-500 hover:text-white transition z-10 relative">EN</button>
                         </div>
                     </div>
 
-                    <button id="btn-settings" onclick="openSettings()" class="hidden w-full text-left px-4 py-3 text-purple-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition">⚙ Настройки</button>
-                    <button id="btn-end-game" onclick="endGame()" class="hidden w-full text-left px-4 py-3 text-red-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition border-t border-zinc-800/50">Завершить сессию</button>
-                    <button onclick="logoutClub()" id="loc-menu-exit" class="w-full text-left px-4 py-3 text-zinc-300 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition border-t border-zinc-800/50">Выйти из комнаты</button>
+                    <!-- Настройки -->
+                    <button id="btn-settings" onclick="openSettings()" class="hidden w-full text-left px-4 py-3 text-zinc-300 hover:text-white hover:bg-zinc-800 transition flex items-center group">
+                        <svg class="w-4 h-4 mr-3 text-zinc-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <span id="loc-menu-settings" class="text-xs font-bold uppercase tracking-widest">Настройки</span>
+                    </button>
+
+                    <!-- Завершить игру -->
+                    <button id="btn-end-game" onclick="endGame()" class="hidden w-full text-left px-4 py-3 text-red-400 hover:text-red-300 hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
+                        <svg class="w-4 h-4 mr-3 text-red-500/70 group-hover:text-red-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg>
+                        <span id="loc-menu-end" class="text-xs font-bold uppercase tracking-widest">Завершить сессию</span>
+                    </button>
+
+                    <!-- Выход -->
+                    <button onclick="logoutClub()" class="w-full text-left px-4 py-3 text-zinc-300 hover:text-white hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
+                        <svg class="w-4 h-4 mr-3 text-zinc-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span id="loc-menu-exit" class="text-xs font-bold uppercase tracking-widest">Выйти из комнаты</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -274,7 +291,7 @@
     <div class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-50 h-[60px]">
         <div class="max-w-md mx-auto flex h-full">
             <button id="tab-table" onclick="showTab('table')" class="flex-1 flex flex-col items-center justify-center text-white transition-colors">
-                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 <span id="loc-tab-table" class="text-[9px] font-bold uppercase tracking-widest">Стол</span>
             </button>
             <button id="tab-rating" onclick="showTab('rating')" class="flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors">
@@ -328,7 +345,7 @@
                 lobbyDesc: "Доступ имеют только те, кто знает пароль. Внутри комнаты все игроки имеют права на редактирование.",
                 modeRead: "Чтение", modeEdit: "Управление", tabTable: "Стол", tabRating: "Рейтинг", tabHist: "История",
                 btnAdd: "Добавить", btnCalc: "Рассчитать", tableCash: "Касса стола", totalBuy: "Сумма бай-инов", totalStack: "Общий стэк",
-                menuClub: "Клуб", menuSettings: "⚙ Настройки", menuEnd: "Завершить сессию", menuExit: "Выйти из комнаты",
+                menuClub: "Клуб", menuSettings: "Настройки", menuEnd: "Завершить сессию", menuExit: "Выйти из комнаты",
                 sync: "Синхронизация...", empty: "Стол пуст", results: "Взаиморасчеты", ratingTitle: "Рейтинг",
                 showProfits: "Показать", colProf: "Профиль", colGames: "Игр", colProfit: "Профит",
                 profDesc: "Статистика игрока", profPlayed: "Сыграно", profNet: "Общий профит", profOwes: "Игрок должен", profOwed: "Игроку должны",
@@ -343,7 +360,7 @@
                 lobbyDesc: "Only users with the password can enter. Inside, everyone has editing rights.",
                 modeRead: "Read", modeEdit: "Manage", tabTable: "Table", tabRating: "Ranking", tabHist: "History",
                 btnAdd: "Add", btnCalc: "Settle Up", tableCash: "Table Bank", totalBuy: "Total Buy-ins", totalStack: "Total Stack",
-                menuClub: "Club", menuSettings: "⚙ Settings", menuEnd: "End Session", menuExit: "Leave Room",
+                menuClub: "Club", menuSettings: "Settings", menuEnd: "End Session", menuExit: "Leave Room",
                 sync: "Syncing...", empty: "Table is empty", results: "Transactions", ratingTitle: "Leaderboard",
                 showProfits: "Show", colProf: "Profile", colGames: "Games", colProfit: "Profit",
                 profDesc: "Player Stats", profPlayed: "Played", profNet: "Total Net", profOwes: "Player Owes", profOwed: "Player is Owed",
@@ -355,7 +372,10 @@
             }
         };
 
-        const monthNames = { '01': 'Янв', '02': 'Фев', '03': 'Мар', '04': 'Апр', '05': 'Май', '06': 'Июн', '07': 'Июл', '08': 'Авг', '09': 'Сен', '10': 'Окт', '11': 'Ноя', '12': 'Дек' };
+        const monthNames = {
+            ru: { '01': 'Янв', '02': 'Фев', '03': 'Мар', '04': 'Апр', '05': 'Май', '06': 'Июн', '07': 'Июл', '08': 'Авг', '09': 'Сен', '10': 'Окт', '11': 'Ноя', '12': 'Дек' },
+            en: { '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' }
+        };
 
         let currentLang = localStorage.getItem('zalubank_lang') || 'ru';
 
@@ -372,8 +392,8 @@
             // Меню переключатели
             let mRu = document.getElementById('menu-lang-ru');
             let mEn = document.getElementById('menu-lang-en');
-            if(mRu) mRu.className = l === 'ru' ? "text-[9px] font-bold px-1.5 py-0.5 rounded bg-zinc-600 text-white transition" : "text-[9px] font-bold px-1.5 py-0.5 rounded text-zinc-400 hover:text-white transition";
-            if(mEn) mEn.className = l === 'en' ? "text-[9px] font-bold px-1.5 py-0.5 rounded bg-zinc-600 text-white transition" : "text-[9px] font-bold px-1.5 py-0.5 rounded text-zinc-400 hover:text-white transition";
+            if(mRu) mRu.className = l === 'ru' ? "flex-1 text-[10px] font-bold py-2 rounded-md bg-zinc-700 text-white transition z-10 relative shadow-sm" : "flex-1 text-[10px] font-bold py-2 rounded-md text-zinc-500 hover:text-white transition z-10 relative";
+            if(mEn) mEn.className = l === 'en' ? "flex-1 text-[10px] font-bold py-2 rounded-md bg-zinc-700 text-white transition z-10 relative shadow-sm" : "flex-1 text-[10px] font-bold py-2 rounded-md text-zinc-500 hover:text-white transition z-10 relative";
 
             applyLang();
             if(dbRef) { renderTable(); if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory(); if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions(); }
@@ -393,9 +413,12 @@
             document.getElementById('loc-total-buyins').innerText = t.totalBuy;
             document.getElementById('loc-total-stack').innerText = t.totalStack;
             document.getElementById('loc-menu-club').innerText = t.menuClub;
-            document.getElementById('btn-settings').innerText = t.menuSettings;
-            document.getElementById('btn-end-game').innerText = t.menuEnd;
+            
+            // Новые span'ы для меню (с защитой от перезаписи иконок)
+            document.getElementById('loc-menu-settings').innerText = t.menuSettings;
+            document.getElementById('loc-menu-end').innerText = t.menuEnd;
             document.getElementById('loc-menu-exit').innerText = t.menuExit;
+            
             document.getElementById('loc-results-title').innerText = t.results;
             document.getElementById('loc-rating-title').innerText = t.ratingTitle;
             document.getElementById('loc-show-profits').innerText = t.showProfits;
@@ -580,7 +603,6 @@
             
             roomSettings = { currency: c, step: s };
             
-            // Если мы сохраняем во время первого запуска (онбординга), принудительно задаем путь к настройкам
             let targetRef = settingsRef;
             if (!targetRef && currentRoom && currentRoom !== 'osnova') {
                 targetRef = ref(database, 'clubs/' + currentRoom + '/settings');
@@ -1034,7 +1056,7 @@
             monthsArr.forEach(m => {
                 let sel = (currentFilter === m) ? 'selected' : '';
                 let parts = m.split('.');
-                let monthName = monthNames[parts[0]] || parts[0];
+                let monthName = monthNames[currentLang][parts[0]] || parts[0];
                 optionsHtml += `<option value="${m}" ${sel}>${monthName} '${parts[1]}</option>`;
             });
             filterSelect.innerHTML = optionsHtml;
