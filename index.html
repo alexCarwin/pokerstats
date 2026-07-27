@@ -31,7 +31,7 @@
 <body class="pt-[72px] px-3 pb-[80px] min-h-screen flex flex-col relative">
 
     <!-- ЛОББИ (ВХОД / СОЗДАНИЕ КОМНАТЫ) -->
-    <div id="lobby-modal" class="fixed inset-0 z-[6000] p-4 flex items-center justify-center bg-[#050505] flex-col hidden">
+    <div id="lobby-modal" class="fixed inset-0 z-[1000] p-4 flex items-center justify-center bg-[#050505] flex-col hidden">
         <div class="absolute top-4 right-4 flex space-x-2 bg-zinc-900 border border-zinc-800 rounded-lg p-1">
             <button onclick="setLang('ru')" id="lang-ru" class="text-[10px] font-bold px-2 py-1 rounded bg-zinc-700 text-white transition">RU</button>
             <button onclick="setLang('en')" id="lang-en" class="text-[10px] font-bold px-2 py-1 rounded text-zinc-500 hover:text-white transition">EN</button>
@@ -57,7 +57,7 @@
     </div>
 
     <!-- ГЛОБАЛЬНЫЙ ЛОАДЕР -->
-    <div id="saving-overlay" class="fixed top-[70px] left-0 right-0 z-[5500] hidden flex justify-center pointer-events-none transition-opacity duration-300">
+    <div id="saving-overlay" class="fixed top-[70px] left-0 right-0 z-[999] hidden flex justify-center pointer-events-none transition-opacity duration-300">
         <div class="bg-zinc-900/95 border border-zinc-700 px-4 py-2 rounded-full flex items-center shadow-[0_0_20px_rgba(0,0,0,0.6)] backdrop-blur-md">
             <div class="w-4 h-4 border-2 border-zinc-600 border-t-emerald-500 rounded-full animate-spin mr-2"></div>
             <span id="loc-saving" class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Синхронизация...</span>
@@ -65,7 +65,7 @@
     </div>
 
     <!-- ОКНО НАСТРОЕК КЛУБА -->
-    <div id="settings-modal" onclick="if(event.target===this) closeSettings()" class="fixed inset-0 hidden z-[6000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
+    <div id="settings-modal" class="fixed inset-0 hidden z-[2000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-5 rounded-3xl w-full max-w-sm flex flex-col shadow-2xl relative">
             <button id="settings-close-btn" onclick="closeSettings()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -87,7 +87,7 @@
     </div>
 
     <!-- ОКНО "О ПРИЛОЖЕНИИ" -->
-    <div id="about-modal" onclick="if(event.target===this) closeAbout()" class="fixed inset-0 hidden z-[6000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
+    <div id="about-modal" class="fixed inset-0 hidden z-[3000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-6 rounded-3xl w-full max-w-md flex flex-col shadow-2xl relative">
             <button onclick="closeAbout()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -132,7 +132,7 @@
     </div>
 
     <!-- ОКНО РЕДАКТИРОВАНИЯ ЗАМЕТКИ -->
-    <div id="note-modal" onclick="if(event.target===this) closeNoteModal()" class="fixed inset-0 hidden z-[6000] p-4 flex items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity">
+    <div id="note-modal" class="fixed inset-0 hidden z-[100] p-4 flex items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-4 rounded-2xl w-full max-w-sm flex flex-col shadow-2xl relative">
             <button onclick="closeNoteModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -146,8 +146,20 @@
         </div>
     </div>
 
-    <!-- ЧИСТАЯ ШАПКА ФИКСИРОВАННАЯ СВЕРХУ (z-[5000] - ПОВЕРХ ВСЕХ ОКОН КРОМЕ ПОПАПОВ) -->
-    <div class="fixed top-0 left-0 right-0 bg-[#050505]/95 backdrop-blur-md z-[5000] border-b border-zinc-800/80">
+    <!-- ОКНО ДЕТАЛЕЙ ИГРЫ (GAME DETAILS) -->
+    <div id="game-details-modal" class="fixed inset-0 hidden z-[4000] p-3 flex flex-col items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
+        <div class="w-full max-w-md relative flex flex-col items-center">
+            <button onclick="closeGameDetails()" class="absolute -top-14 right-0 text-zinc-500 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div id="game-details-content" class="w-full">
+                <!-- Сюда инжектится карточка игры -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ЧИСТАЯ ШАПКА ФИКСИРОВАННАЯ СВЕРХУ -->
+    <div class="fixed top-0 left-0 right-0 bg-[#050505]/95 backdrop-blur-md z-50 border-b border-zinc-800/80">
         <div class="max-w-md mx-auto w-full flex justify-between items-center p-3 relative">
             <div class="flex items-center space-x-2">
                 <h1 class="text-xl font-black uppercase italic tracking-tighter drop-shadow-lg">
@@ -181,13 +193,15 @@
                 </button>
 
                 <!-- ВЫПАДАЮЩЕЕ МЕНЮ -->
-                <div id="dropdown-menu" class="hidden absolute top-full right-3 mt-2 w-56 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl py-2 overflow-hidden z-[5100]">
+                <div id="dropdown-menu" class="hidden absolute top-full right-3 mt-2 w-56 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl py-2 overflow-hidden z-50">
                     
+                    <!-- Клуб -->
                     <div class="px-4 py-2 border-b border-zinc-800/50 mb-2">
                         <span id="loc-menu-club" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest block mb-1">Клуб</span>
                         <p id="menu-room-badge" class="text-sm font-black text-white uppercase truncate">---</p>
                     </div>
                     
+                    <!-- Выбор языка (Стильный свитчер) -->
                     <div class="px-4 py-2 border-b border-zinc-800/50 mb-2 flex justify-center">
                         <div class="flex w-full bg-zinc-950 border border-zinc-800 rounded-lg p-1 relative">
                             <button onclick="setLang('ru')" id="menu-lang-ru" class="flex-1 text-[10px] font-bold py-2 rounded-md bg-zinc-700 text-white transition z-10 relative shadow-sm">RU</button>
@@ -195,21 +209,25 @@
                         </div>
                     </div>
 
-                    <button id="btn-settings" onclick="openSettings()" class="hidden w-full text-left px-4 py-3 text-purple-400 hover:text-purple-300 hover:bg-zinc-800 transition flex items-center group">
+                    <!-- Настройки -->
+                    <button id="btn-settings" onclick="openSettings()" class="hidden w-full text-left px-4 py-3 text-zinc-300 hover:text-white hover:bg-zinc-800 transition flex items-center group">
                         <svg class="w-4 h-4 mr-3 text-zinc-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         <span id="loc-menu-settings" class="text-xs font-bold uppercase tracking-widest">Настройки</span>
                     </button>
 
+                    <!-- О приложении -->
                     <button onclick="openAbout()" class="w-full text-left px-4 py-3 text-blue-400 hover:text-blue-300 hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
                         <svg class="w-4 h-4 mr-3 text-blue-500/70 group-hover:text-blue-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         <span id="loc-menu-about" class="text-xs font-bold uppercase tracking-widest">О приложении</span>
                     </button>
 
+                    <!-- Завершить игру -->
                     <button id="btn-end-game" onclick="endGame()" class="hidden w-full text-left px-4 py-3 text-red-400 hover:text-red-300 hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
                         <svg class="w-4 h-4 mr-3 text-red-500/70 group-hover:text-red-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg>
                         <span id="loc-menu-end" class="text-xs font-bold uppercase tracking-widest">Завершить сессию</span>
                     </button>
 
+                    <!-- Выход -->
                     <button onclick="logoutClub()" class="w-full text-left px-4 py-3 text-zinc-300 hover:text-white hover:bg-zinc-800 transition flex items-center group border-t border-zinc-800/50">
                         <svg class="w-4 h-4 mr-3 text-zinc-500 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         <span id="loc-menu-exit" class="text-xs font-bold uppercase tracking-widest">Выйти из комнаты</span>
@@ -218,75 +236,6 @@
             </div>
         </div>
     </div>
-
-    <!-- ОКНО ПРОФИЛЯ ИГРОКА (СТАРТУЕТ ПОД ШАПКОЙ) -->
-    <div id="profile-modal" onclick="if(event.target===this) closePlayerProfile()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4000] p-3 flex flex-col bg-[#050505] overflow-y-auto">
-        <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6 relative">
-            <div class="flex justify-between items-start mb-6 mt-2">
-                <div>
-                    <h2 id="profile-name" class="text-3xl font-black text-white uppercase tracking-tighter drop-shadow-md transition-colors">Имя</h2>
-                    <p id="loc-prof-desc" class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">Статистика игрока</p>
-                </div>
-                <button onclick="closePlayerProfile()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            
-            <div class="flex space-x-3 mb-4">
-                <div class="flex-1 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-center items-center shadow-lg">
-                    <span id="loc-prof-played" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-1">Сыграно</span>
-                    <span id="profile-games" class="text-2xl font-black text-white">0</span>
-                </div>
-                <div class="flex-[1.5] bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-center items-center shadow-lg relative overflow-hidden">
-                    <span id="loc-prof-net" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-1 relative z-10">Общий профит</span>
-                    <span id="profile-net" class="text-2xl font-black relative z-10">0</span>
-                </div>
-            </div>
-
-            <div class="flex space-x-3 mb-5">
-                <div class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
-                    <span id="loc-prof-owes" class="text-[8px] font-bold text-red-500/70 uppercase tracking-widest mb-1">Игрок должен</span>
-                    <span id="profile-owes" class="text-lg font-black text-red-500">0</span>
-                </div>
-                <div class="flex-1 bg-zinc-900 border border-emerald-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
-                    <span id="loc-prof-owed" class="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Игроку должны</span>
-                    <span id="profile-owed" class="text-lg font-black text-emerald-500">0</span>
-                </div>
-            </div>
-
-            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 shadow-lg mb-5 relative">
-                <div class="flex justify-between items-center mb-3 px-1">
-                    <h3 id="loc-prof-chart" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">График профита</h3>
-                    <div class="flex space-x-1 bg-zinc-950 border border-zinc-800 rounded p-0.5">
-                        <button onclick="updateChartFilter('10')" id="chart-filter-10" class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-zinc-700 text-white transition">10 ИГР</button>
-                        <button onclick="updateChartFilter('month')" id="chart-filter-month" class="text-[8px] font-bold px-1.5 py-0.5 rounded text-zinc-500 hover:text-white transition">МЕСЯЦ</button>
-                        <button onclick="updateChartFilter('all')" id="chart-filter-all" class="text-[8px] font-bold px-1.5 py-0.5 rounded text-zinc-500 hover:text-white transition">ВСЁ ВРЕМЯ</button>
-                    </div>
-                </div>
-                <div class="w-full h-40">
-                    <canvas id="profileChart"></canvas>
-                </div>
-            </div>
-
-            <h3 id="loc-prof-history" class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 px-1">История игр</h3>
-            <div id="profile-sessions-list" class="space-y-2">
-            </div>
-        </div>
-    </div>
-
-    <!-- ОКНО ДЕТАЛЕЙ ИГРЫ (СТАРТУЕТ ПОД ШАПКОЙ) -->
-    <div id="game-details-modal" onclick="if(event.target===this) closeGameDetails()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4500] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
-        <div class="w-full max-w-md relative flex flex-col items-center pb-6">
-            <div class="w-full flex justify-end mb-2">
-                <button onclick="closeGameDetails()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div id="game-details-content" class="w-full">
-            </div>
-        </div>
-    </div>
-
 
     <!-- ГЛАВНЫЙ ЭКРАН (СТОЛ) -->
     <div id="main-table-view" class="max-w-md mx-auto w-full flex-1 flex-col flex">
@@ -359,6 +308,63 @@
         </div>
     </div>
 
+    <!-- ПРОФИЛЬ ИГРОКА -->
+    <div id="profile-modal" class="fixed inset-0 hidden z-[60] p-3 flex flex-col bg-[#050505] overflow-y-auto">
+        <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6 relative mt-[72px]">
+            <div class="flex justify-between items-start mb-6 mt-2">
+                <div>
+                    <h2 id="profile-name" class="text-3xl font-black text-white uppercase tracking-tighter drop-shadow-md transition-colors">Имя</h2>
+                    <p id="loc-prof-desc" class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">Статистика игрока</p>
+                </div>
+                <button onclick="closePlayerProfile()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="flex space-x-3 mb-4">
+                <div class="flex-1 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-center items-center shadow-lg">
+                    <span id="loc-prof-played" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-1">Сыграно</span>
+                    <span id="profile-games" class="text-2xl font-black text-white">0</span>
+                </div>
+                <div class="flex-[1.5] bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-center items-center shadow-lg relative overflow-hidden">
+                    <span id="loc-prof-net" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mb-1 relative z-10">Общий профит</span>
+                    <span id="profile-net" class="text-2xl font-black relative z-10">0</span>
+                </div>
+            </div>
+
+            <div class="flex space-x-3 mb-5">
+                <div class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
+                    <span id="loc-prof-owes" class="text-[8px] font-bold text-red-500/70 uppercase tracking-widest mb-1">Игрок должен</span>
+                    <span id="profile-owes" class="text-lg font-black text-red-500">0</span>
+                </div>
+                <div class="flex-1 bg-zinc-900 border border-emerald-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
+                    <span id="loc-prof-owed" class="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Игроку должны</span>
+                    <span id="profile-owed" class="text-lg font-black text-emerald-500">0</span>
+                </div>
+            </div>
+
+            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 shadow-lg mb-5 relative">
+                <div class="flex justify-between items-center mb-3 px-1">
+                    <h3 id="loc-prof-chart" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">График профита</h3>
+                    
+                    <!-- Переключатель графиков -->
+                    <div class="flex space-x-1 bg-zinc-950 border border-zinc-800 rounded p-0.5">
+                        <button onclick="updateChartFilter('10')" id="chart-filter-10" class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-zinc-700 text-white transition">10 ИГР</button>
+                        <button onclick="updateChartFilter('month')" id="chart-filter-month" class="text-[8px] font-bold px-1.5 py-0.5 rounded text-zinc-500 hover:text-white transition">МЕСЯЦ</button>
+                        <button onclick="updateChartFilter('all')" id="chart-filter-all" class="text-[8px] font-bold px-1.5 py-0.5 rounded text-zinc-500 hover:text-white transition">ВСЁ ВРЕМЯ</button>
+                    </div>
+                </div>
+                <div class="w-full h-40">
+                    <canvas id="profileChart"></canvas>
+                </div>
+            </div>
+
+            <h3 id="loc-prof-history" class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 px-1">История игр</h3>
+            <div id="profile-sessions-list" class="space-y-2">
+            </div>
+        </div>
+    </div>
+
     <!-- ОКНО ИСТОРИИ СЕССИЙ -->
     <div id="sessions-modal" class="hidden max-w-md mx-auto w-full flex-1 flex-col">
         <div class="flex justify-between items-center mb-4 mt-2">
@@ -369,7 +375,7 @@
     </div>
 
     <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
-    <div class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-[4900] h-[60px]">
+    <div class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-50 h-[60px]">
         <div class="max-w-md mx-auto flex h-full">
             <button id="tab-table" onclick="showTab('table')" class="flex-1 flex flex-col items-center justify-center text-white transition-colors">
                 <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
@@ -479,8 +485,6 @@
             ru: { '01': 'Янв', '02': 'Фев', '03': 'Мар', '04': 'Апр', '05': 'Май', '06': 'Июн', '07': 'Июл', '08': 'Авг', '09': 'Сен', '10': 'Окт', '11': 'Ноя', '12': 'Дек' },
             en: { '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' }
         };
-
-        let currentLang = localStorage.getItem('zalubank_lang') || 'ru';
 
         window.setLang = function(l) {
             currentLang = l;
@@ -603,11 +607,11 @@
             const eyeClosed = document.getElementById('eye-closed-icon');
             const eyeOpen = document.getElementById('eye-open-icon');
             if (isProfitsVisible) {
-                eyeClosed.classList.add('hidden');
-                eyeOpen.classList.remove('hidden');
+                if (eyeClosed) eyeClosed.classList.add('hidden');
+                if (eyeOpen) eyeOpen.classList.remove('hidden');
             } else {
-                eyeClosed.classList.remove('hidden');
-                eyeOpen.classList.add('hidden');
+                if (eyeClosed) eyeClosed.classList.remove('hidden');
+                if (eyeOpen) eyeOpen.classList.add('hidden');
             }
         }
 
@@ -667,7 +671,7 @@
             document.getElementById('sessions-modal').classList.add('hidden');
             document.getElementById('sessions-modal').classList.remove('flex');
             
-            document.getElementById('tab-table').className = "flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors";
+            document.getElementById('tab-table').className = "flex-1 flex flex-col items-center justify-center text-white transition-colors";
             document.getElementById('tab-rating').className = "flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors";
             document.getElementById('tab-history').className = "flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors";
 
@@ -725,7 +729,6 @@
                             currentPwd = pwd;
                             document.getElementById('lobby-modal').classList.add('hidden');
                             
-                            // Запуск окна Настроек в режиме онбординга
                             document.getElementById('settings-modal').dataset.onboarding = "true";
                             document.getElementById('settings-close-btn').classList.add('hidden');
                             document.getElementById('setting-currency').value = '₽';
@@ -844,9 +847,7 @@
                 
                 if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
                 if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
-                if(!document.getElementById('profile-modal').classList.contains('hidden')) {
-                    window.openPlayerProfile(document.getElementById('profile-name').innerText);
-                }
+                
                 if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) {
                     window.openGameDetails(currentGameDetailsId);
                 }
@@ -942,13 +943,13 @@
             localStorage.setItem('zalubank_privacy', isProfitsVisible);
             updateEyeIcon();
             
+            renderTable();
             if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
-            if(!document.getElementById('profile-modal').classList.contains('hidden')) {
-                window.openPlayerProfile(document.getElementById('profile-name').innerText);
-            }
+            
             if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) {
                 window.openGameDetails(currentGameDetailsId);
             }
+            if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
         }
 
         window.updateChartFilter = function(filter) {
@@ -1063,8 +1064,8 @@
                     totalBuyIns += bIn; totalCashouts += cOut;
 
                     const net = cOut - bIn;
-                    const netClass = net > 0 ? 'text-emerald-500' : (net < 0 ? 'text-red-500' : 'text-zinc-500');
-                    const netText = net > 0 ? `+${formatMoney(net)}` : formatMoney(net);
+                    const netClass = isProfitsVisible ? (net > 0 ? 'text-emerald-500' : (net < 0 ? 'text-red-500' : 'text-zinc-500')) : 'text-zinc-500';
+                    const netText = isProfitsVisible ? (net > 0 ? `+${formatMoney(net)}` : formatMoney(net)) : '***';
 
                     const buyInDisplay = p.buyIn === null || p.buyIn === undefined ? '' : p.buyIn;
                     const cashOutDisplay = p.cashOut === null || p.cashOut === undefined ? '' : p.cashOut;
@@ -1084,7 +1085,7 @@
                         </div>
                     ` : `
                         <div class="flex h-[26px] items-center px-2 bg-zinc-800/50 rounded-md border border-zinc-800">
-                            <span class="text-xs font-bold text-white">${buyInDisplay ? formatMoney(buyInDisplay) : '0'}</span>
+                            <span class="text-xs font-bold text-white">${buyInDisplay && isProfitsVisible ? formatMoney(buyInDisplay) : (buyInDisplay ? '***' : '0')}</span>
                         </div>
                     `;
 
@@ -1092,14 +1093,14 @@
                         <input type="text" id="cashout-${index}" value="${cashOutDisplay}" placeholder="0" onchange="updateCashOut(${index}, this.value)" onkeyup="if(event.key === 'Enter') this.blur()" class="w-full bg-zinc-800 rounded-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-blue-500 transition">
                     ` : `
                         <div class="flex h-[26px] items-center px-2 bg-zinc-800/50 rounded-md border border-zinc-800">
-                            <span class="text-xs font-bold text-white">${cashOutDisplay ? formatMoney(cashOutDisplay) : '0'}</span>
+                            <span class="text-xs font-bold text-white">${cashOutDisplay && isProfitsVisible ? formatMoney(cashOutDisplay) : (cashOutDisplay ? '***' : '0')}</span>
                         </div>
                     `;
 
                     newHTML += `
                         <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 flex flex-col relative">
                             <div class="flex justify-between items-center mb-1.5 pr-4">
-                                <span class="font-black text-sm tracking-tight ${nameTitleClass}">${p.name}</span>
+                                <span onclick="openPlayerProfile('${p.name}')" class="font-black text-sm tracking-tight cursor-pointer hover:underline decoration-zinc-500 underline-offset-4 transition ${nameTitleClass}">${p.name}</span>
                                 <span class="text-[9px] font-bold ${netClass}">${netText}</span>
                             </div>
                             <div class="flex space-x-2 items-end">
@@ -1125,8 +1126,8 @@
                 if (el) { el.focus(); if (activeVal !== null) el.value = activeVal; }
             }
 
-            document.getElementById('total-buyins').innerText = formatMoney(totalBuyIns);
-            document.getElementById('total-cashouts').innerText = formatMoney(totalCashouts);
+            document.getElementById('total-buyins').innerText = isProfitsVisible ? formatMoney(totalBuyIns) : '***';
+            document.getElementById('total-cashouts').innerText = isProfitsVisible ? formatMoney(totalCashouts) : '***';
 
             const badge = document.getElementById('status-badge');
             const bg = document.getElementById('status-bg');
@@ -1356,7 +1357,6 @@
         }
 
         window.openPlayerProfile = function(name) {
-            closeGameDetails(); 
             
             const stats = db.history[name];
             if(!stats) return;
@@ -1392,13 +1392,17 @@
                             let remaining = absNet - settledAmt;
 
                             if (remaining > 0) {
-                                if (net < 0) totalOwes += remaining;
-                                else if (net > 0) totalOwed += remaining;
+                                if (net < 0) {
+                                    totalOwes += remaining;
+                                } else if (net > 0) {
+                                    totalOwed += remaining;
+                                }
                             }
                         }
                     }
                 });
             }
+            
 
             const owesEl = document.getElementById('profile-owes');
             const owedEl = document.getElementById('profile-owed');
@@ -1411,7 +1415,7 @@
             }
 
             currentPlayerSessionsData = [...playerSessions].sort((a, b) => a.id.localeCompare(b.id)); 
-            updateChartFilter('all'); 
+            updateChartFilter(currentChartFilter); 
 
             playerSessions.sort((a, b) => b.id.localeCompare(a.id)); 
 
@@ -1436,6 +1440,7 @@
 
         window.closePlayerProfile = function() {
             document.getElementById('profile-modal').classList.add('hidden');
+            
         }
 
         function buildSessionCardHTML(s, id, isEditMode) {
@@ -1560,6 +1565,7 @@
         window.renderSessions = function() {
             const list = document.getElementById('sessions-list');
             list.innerHTML = '';
+            const t = i18n[currentLang];
             
             if(!db.sessions || Object.keys(db.sessions).length === 0) {
                 list.innerHTML = `<p class="text-center text-xs text-zinc-500 italic mt-10">${currentLang === 'ru'?'Нет записей':'No records'}</p>`;
@@ -1626,6 +1632,7 @@
                 db.sessions[currentNoteSessionId].note = document.getElementById('note-textarea').value.trim();
                 saveToCloud();
                 renderSessions();
+                if(currentGameDetailsId) openGameDetails(currentGameDetailsId);
             }
             closeNoteModal(true);
         }
@@ -1741,6 +1748,7 @@
                 delete db.sessions[id];
                 updateTopPlayer();
                 saveToCloud();
+                closeGameDetails();
             }
         }
 
