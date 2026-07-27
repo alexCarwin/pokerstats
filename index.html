@@ -65,7 +65,7 @@
     </div>
 
     <!-- ОКНО НАСТРОЕК КЛУБА -->
-    <div id="settings-modal" class="fixed inset-0 hidden z-[6000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
+    <div id="settings-modal" onclick="if(event.target===this) closeSettings()" class="fixed inset-0 hidden z-[6000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-5 rounded-3xl w-full max-w-sm flex flex-col shadow-2xl relative">
             <button id="settings-close-btn" onclick="closeSettings()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -87,7 +87,7 @@
     </div>
 
     <!-- ОКНО "О ПРИЛОЖЕНИИ" -->
-    <div id="about-modal" class="fixed inset-0 hidden z-[6000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
+    <div id="about-modal" onclick="if(event.target===this) closeAbout()" class="fixed inset-0 hidden z-[6000] p-4 flex items-center justify-center bg-black/95 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-6 rounded-3xl w-full max-w-md flex flex-col shadow-2xl relative">
             <button onclick="closeAbout()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -132,7 +132,7 @@
     </div>
 
     <!-- ОКНО РЕДАКТИРОВАНИЯ ЗАМЕТКИ -->
-    <div id="note-modal" class="fixed inset-0 hidden z-[6000] p-4 flex items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity">
+    <div id="note-modal" onclick="if(event.target===this) closeNoteModal()" class="fixed inset-0 hidden z-[6000] p-4 flex items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity">
         <div class="bg-zinc-900 border border-zinc-700 p-4 rounded-2xl w-full max-w-sm flex flex-col shadow-2xl relative">
             <button onclick="closeNoteModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -220,7 +220,7 @@
     </div>
 
     <!-- ОКНО ПРОФИЛЯ ИГРОКА (СТАРТУЕТ ПОД ШАПКОЙ) -->
-    <div id="profile-modal" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4000] p-3 flex flex-col bg-[#050505] overflow-y-auto">
+    <div id="profile-modal" onclick="if(event.target===this) closePlayerProfile()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4000] p-3 flex flex-col bg-[#050505] overflow-y-auto">
         <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6 relative">
             <div class="flex justify-between items-start mb-6 mt-2">
                 <div>
@@ -244,11 +244,11 @@
             </div>
 
             <div class="flex space-x-3 mb-5">
-                <div onclick="openDebtList('owes')" class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg cursor-pointer hover:bg-zinc-800 transition">
+                <div class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
                     <span id="loc-prof-owes" class="text-[8px] font-bold text-red-500/70 uppercase tracking-widest mb-1">Игрок должен</span>
                     <span id="profile-owes" class="text-lg font-black text-red-500">0</span>
                 </div>
-                <div onclick="openDebtList('owed')" class="flex-1 bg-zinc-900 border border-emerald-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg cursor-pointer hover:bg-zinc-800 transition">
+                <div class="flex-1 bg-zinc-900 border border-emerald-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
                     <span id="loc-prof-owed" class="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Игроку должны</span>
                     <span id="profile-owed" class="text-lg font-black text-emerald-500">0</span>
                 </div>
@@ -257,7 +257,6 @@
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 shadow-lg mb-5 relative">
                 <div class="flex justify-between items-center mb-3 px-1">
                     <h3 id="loc-prof-chart" class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">График профита</h3>
-                    
                     <div class="flex space-x-1 bg-zinc-950 border border-zinc-800 rounded p-0.5">
                         <button onclick="updateChartFilter('10')" id="chart-filter-10" class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-zinc-700 text-white transition">10 ИГР</button>
                         <button onclick="updateChartFilter('month')" id="chart-filter-month" class="text-[8px] font-bold px-1.5 py-0.5 rounded text-zinc-500 hover:text-white transition">МЕСЯЦ</button>
@@ -275,24 +274,8 @@
         </div>
     </div>
 
-    <!-- ОКНО СПИСКА ДОЛГОВ -->
-    <div id="debt-list-modal" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4200] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
-        <div class="w-full max-w-md relative flex flex-col items-center pb-6">
-            <div class="w-full flex justify-end mb-2 mt-2">
-                <button onclick="closeDebtList()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div class="w-full flex justify-between items-center mb-4 mt-2">
-                <h3 id="debt-list-title" class="text-sm font-black uppercase tracking-widest text-white">Долги</h3>
-            </div>
-            <div id="debt-list-content" class="w-full space-y-2">
-            </div>
-        </div>
-    </div>
-
     <!-- ОКНО ДЕТАЛЕЙ ИГРЫ (СТАРТУЕТ ПОД ШАПКОЙ) -->
-    <div id="game-details-modal" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4500] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
+    <div id="game-details-modal" onclick="if(event.target===this) closeGameDetails()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4500] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
         <div class="w-full max-w-md relative flex flex-col items-center pb-6">
             <div class="w-full flex justify-end mb-2">
                 <button onclick="closeGameDetails()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
@@ -303,6 +286,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- ГЛАВНЫЙ ЭКРАН (СТОЛ) -->
     <div id="main-table-view" class="max-w-md mx-auto w-full flex-1 flex-col flex">
@@ -437,16 +421,12 @@
         let currentPwd = null;
 
         // Трекинг состояний
-        let currentPlayerProfileName = null; 
         let initialSettings = { currency: '', step: '' };
         let currentNoteSessionId = null;
         let initialNote = '';
         let currentGameDetailsId = null;
         let currentPlayerSessionsData = [];
         let currentChartFilter = 'all';
-
-        window.currentOwesSessions = [];
-        window.currentOwedSessions = [];
 
         const i18n = {
             ru: {
@@ -499,6 +479,8 @@
             ru: { '01': 'Янв', '02': 'Фев', '03': 'Мар', '04': 'Апр', '05': 'Май', '06': 'Июн', '07': 'Июл', '08': 'Авг', '09': 'Сен', '10': 'Окт', '11': 'Ноя', '12': 'Дек' },
             en: { '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' }
         };
+
+        let currentLang = localStorage.getItem('zalubank_lang') || 'ru';
 
         window.setLang = function(l) {
             currentLang = l;
@@ -862,8 +844,8 @@
                 
                 if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
                 if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
-                if(!document.getElementById('profile-modal').classList.contains('hidden') && currentPlayerProfileName) {
-                    window.openPlayerProfile(currentPlayerProfileName);
+                if(!document.getElementById('profile-modal').classList.contains('hidden')) {
+                    window.openPlayerProfile(document.getElementById('profile-name').innerText);
                 }
                 if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) {
                     window.openGameDetails(currentGameDetailsId);
@@ -960,19 +942,12 @@
             localStorage.setItem('zalubank_privacy', isProfitsVisible);
             updateEyeIcon();
             
-            renderTable();
             if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
-            if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
-            
-            if(!document.getElementById('profile-modal').classList.contains('hidden') && currentPlayerProfileName) {
-                window.openPlayerProfile(currentPlayerProfileName);
+            if(!document.getElementById('profile-modal').classList.contains('hidden')) {
+                window.openPlayerProfile(document.getElementById('profile-name').innerText);
             }
             if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) {
                 window.openGameDetails(currentGameDetailsId);
-            }
-            if(document.getElementById('debt-list-modal') && !document.getElementById('debt-list-modal').classList.contains('hidden')) {
-                const isOwes = document.getElementById('debt-list-title').classList.contains('text-red-500');
-                openDebtList(isOwes ? 'owes' : 'owed');
             }
         }
 
@@ -1088,8 +1063,8 @@
                     totalBuyIns += bIn; totalCashouts += cOut;
 
                     const net = cOut - bIn;
-                    const netClass = isProfitsVisible ? (net > 0 ? 'text-emerald-500' : (net < 0 ? 'text-red-500' : 'text-zinc-500')) : 'text-zinc-500';
-                    const netText = isProfitsVisible ? (net > 0 ? `+${formatMoney(net)}` : formatMoney(net)) : '***';
+                    const netClass = net > 0 ? 'text-emerald-500' : (net < 0 ? 'text-red-500' : 'text-zinc-500');
+                    const netText = net > 0 ? `+${formatMoney(net)}` : formatMoney(net);
 
                     const buyInDisplay = p.buyIn === null || p.buyIn === undefined ? '' : p.buyIn;
                     const cashOutDisplay = p.cashOut === null || p.cashOut === undefined ? '' : p.cashOut;
@@ -1109,7 +1084,7 @@
                         </div>
                     ` : `
                         <div class="flex h-[26px] items-center px-2 bg-zinc-800/50 rounded-md border border-zinc-800">
-                            <span class="text-xs font-bold text-white">${buyInDisplay && isProfitsVisible ? formatMoney(buyInDisplay) : (buyInDisplay ? '***' : '0')}</span>
+                            <span class="text-xs font-bold text-white">${buyInDisplay ? formatMoney(buyInDisplay) : '0'}</span>
                         </div>
                     `;
 
@@ -1117,14 +1092,14 @@
                         <input type="text" id="cashout-${index}" value="${cashOutDisplay}" placeholder="0" onchange="updateCashOut(${index}, this.value)" onkeyup="if(event.key === 'Enter') this.blur()" class="w-full bg-zinc-800 rounded-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-blue-500 transition">
                     ` : `
                         <div class="flex h-[26px] items-center px-2 bg-zinc-800/50 rounded-md border border-zinc-800">
-                            <span class="text-xs font-bold text-white">${cashOutDisplay && isProfitsVisible ? formatMoney(cashOutDisplay) : (cashOutDisplay ? '***' : '0')}</span>
+                            <span class="text-xs font-bold text-white">${cashOutDisplay ? formatMoney(cashOutDisplay) : '0'}</span>
                         </div>
                     `;
 
                     newHTML += `
                         <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 flex flex-col relative">
                             <div class="flex justify-between items-center mb-1.5 pr-4">
-                                <span onclick="openPlayerProfile('${p.name}')" class="font-black text-sm tracking-tight cursor-pointer hover:underline decoration-zinc-500 underline-offset-4 transition ${nameTitleClass}">${p.name}</span>
+                                <span class="font-black text-sm tracking-tight ${nameTitleClass}">${p.name}</span>
                                 <span class="text-[9px] font-bold ${netClass}">${netText}</span>
                             </div>
                             <div class="flex space-x-2 items-end">
@@ -1150,8 +1125,8 @@
                 if (el) { el.focus(); if (activeVal !== null) el.value = activeVal; }
             }
 
-            document.getElementById('total-buyins').innerText = isProfitsVisible ? formatMoney(totalBuyIns) : '***';
-            document.getElementById('total-cashouts').innerText = isProfitsVisible ? formatMoney(totalCashouts) : '***';
+            document.getElementById('total-buyins').innerText = formatMoney(totalBuyIns);
+            document.getElementById('total-cashouts').innerText = formatMoney(totalCashouts);
 
             const badge = document.getElementById('status-badge');
             const bg = document.getElementById('status-bg');
@@ -1381,7 +1356,6 @@
         }
 
         window.openPlayerProfile = function(name) {
-            currentPlayerProfileName = name; 
             closeGameDetails(); 
             
             const stats = db.history[name];
@@ -1402,8 +1376,6 @@
             list.innerHTML = '';
             
             let playerSessions = [];
-            window.currentOwesSessions = [];
-            window.currentOwedSessions = [];
             let totalOwes = 0; let totalOwed = 0; 
 
             if(db.sessions) {
@@ -1420,13 +1392,8 @@
                             let remaining = absNet - settledAmt;
 
                             if (remaining > 0) {
-                                if (net < 0) {
-                                    totalOwes += remaining;
-                                    window.currentOwesSessions.push({ ...sess, id: id, remaining: remaining, net: net });
-                                } else if (net > 0) {
-                                    totalOwed += remaining;
-                                    window.currentOwedSessions.push({ ...sess, id: id, remaining: remaining, net: net });
-                                }
+                                if (net < 0) totalOwes += remaining;
+                                else if (net > 0) totalOwed += remaining;
                             }
                         }
                     }
@@ -1444,7 +1411,7 @@
             }
 
             currentPlayerSessionsData = [...playerSessions].sort((a, b) => a.id.localeCompare(b.id)); 
-            updateChartFilter(currentChartFilter); 
+            updateChartFilter('all'); 
 
             playerSessions.sort((a, b) => b.id.localeCompare(a.id)); 
 
@@ -1469,49 +1436,6 @@
 
         window.closePlayerProfile = function() {
             document.getElementById('profile-modal').classList.add('hidden');
-            currentPlayerProfileName = null;
-        }
-
-        window.openDebtList = function(type) {
-            if (!currentPlayerProfileName) return;
-            const list = type === 'owes' ? window.currentOwesSessions : window.currentOwedSessions;
-            const container = document.getElementById('debt-list-content');
-            const title = document.getElementById('debt-list-title');
-
-            if (type === 'owes') {
-                title.innerText = i18n[currentLang].profOwes;
-                title.className = "text-sm font-black uppercase tracking-widest text-red-500";
-            } else {
-                title.innerText = i18n[currentLang].profOwed;
-                title.className = "text-sm font-black uppercase tracking-widest text-emerald-500";
-            }
-
-            if (list.length === 0) {
-                container.innerHTML = `<p class="text-center text-xs text-zinc-500 italic py-4">${currentLang === 'ru' ? 'Нет долгов' : 'No debts'}</p>`;
-            } else {
-                let html = '';
-                list.sort((a,b) => b.id.localeCompare(a.id)).forEach(s => {
-                    const remStr = isProfitsVisible ? formatMoney(s.remaining) : '***';
-                    const nClass = type === 'owes' ? 'text-red-400' : 'text-emerald-400';
-
-                    html += `
-                        <div onclick="openGameDetails('${s.id}')" class="flex justify-between items-center bg-zinc-900/80 p-3 rounded-xl border border-zinc-800 cursor-pointer hover:bg-zinc-800 transition">
-                            <span class="text-xs font-bold text-zinc-400">${s.date || '?'}</span>
-                            <div class="flex flex-col items-end">
-                                <span class="text-[8px] font-bold text-zinc-500 uppercase tracking-widest mb-0.5">${currentLang === 'ru' ? 'Остаток' : 'Remaining'}</span>
-                                <span class="text-sm font-black ${nClass}">${remStr}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            }
-
-            document.getElementById('debt-list-modal').classList.remove('hidden');
-        }
-
-        window.closeDebtList = function() {
-            document.getElementById('debt-list-modal').classList.add('hidden');
         }
 
         function buildSessionCardHTML(s, id, isEditMode) {
@@ -1636,7 +1560,6 @@
         window.renderSessions = function() {
             const list = document.getElementById('sessions-list');
             list.innerHTML = '';
-            const t = i18n[currentLang];
             
             if(!db.sessions || Object.keys(db.sessions).length === 0) {
                 list.innerHTML = `<p class="text-center text-xs text-zinc-500 italic mt-10">${currentLang === 'ru'?'Нет записей':'No records'}</p>`;
@@ -1818,7 +1741,6 @@
                 delete db.sessions[id];
                 updateTopPlayer();
                 saveToCloud();
-                closeGameDetails();
             }
         }
 
