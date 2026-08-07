@@ -169,12 +169,6 @@
                     </label>
                 </div>
 
-                <!-- ГЛОБАЛЬНЫЙ ГЛАЗИК (Показать/Скрыть суммы) -->
-                <button onclick="toggleProfits()" class="text-zinc-400 hover:text-white transition p-1 ml-2">
-                    <svg id="eye-closed-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
-                    <svg id="eye-open-icon" class="w-5 h-5 hidden text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                </button>
-
                 <!-- Бургер меню -->
                 <button onclick="toggleMenu()" class="text-zinc-400 hover:text-white transition p-1">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -220,7 +214,7 @@
     </div>
 
     <!-- ОКНО ПРОФИЛЯ ИГРОКА (СТАРТУЕТ ПОД ШАПКОЙ) -->
-    <div id="profile-modal" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4000] p-3 flex flex-col bg-[#050505] overflow-y-auto">
+    <div id="profile-modal" onclick="if(event.target===this) closePlayerProfile()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4000] p-3 flex flex-col bg-[#050505] overflow-y-auto">
         <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6 relative">
             <div class="flex justify-between items-start mb-6 mt-2">
                 <div>
@@ -243,13 +237,12 @@
                 </div>
             </div>
 
-            <!-- ИНТЕРАКТИВНЫЕ ДОЛГИ -->
             <div class="flex space-x-3 mb-5">
-                <div onclick="openDebtList('owes')" class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg cursor-pointer hover:bg-zinc-800 transition">
+                <div class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
                     <span id="loc-prof-owes" class="text-[8px] font-bold text-red-500/70 uppercase tracking-widest mb-1">Игрок должен</span>
                     <span id="profile-owes" class="text-lg font-black text-red-500">0</span>
                 </div>
-                <div onclick="openDebtList('owed')" class="flex-1 bg-zinc-900 border border-emerald-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg cursor-pointer hover:bg-zinc-800 transition">
+                <div class="flex-1 bg-zinc-900 border border-emerald-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
                     <span id="loc-prof-owed" class="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Игроку должны</span>
                     <span id="profile-owed" class="text-lg font-black text-emerald-500">0</span>
                 </div>
@@ -276,24 +269,10 @@
         </div>
     </div>
 
-    <!-- ОКНО СПИСКА ДОЛГОВ -->
-    <div id="debt-list-modal" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4100] p-3 flex flex-col items-center bg-[#050505] overflow-y-auto">
-        <div class="w-full max-w-md relative flex flex-col items-center pb-6">
-            <div class="w-full flex justify-between items-center mb-4 mt-2">
-                <h3 id="debt-list-title" class="text-sm font-black uppercase tracking-widest text-white">Долги</h3>
-                <button onclick="closeDebtList()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div id="debt-list-content" class="w-full space-y-2">
-            </div>
-        </div>
-    </div>
-
     <!-- ОКНО ДЕТАЛЕЙ ИГРЫ (СТАРТУЕТ ПОД ШАПКОЙ) -->
-    <div id="game-details-modal" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4500] p-3 flex flex-col items-center bg-[#050505] overflow-y-auto">
+    <div id="game-details-modal" onclick="if(event.target===this) closeGameDetails()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4500] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
         <div class="w-full max-w-md relative flex flex-col items-center pb-6">
-            <div class="w-full flex justify-end mb-2 mt-2">
+            <div class="w-full flex justify-end mb-2">
                 <button onclick="closeGameDetails()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
@@ -302,6 +281,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- ГЛАВНЫЙ ЭКРАН (СТОЛ) -->
     <div id="main-table-view" class="max-w-md mx-auto w-full flex-1 flex-col flex">
@@ -387,7 +367,7 @@
     <div class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-[4900] h-[60px]">
         <div class="max-w-md mx-auto flex h-full">
             <button id="tab-table" onclick="showTab('table')" class="flex-1 flex flex-col items-center justify-center text-white transition-colors">
-                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 <span id="loc-tab-table" class="text-[9px] font-bold uppercase tracking-widest">Стол</span>
             </button>
             <button id="tab-rating" onclick="showTab('rating')" class="flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors">
@@ -427,7 +407,6 @@
         
         let isFirstLoad = true;
         let isEditMode = false; 
-        let isProfitsVisible = localStorage.getItem('zalubank_privacy') === 'true'; 
         let isOnline = false;
         let pendingSaves = 0;
         
@@ -436,16 +415,12 @@
         let currentPwd = null;
 
         // Трекинг состояний
-        window.currentPlayerNameForEye = null; 
         let initialSettings = { currency: '', step: '' };
         let currentNoteSessionId = null;
         let initialNote = '';
         let currentGameDetailsId = null;
         let currentPlayerSessionsData = [];
         let currentChartFilter = 'all';
-
-        window.currentOwesSessions = [];
-        window.currentOwedSessions = [];
 
         const i18n = {
             ru: {
@@ -521,10 +496,6 @@
                 if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory(); 
                 if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions(); 
                 if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) openGameDetails(currentGameDetailsId);
-                if(document.getElementById('debt-list-modal') && !document.getElementById('debt-list-modal').classList.contains('hidden')) {
-                    const isOwes = document.getElementById('debt-list-title').classList.contains('text-red-500');
-                    window.openDebtList(isOwes ? 'owes' : 'owed');
-                }
             }
         }
 
@@ -620,18 +591,6 @@
                 return parts[1] + '.' + parts[parts.length-1];
             }
             return null;
-        }
-
-        function updateEyeIcon() {
-            const eyeClosed = document.getElementById('eye-closed-icon');
-            const eyeOpen = document.getElementById('eye-open-icon');
-            if (isProfitsVisible) {
-                if (eyeClosed) eyeClosed.classList.add('hidden');
-                if (eyeOpen) eyeOpen.classList.remove('hidden');
-            } else {
-                if (eyeClosed) eyeClosed.classList.remove('hidden');
-                if (eyeOpen) eyeOpen.classList.add('hidden');
-            }
         }
 
         setLang(currentLang);
@@ -862,15 +821,11 @@
                 }
                 
                 updateTopPlayer();
-                updateEyeIcon();
                 renderTable();
                 
                 if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
                 if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
                 
-                if(!document.getElementById('profile-modal').classList.contains('hidden') && window.currentPlayerNameForEye) {
-                    window.openPlayerProfile(window.currentPlayerNameForEye);
-                }
                 if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) {
                     window.openGameDetails(currentGameDetailsId);
                 }
@@ -885,7 +840,6 @@
         }
 
         window.onload = function() {
-            updateEyeIcon();
             const urlParams = new URLSearchParams(window.location.search);
             const clubFromUrl = urlParams.get('club');
             let savedClub = localStorage.getItem('zalubank_club');
@@ -959,27 +913,6 @@
             if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
             if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
             if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) openGameDetails(currentGameDetailsId);
-        }
-
-        window.toggleProfits = function() {
-            isProfitsVisible = !isProfitsVisible;
-            localStorage.setItem('zalubank_privacy', isProfitsVisible);
-            updateEyeIcon();
-            
-            renderTable();
-            if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
-            if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
-            
-            if(!document.getElementById('profile-modal').classList.contains('hidden') && window.currentPlayerNameForEye) {
-                window.openPlayerProfile(window.currentPlayerNameForEye);
-            }
-            if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) {
-                window.openGameDetails(currentGameDetailsId);
-            }
-            if(document.getElementById('debt-list-modal') && !document.getElementById('debt-list-modal').classList.contains('hidden')) {
-                const isOwes = document.getElementById('debt-list-title').classList.contains('text-red-500');
-                window.openDebtList(isOwes ? 'owes' : 'owed');
-            }
         }
 
         window.updateChartFilter = function(filter) {
@@ -1094,8 +1027,8 @@
                     totalBuyIns += bIn; totalCashouts += cOut;
 
                     const net = cOut - bIn;
-                    const netClass = isProfitsVisible ? (net > 0 ? 'text-emerald-500' : (net < 0 ? 'text-red-500' : 'text-zinc-500')) : 'text-zinc-500';
-                    const netText = isProfitsVisible ? (net > 0 ? `+${formatMoney(net)}` : formatMoney(net)) : '***';
+                    const netClass = net > 0 ? 'text-emerald-500' : (net < 0 ? 'text-red-500' : 'text-zinc-500');
+                    const netText = net > 0 ? `+${formatMoney(net)}` : formatMoney(net);
 
                     const buyInDisplay = p.buyIn === null || p.buyIn === undefined ? '' : p.buyIn;
                     const cashOutDisplay = p.cashOut === null || p.cashOut === undefined ? '' : p.cashOut;
@@ -1115,7 +1048,7 @@
                         </div>
                     ` : `
                         <div class="flex h-[26px] items-center px-2 bg-zinc-800/50 rounded-md border border-zinc-800">
-                            <span class="text-xs font-bold text-white">${buyInDisplay && isProfitsVisible ? formatMoney(buyInDisplay) : (buyInDisplay ? '***' : '0')}</span>
+                            <span class="text-xs font-bold text-white">${buyInDisplay ? formatMoney(buyInDisplay) : '0'}</span>
                         </div>
                     `;
 
@@ -1123,14 +1056,14 @@
                         <input type="text" id="cashout-${index}" value="${cashOutDisplay}" placeholder="0" onchange="updateCashOut(${index}, this.value)" onkeyup="if(event.key === 'Enter') this.blur()" class="w-full bg-zinc-800 rounded-md px-2 py-1 text-xs font-bold text-white outline-none border border-transparent focus:border-blue-500 transition">
                     ` : `
                         <div class="flex h-[26px] items-center px-2 bg-zinc-800/50 rounded-md border border-zinc-800">
-                            <span class="text-xs font-bold text-white">${cashOutDisplay && isProfitsVisible ? formatMoney(cashOutDisplay) : (cashOutDisplay ? '***' : '0')}</span>
+                            <span class="text-xs font-bold text-white">${cashOutDisplay ? formatMoney(cashOutDisplay) : '0'}</span>
                         </div>
                     `;
 
                     newHTML += `
                         <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 flex flex-col relative">
                             <div class="flex justify-between items-center mb-1.5 pr-4">
-                                <span onclick="window.openPlayerProfile('${p.name}')" class="font-black text-sm tracking-tight cursor-pointer hover:underline decoration-zinc-500 underline-offset-4 transition ${nameTitleClass}">${p.name}</span>
+                                <span class="font-black text-sm tracking-tight ${nameTitleClass}">${p.name}</span>
                                 <span class="text-[9px] font-bold ${netClass}">${netText}</span>
                             </div>
                             <div class="flex space-x-2 items-end">
@@ -1156,8 +1089,8 @@
                 if (el) { el.focus(); if (activeVal !== null) el.value = activeVal; }
             }
 
-            document.getElementById('total-buyins').innerText = isProfitsVisible ? formatMoney(totalBuyIns) : '***';
-            document.getElementById('total-cashouts').innerText = isProfitsVisible ? formatMoney(totalCashouts) : '***';
+            document.getElementById('total-buyins').innerText = formatMoney(totalBuyIns);
+            document.getElementById('total-cashouts').innerText = formatMoney(totalCashouts);
 
             const badge = document.getElementById('status-badge');
             const bg = document.getElementById('status-bg');
@@ -1352,8 +1285,8 @@
                 let html = '';
                 historyArray.forEach((p, index) => {
                     if (!p || !p.name) return;
-                    const netClass = isProfitsVisible ? (p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400')) : 'text-zinc-600 font-bold tracking-widest';
-                    const netText = isProfitsVisible ? (p.net > 0 ? `+${formatMoney(p.net)}` : formatMoney(p.net)) : '***';
+                    const netClass = p.net > 0 ? 'text-emerald-400' : (p.net < 0 ? 'text-red-400' : 'text-zinc-400');
+                    const netText = p.net > 0 ? `+${formatMoney(p.net)}` : formatMoney(p.net);
 
                     let adminButtons = (isEditMode && currentFilter === 'all') ? `
                         <div class="w-[15%] flex justify-end space-x-2">
@@ -1374,7 +1307,7 @@
                         <div class="flex px-3 py-2 items-center border-b border-zinc-800/30 last:border-0 hover:bg-zinc-800/40 transition group">
                             <div class="${nameWidth} flex items-center pr-1 truncate">
                                 <span class="w-4 inline-block text-[10px] text-zinc-600 font-bold text-right flex-shrink-0">${index + 1}</span>
-                                <button onclick="window.openPlayerProfile('${p.name}')" class="ml-2 font-bold text-xs text-left truncate hover:opacity-80 transition underline decoration-blue-900/50 underline-offset-4 ${rowNameClass}">${p.name}</button>
+                                <button onclick="openPlayerProfile('${p.name}')" class="ml-2 font-bold text-xs text-left truncate hover:opacity-80 transition underline decoration-blue-900/50 underline-offset-4 ${rowNameClass}">${p.name}</button>
                             </div>
                             <div class="w-[15%] text-center text-[10px] text-zinc-500 font-medium">${p.games || 0}</div>
                             <div class="w-[25%] text-right text-xs font-black ${netClass}">${netText}</div>
@@ -1387,7 +1320,7 @@
         }
 
         window.openPlayerProfile = function(name) {
-            window.currentPlayerNameForEye = name;
+            closeGameDetails(); 
             
             const stats = db.history[name];
             if(!stats) return;
@@ -1397,8 +1330,8 @@
             document.getElementById('profile-name').innerText = name;
             document.getElementById('profile-games').innerText = stats.games || 0;
             
-            const netClass = isProfitsVisible ? (stats.net > 0 ? 'text-emerald-400' : (stats.net < 0 ? 'text-red-400' : 'text-white')) : 'text-zinc-600 tracking-widest';
-            const netText = isProfitsVisible ? (stats.net > 0 ? `+${formatMoney(stats.net)}` : formatMoney(stats.net)) : '***';
+            const netClass = stats.net > 0 ? 'text-emerald-400' : (stats.net < 0 ? 'text-red-400' : 'text-white');
+            const netText = stats.net > 0 ? `+${formatMoney(stats.net)}` : formatMoney(stats.net);
             
             document.getElementById('profile-net').className = `text-2xl font-black relative z-10 ${netClass}`;
             document.getElementById('profile-net').innerText = netText;
@@ -1407,8 +1340,6 @@
             list.innerHTML = '';
             
             let playerSessions = [];
-            window.currentOwesSessions = [];
-            window.currentOwedSessions = [];
             let totalOwes = 0; let totalOwed = 0; 
 
             if(db.sessions) {
@@ -1425,13 +1356,8 @@
                             let remaining = absNet - settledAmt;
 
                             if (remaining > 0) {
-                                if (net < 0) {
-                                    totalOwes += remaining;
-                                    window.currentOwesSessions.push({ ...sess, id: id, remaining: remaining, net: net });
-                                } else if (net > 0) {
-                                    totalOwed += remaining;
-                                    window.currentOwedSessions.push({ ...sess, id: id, remaining: remaining, net: net });
-                                }
+                                if (net < 0) totalOwes += remaining;
+                                else if (net > 0) totalOwed += remaining;
                             }
                         }
                     }
@@ -1440,16 +1366,12 @@
 
             const owesEl = document.getElementById('profile-owes');
             const owedEl = document.getElementById('profile-owed');
-            if (isProfitsVisible) {
-                owesEl.innerText = totalOwes > 0 ? formatMoney(totalOwes) : '0';
-                owedEl.innerText = totalOwed > 0 ? formatMoney(totalOwed) : '0';
-            } else {
-                owesEl.innerText = '***';
-                owedEl.innerText = '***';
-            }
+            
+            owesEl.innerText = totalOwes > 0 ? formatMoney(totalOwes) : '0';
+            owedEl.innerText = totalOwed > 0 ? formatMoney(totalOwed) : '0';
 
             currentPlayerSessionsData = [...playerSessions].sort((a, b) => a.id.localeCompare(b.id)); 
-            updateChartFilter(currentChartFilter); 
+            updateChartFilter('all'); 
 
             playerSessions.sort((a, b) => b.id.localeCompare(a.id)); 
 
@@ -1458,8 +1380,8 @@
             } else {
                 let html = '';
                 playerSessions.forEach(s => {
-                    const sNetClass = isProfitsVisible ? (s.net > 0 ? 'text-emerald-400' : (s.net < 0 ? 'text-red-400' : 'text-zinc-500')) : 'text-zinc-600';
-                    const sNetText = isProfitsVisible ? (s.net > 0 ? `+${formatMoney(s.net)}` : formatMoney(s.net)) : '***';
+                    const sNetClass = s.net > 0 ? 'text-emerald-400' : (s.net < 0 ? 'text-red-400' : 'text-zinc-500');
+                    const sNetText = s.net > 0 ? `+${formatMoney(s.net)}` : formatMoney(s.net);
                     html += `
                         <div onclick="openGameDetails('${s.id}')" class="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-zinc-800/50 cursor-pointer hover:bg-zinc-800 transition">
                             <span class="text-xs font-bold text-zinc-400">${s.date}</span>
@@ -1476,48 +1398,6 @@
             document.getElementById('profile-modal').classList.add('hidden');
         }
 
-        window.openDebtList = function(type) {
-            if (!window.currentPlayerNameForEye) return;
-            const list = type === 'owes' ? window.currentOwesSessions : window.currentOwedSessions;
-            const container = document.getElementById('debt-list-content');
-            const title = document.getElementById('debt-list-title');
-
-            if (type === 'owes') {
-                title.innerText = i18n[currentLang].profOwes;
-                title.className = "text-sm font-black uppercase tracking-widest text-red-500";
-            } else {
-                title.innerText = i18n[currentLang].profOwed;
-                title.className = "text-sm font-black uppercase tracking-widest text-emerald-500";
-            }
-
-            if (list.length === 0) {
-                container.innerHTML = `<p class="text-center text-xs text-zinc-500 italic py-4">${currentLang === 'ru' ? 'Нет активных долгов' : 'No pending debts'}</p>`;
-            } else {
-                let html = '';
-                list.sort((a,b) => b.id.localeCompare(a.id)).forEach(s => {
-                    const remStr = isProfitsVisible ? formatMoney(s.remaining) : '***';
-                    const nClass = type === 'owes' ? 'text-red-400' : 'text-emerald-400';
-
-                    html += `
-                        <div onclick="openGameDetails('${s.id}')" class="flex justify-between items-center bg-zinc-900/80 p-3 rounded-xl border border-zinc-800 cursor-pointer hover:bg-zinc-800 transition">
-                            <span class="text-xs font-bold text-zinc-400">${s.date || '?'}</span>
-                            <div class="flex flex-col items-end">
-                                <span class="text-[8px] font-bold text-zinc-500 uppercase tracking-widest mb-0.5">${currentLang === 'ru' ? 'Остаток' : 'Remaining'}</span>
-                                <span class="text-sm font-black ${nClass}">${remStr}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            }
-
-            document.getElementById('debt-list-modal').classList.remove('hidden');
-        }
-
-        window.closeDebtList = function() {
-            document.getElementById('debt-list-modal').classList.add('hidden');
-        }
-
         function buildSessionCardHTML(s, id, isEditMode) {
             const t = i18n[currentLang];
             let playersHTML = s.players.filter(p=>p).map(p => {
@@ -1527,13 +1407,13 @@
                 let settledAmount = p.settledAmount !== undefined ? p.settledAmount : (p.settled ? absNet : 0);
                 let isFullySettled = (settledAmount === absNet) || (net === 0);
                 
-                let nClass = isProfitsVisible ? (net > 0 ? 'text-emerald-400' : (net < 0 ? 'text-red-400' : 'text-zinc-400')) : 'text-zinc-600';
-                if(isFullySettled && isProfitsVisible) {
+                let nClass = net > 0 ? 'text-emerald-400' : (net < 0 ? 'text-red-400' : 'text-zinc-400');
+                if(isFullySettled) {
                     if (net > 0) nClass = 'text-emerald-500'; 
                     if (net < 0) nClass = 'text-red-500';
                 }
                 
-                let netStr = isProfitsVisible ? (net > 0 ? '+'+formatMoney(net) : formatMoney(net)) : '***';
+                let netStr = net > 0 ? '+'+formatMoney(net) : formatMoney(net);
                 let rowOpacity = isFullySettled ? 'opacity-70' : 'opacity-100'; 
                 
                 let statusDisplay = '';
@@ -1557,7 +1437,7 @@
                     
                 let toggleAction = isEditMode ? `onclick="toggleSettled('${id}', '${p.name}')" class="cursor-pointer hover:opacity-80 transition ml-2.5 flex items-center"` : `class="ml-2.5 flex items-center"`;
 
-                let nameClick = `onclick="window.openPlayerProfile('${p.name}')" class="font-medium ${rowNameClass} cursor-pointer hover:underline decoration-zinc-500 underline-offset-4 transition"`;
+                let nameClick = `onclick="openPlayerProfile('${p.name}')" class="font-medium ${rowNameClass} cursor-pointer hover:underline decoration-zinc-500 underline-offset-4 transition"`;
 
                 return `
                     <div class="flex justify-between items-center text-[13px] py-1 ${rowOpacity} transition-opacity duration-300">
@@ -1604,7 +1484,7 @@
                 `;
             }
 
-            let tableCashStr = isProfitsVisible ? formatMoney(s.totalB) : '***';
+            let tableCashStr = formatMoney(s.totalB);
 
             return `
                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 relative shadow-lg">
@@ -1707,7 +1587,6 @@
                 db.sessions[currentNoteSessionId].note = document.getElementById('note-textarea').value.trim();
                 saveToCloud();
                 renderSessions();
-                if(currentGameDetailsId) openGameDetails(currentGameDetailsId);
             }
             closeNoteModal(true);
         }
