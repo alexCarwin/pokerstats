@@ -146,7 +146,7 @@
         </div>
     </div>
 
-    <!-- ЧИСТАЯ ШАПКА ФИКСИРОВАННАЯ СВЕРХУ (z-[5000] - ПОВЕРХ ВСЕХ ОКОН КРОМЕ ПОПАПОВ) -->
+    <!-- ЧИСТАЯ ШАПКА ФИКСИРОВАННАЯ СВЕРХУ -->
     <div class="fixed top-0 left-0 right-0 bg-[#050505]/95 backdrop-blur-md z-[5000] border-b border-zinc-800/80">
         <div class="max-w-md mx-auto w-full flex justify-between items-center p-3 relative">
             <div class="flex items-center space-x-2">
@@ -213,7 +213,7 @@
         </div>
     </div>
 
-    <!-- ОКНО ПРОФИЛЯ ИГРОКА -->
+    <!-- ОКНО ПРОФИЛЯ ИГРОКА (СТАРТУЕТ ПОД ШАПКОЙ) -->
     <div id="profile-modal" onclick="if(event.target===this) closePlayerProfile()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4000] p-3 flex flex-col bg-[#050505] overflow-y-auto">
         <div class="max-w-md mx-auto w-full flex-1 flex flex-col pb-6 relative">
             <div class="flex justify-between items-start mb-6 mt-2">
@@ -237,13 +237,12 @@
                 </div>
             </div>
 
-            <!-- ИНТЕРАКТИВНЫЕ ДОЛГИ -->
             <div class="flex space-x-3 mb-5">
-                <div onclick="openDebtList('owes')" class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg cursor-pointer hover:bg-zinc-800 transition">
+                <div class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
                     <span id="loc-prof-owes" class="text-[8px] font-bold text-red-500/70 uppercase tracking-widest mb-1">Игрок должен</span>
                     <span id="profile-owes" class="text-lg font-black text-red-500">0</span>
                 </div>
-                <div onclick="openDebtList('owed')" class="flex-1 bg-zinc-900 border border-emerald-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg cursor-pointer hover:bg-zinc-800 transition">
+                <div class="flex-1 bg-zinc-900 border border-emerald-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
                     <span id="loc-prof-owed" class="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Игроку должны</span>
                     <span id="profile-owed" class="text-lg font-black text-emerald-500">0</span>
                 </div>
@@ -270,25 +269,11 @@
         </div>
     </div>
 
-    <!-- ОКНО СПИСКА ДОЛГОВ -->
-    <div id="debt-list-modal" onclick="if(event.target===this) closeDebtList()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4100] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
-        <div class="w-full max-w-md relative flex flex-col items-center pb-6">
-            <div class="w-full flex justify-between items-center mb-4 mt-2">
-                <h3 id="debt-list-title" class="text-sm font-black uppercase tracking-widest text-white">Долги</h3>
-                <button onclick="closeDebtList()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div id="debt-list-content" class="w-full space-y-2">
-            </div>
-        </div>
-    </div>
-
     <!-- ОКНО ДЕТАЛЕЙ ИГРЫ (СТАРТУЕТ ПОД ШАПКОЙ) -->
     <div id="game-details-modal" onclick="if(event.target===this) closeGameDetails()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4500] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
         <div class="w-full max-w-md relative flex flex-col items-center pb-6">
-            <div class="w-full flex justify-end mb-2 mt-2">
-                <button onclick="closeGameDetails()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
+            <div class="w-full flex justify-end mb-2">
+                <button onclick="closeGameDetails()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg mt-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
@@ -296,6 +281,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- ГЛАВНЫЙ ЭКРАН (СТОЛ) -->
     <div id="main-table-view" class="max-w-md mx-auto w-full flex-1 flex-col flex">
@@ -429,16 +415,12 @@
         let currentPwd = null;
 
         // Трекинг состояний
-        window.currentPlayerProfileName = null;
         let initialSettings = { currency: '', step: '' };
         let currentNoteSessionId = null;
         let initialNote = '';
         let currentGameDetailsId = null;
         let currentPlayerSessionsData = [];
         let currentChartFilter = 'all';
-
-        window.currentOwesSessions = [];
-        window.currentOwedSessions = [];
 
         const i18n = {
             ru: {
@@ -843,9 +825,7 @@
                 
                 if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
                 if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
-                if(!document.getElementById('profile-modal').classList.contains('hidden') && window.currentPlayerProfileName) {
-                    window.openPlayerProfile(window.currentPlayerProfileName);
-                }
+                
                 if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) {
                     window.openGameDetails(currentGameDetailsId);
                 }
@@ -1381,10 +1361,10 @@
                             if (remaining > 0) {
                                 if (net < 0) {
                                     totalOwes += remaining;
-                                    window.currentOwesSessions.push({ ...sess, id: id, remaining: remaining, net: net });
+                                    window.currentOwesSessions.push({ ...sess, id: id, remaining: remaining, net: net }); 
                                 } else if (net > 0) {
                                     totalOwed += remaining;
-                                    window.currentOwedSessions.push({ ...sess, id: id, remaining: remaining, net: net });
+                                    window.currentOwedSessions.push({ ...sess, id: id, remaining: remaining, net: net }); 
                                 }
                             }
                         }
@@ -1500,18 +1480,10 @@
                 let isGolden = (p.name === topPlayerName);
                 let rowNameClass = isGolden ? 'golden-text' : 'text-zinc-200';
 
-                let editPlayerAction = isEditMode ? `
-                    <button onclick="editSessionPlayer('${id}', '${p.name}')" class="ml-2 text-zinc-500 hover:text-blue-400 transition">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                    </button>` : '';
+                // Сделали саму сумму долга кликабельной в режиме редактирования
+                let netClickAction = isEditMode ? `onclick="editSessionPlayer('${id}', '${p.name}')" class="${nClass} font-bold cursor-pointer hover:opacity-70 transition"` : `class="${nClass} font-bold"`;
                     
-                let toggleAction = isEditMode ? `onclick="toggleSettled('${id}', '${p.name}')" class="cursor-pointer hover:opacity-80 transition flex items-center"` : `class="flex items-center"`;
-
-                let quickSettleBtn = (isEditMode && !isFullySettled) ? `
-                    <button onclick="window.quickSettle('${id}', '${p.name}'); event.stopPropagation();" class="ml-1.5 bg-emerald-900/30 text-emerald-500 border border-emerald-900/50 rounded px-1 py-0.5 hover:bg-emerald-600 hover:text-white transition shadow-[0_0_8px_rgba(16,185,129,0.2)] flex items-center justify-center active:scale-95">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                    </button>
-                ` : '';
+                let toggleAction = isEditMode ? `onclick="toggleSettled('${id}', '${p.name}')" class="cursor-pointer hover:opacity-80 transition ml-2.5 flex items-center"` : `class="ml-2.5 flex items-center"`;
 
                 let nameClick = `onclick="window.openPlayerProfile('${p.name}')" class="font-medium ${rowNameClass} cursor-pointer hover:underline decoration-zinc-500 underline-offset-4 transition"`;
 
@@ -1519,12 +1491,8 @@
                     <div class="flex justify-between items-center text-[13px] py-1 ${rowOpacity} transition-opacity duration-300">
                         <span ${nameClick}>${p.name}</span>
                         <div class="flex items-center">
-                            <span class="${nClass} font-bold">${netStr}</span>
-                            ${editPlayerAction}
-                            <div class="ml-2.5 flex items-center">
-                                <div ${toggleAction}>${statusDisplay}</div>
-                                ${quickSettleBtn}
-                            </div>
+                            <span ${netClickAction}>${netStr}</span>
+                            <div ${toggleAction}>${statusDisplay}</div>
                         </div>
                     </div>
                 `;
@@ -1666,7 +1634,6 @@
                 db.sessions[currentNoteSessionId].note = document.getElementById('note-textarea').value.trim();
                 saveToCloud();
                 renderSessions();
-                if(currentGameDetailsId) window.openGameDetails(currentGameDetailsId);
             }
             closeNoteModal(true);
         }
@@ -1750,23 +1717,6 @@
                     alert("Error.");
                 }
             }
-        }
-
-        window.quickSettle = function(id, playerName) {
-            if(!isEditMode) return;
-            const session = db.sessions[id];
-            if(!session) return;
-            const playerIndex = session.players.findIndex(p => p && p.name === playerName);
-            if(playerIndex === -1) return;
-
-            let p = session.players[playerIndex];
-            let net = (p.cashOut || 0) - (p.buyIn || 0);
-            if (net === 0) return; 
-
-            let absNet = Math.abs(net);
-            db.sessions[id].players[playerIndex].settledAmount = absNet;
-            db.sessions[id].players[playerIndex].settled = true;
-            saveToCloud();
         }
 
         window.editSessionDate = function(id) {
