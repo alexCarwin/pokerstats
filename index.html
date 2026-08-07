@@ -146,7 +146,7 @@
         </div>
     </div>
 
-    <!-- ЧИСТАЯ ШАПКА ФИКСИРОВАННАЯ СВЕРХУ -->
+    <!-- ЧИСТАЯ ШАПКА ФИКСИРОВАННАЯ СВЕРХУ (z-[5000] - ПОВЕРХ ВСЕХ ОКОН КРОМЕ ПОПАПОВ) -->
     <div class="fixed top-0 left-0 right-0 bg-[#050505]/95 backdrop-blur-md z-[5000] border-b border-zinc-800/80">
         <div class="max-w-md mx-auto w-full flex justify-between items-center p-3 relative">
             <div class="flex items-center space-x-2">
@@ -237,12 +237,13 @@
                 </div>
             </div>
 
+            <!-- ИНТЕРАКТИВНЫЕ ДОЛГИ -->
             <div class="flex space-x-3 mb-5">
-                <div class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
+                <div onclick="openDebtList('owes')" class="flex-1 bg-zinc-900 border border-red-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg cursor-pointer hover:bg-zinc-800 transition">
                     <span id="loc-prof-owes" class="text-[8px] font-bold text-red-500/70 uppercase tracking-widest mb-1">Игрок должен</span>
                     <span id="profile-owes" class="text-lg font-black text-red-500">0</span>
                 </div>
-                <div class="flex-1 bg-zinc-900 border border-emerald-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg">
+                <div onclick="openDebtList('owed')" class="flex-1 bg-zinc-900 border border-emerald-900/30 rounded-2xl p-3 flex flex-col justify-center items-center shadow-lg cursor-pointer hover:bg-zinc-800 transition">
                     <span id="loc-prof-owed" class="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Игроку должны</span>
                     <span id="profile-owed" class="text-lg font-black text-emerald-500">0</span>
                 </div>
@@ -269,11 +270,25 @@
         </div>
     </div>
 
+    <!-- ОКНО СПИСКА ДОЛГОВ -->
+    <div id="debt-list-modal" onclick="if(event.target===this) closeDebtList()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4100] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
+        <div class="w-full max-w-md relative flex flex-col items-center pb-6">
+            <div class="w-full flex justify-between items-center mb-4 mt-2">
+                <h3 id="debt-list-title" class="text-sm font-black uppercase tracking-widest text-white">Долги</h3>
+                <button onclick="closeDebtList()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div id="debt-list-content" class="w-full space-y-2">
+            </div>
+        </div>
+    </div>
+
     <!-- ОКНО ДЕТАЛЕЙ ИГРЫ (СТАРТУЕТ ПОД ШАПКОЙ) -->
     <div id="game-details-modal" onclick="if(event.target===this) closeGameDetails()" class="fixed top-[72px] left-0 right-0 bottom-0 hidden z-[4500] p-3 flex flex-col items-center bg-[#050505]/95 backdrop-blur-md overflow-y-auto">
         <div class="w-full max-w-md relative flex flex-col items-center pb-6">
-            <div class="w-full flex justify-end mb-2">
-                <button onclick="closeGameDetails()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg mt-2">
+            <div class="w-full flex justify-end mb-2 mt-2">
+                <button onclick="closeGameDetails()" class="text-zinc-400 hover:text-white transition bg-zinc-900 border border-zinc-800 p-2 rounded-full shadow-lg">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
@@ -367,7 +382,7 @@
     <div class="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-[4900] h-[60px]">
         <div class="max-w-md mx-auto flex h-full">
             <button id="tab-table" onclick="showTab('table')" class="flex-1 flex flex-col items-center justify-center text-white transition-colors">
-                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 <span id="loc-tab-table" class="text-[9px] font-bold uppercase tracking-widest">Стол</span>
             </button>
             <button id="tab-rating" onclick="showTab('rating')" class="flex-1 flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors">
@@ -415,12 +430,16 @@
         let currentPwd = null;
 
         // Трекинг состояний
+        window.currentPlayerProfileName = null;
         let initialSettings = { currency: '', step: '' };
         let currentNoteSessionId = null;
         let initialNote = '';
         let currentGameDetailsId = null;
         let currentPlayerSessionsData = [];
         let currentChartFilter = 'all';
+
+        window.currentOwesSessions = [];
+        window.currentOwedSessions = [];
 
         const i18n = {
             ru: {
@@ -826,6 +845,9 @@
                 if(!document.getElementById('history-modal').classList.contains('hidden')) renderHistory();
                 if(!document.getElementById('sessions-modal').classList.contains('hidden')) renderSessions();
                 
+                if(!document.getElementById('profile-modal').classList.contains('hidden') && window.currentPlayerProfileName) {
+                    window.openPlayerProfile(window.currentPlayerProfileName);
+                }
                 if(!document.getElementById('game-details-modal').classList.contains('hidden') && currentGameDetailsId) {
                     window.openGameDetails(currentGameDetailsId);
                 }
@@ -1634,6 +1656,7 @@
                 db.sessions[currentNoteSessionId].note = document.getElementById('note-textarea').value.trim();
                 saveToCloud();
                 renderSessions();
+                if(currentGameDetailsId) window.openGameDetails(currentGameDetailsId);
             }
             closeNoteModal(true);
         }
@@ -1705,7 +1728,8 @@
             let absNet = Math.abs(net);
             let currentSettled = p.settledAmount !== undefined ? p.settledAmount : (p.settled ? absNet : 0);
             
-            let amountStr = prompt(`Игрок: ${playerName}\nИтог: ${net > 0 ? '+'+formatMoney(net) : formatMoney(net)}\n\nСумма (0 - ${absNet}):`, currentSettled);
+            // ВАЖНО: Подставляем absNet по умолчанию вместо currentSettled
+            let amountStr = prompt(`Игрок: ${playerName}\nИтог: ${net > 0 ? '+'+formatMoney(net) : formatMoney(net)}\n\nСумма (0 - ${absNet}):`, absNet);
 
             if (amountStr !== null) {
                 let parsed = parseInput(amountStr);
